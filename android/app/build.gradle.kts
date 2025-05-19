@@ -37,15 +37,6 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
-
-    // Here you can add additional dependencies that your Android project needs
-    dependencies {
-        implementation("androidx.appcompat:appcompat:1.6.1") // Ensure AppCompat is included for backward compatibility
-        implementation("androidx.constraintlayout:constraintlayout:2.1.4") // For layout management
-        implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.0") // For lifecycle components
-        implementation("androidx.activity:activity-ktx:1.6.0") // Kotlin extensions related to activities
-        implementation("com.google.android.material:material:1.12.0")
-    }
 }
 
 flutter {

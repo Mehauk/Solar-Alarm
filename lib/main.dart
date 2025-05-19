@@ -15,7 +15,7 @@ void sendZenith() {
   final temp = solarNoon.add(Duration(minutes: 60));
   print(temp);
   if (!temp.isAfter(DateTime.now())) {
-    print("CANECLED");
+    print("CANCELED");
     return;
   }
 
