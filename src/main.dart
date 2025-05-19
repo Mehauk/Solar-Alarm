@@ -1,6 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:solar_alarm/platform/alarm_channel.dart';
 import 'package:solar_alarm/solar.dart';
+
+final int rando = Random().nextInt(10000);
 
 void sendZenith() {
   // Coordinates for Edmonton, Alberta, Canada
@@ -19,11 +23,12 @@ void sendZenith() {
     return;
   }
 
-  scheduleAlarm(temp);
+  scheduleAlarm(temp, "Dhur");
 }
 
 void sendAlarm() {
-  scheduleAlarm(DateTime.now().add(Duration(seconds: 10)));
+  final int rando = Random().nextInt(10000);
+  scheduleAlarm(DateTime.now().add(Duration(seconds: 10)), "MYname $rando");
   print("SENT");
 }
 
@@ -32,7 +37,10 @@ void main(List<String> args) {
     MaterialApp(
       home: Scaffold(
         body: Center(
-          child: TextButton(onPressed: sendAlarm, child: Text("SEND ALARM")),
+          child: TextButton(
+            onPressed: sendAlarm,
+            child: Text("SEND ALARM $rando"),
+          ),
         ),
       ),
     ),

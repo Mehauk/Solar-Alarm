@@ -11,11 +11,13 @@ import com.example.solar_alarm.AlarmReceiver
 class Alarm {
     companion object {
         @SuppressLint("MissingPermission")
-        fun setAlarm(timeInMillis: Long, context: Context) {
+        fun setAlarm(timeInMillis: Long, alarmName: String, context: Context) {
             val intent = Intent(context, AlarmReceiver::class.java)
+            intent.putExtra("alarmName", alarmName)
+
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
-                0,
+                alarmName.hashCode(),
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )

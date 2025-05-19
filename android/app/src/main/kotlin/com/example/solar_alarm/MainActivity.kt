@@ -15,9 +15,11 @@ class MainActivity : FlutterActivity() {
                 call, result ->
                 when (call.method) {
                     "setAlarm" -> {
-                        val timeInMillis = (call.arguments as Map<*, *>)["time"]!! as Long
+                        val args = call.arguments as Map<*, *>;
+                        val timeInMillis = args["time"]!! as Long
+                        val alarmName = args["name"]!! as String
                         val context = applicationContext
-                        setAlarm(timeInMillis, context)
+                        setAlarm(timeInMillis, alarmName, context)
                         result.success(null)
                     }
                 }

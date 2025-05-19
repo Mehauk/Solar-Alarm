@@ -11,6 +11,7 @@ class AlarmReceiver : BroadcastReceiver() {
         Log.d("AlarmReceiver", SystemClock.currentThreadTimeMillis().toString() + " in com.example.solar_alarm.AlarmReceiver onReceive()")
         val alarmIntent = Intent(context, AlarmActivity::class.java)
         alarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        alarmIntent.putExtra("alarmName", intent.getStringExtra("alarmName"));
         context.startActivity(alarmIntent)
     }
 }

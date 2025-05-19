@@ -1,3 +1,8 @@
-- [x] Change to fullscreen dialog
+- [x] Change to fullscreen dialog (used setAlarmClock)
+- [x] Implement snooze
+- [x] Issue with multiple alarms? maybe dont work if too close. (needed different IDs)
+- [ ] Set alarms for prayer
+  - [x] Set name
+  - [ ] Set proper times
+  - [ ] Set for next day/s
 - [ ] Potential issue if phone turns off and the next are not scheduled?
-- [ ] Calculate next time when?

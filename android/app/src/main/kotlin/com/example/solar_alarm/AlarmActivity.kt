@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import android.view.WindowManager
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import com.example.solar_alarm.utils.Alarm.Companion.setAlarm
 
@@ -32,6 +33,9 @@ class AlarmActivity : Activity() {
         }
         setContentView(R.layout.activity_alarm)
 
+        val alarmName = intent.getStringExtra("alarmName") ?: "ALARM!"
+        findViewById<TextView>(R.id.alarmTitle).text = alarmName
+
         findViewById<Button>(R.id.dismissButton).setOnClickListener {
             Toast.makeText(this, "Alarm dismissed", Toast.LENGTH_SHORT).show()
             finish()
@@ -40,7 +44,7 @@ class AlarmActivity : Activity() {
             Toast.makeText(this, "Snoozed for 5 minutes", Toast.LENGTH_SHORT).show()
             val timeInMillis = System.currentTimeMillis() + (1_000 * 60 * 5)
             val context = applicationContext
-            setAlarm(timeInMillis, context)
+            setAlarm(timeInMillis, alarmName, context)
             finish()
         }
     }
