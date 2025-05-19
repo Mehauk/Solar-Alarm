@@ -1,0 +1,3 @@
+- [ ] Change to fullscreen dialog
+- [ ] Use forground service to show remaining or upcoming time?
+- [ ] Calculate next time when?
