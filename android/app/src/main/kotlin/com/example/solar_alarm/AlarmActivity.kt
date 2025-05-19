@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.Toast
+import com.example.solar_alarm.utils.Alarm.Companion.setAlarm
 
 class AlarmActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +38,9 @@ class AlarmActivity : Activity() {
         }
         findViewById<Button>(R.id.snoozeButton).setOnClickListener {
             Toast.makeText(this, "Snoozed for 5 minutes", Toast.LENGTH_SHORT).show()
-            // TODO: Implement snooze logic (e.g., reschedule alarm)
+            val timeInMillis = System.currentTimeMillis() + (1_000 * 60 * 5)
+            val context = applicationContext
+            setAlarm(timeInMillis, context)
             finish()
         }
     }

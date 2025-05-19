@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
-        android:text="Alarm!"
+        android:text="ALARM!"
         android:textColor="#fff"
         android:textSize="32sp" />
 
@@ -20,15 +20,17 @@
         android:id="@+id/dismissButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:rotationX="15"
         android:text="Dismiss"
-        android:textAllCaps="true"
-        android:layout_marginBottom="16dp"/>
+        android:textAllCaps="true" />
 
     <Button
         android:id="@+id/snoozeButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:rotationX="-15"
         android:text="Snooze"
-        android:textAllCaps="true"/>
+        android:textAllCaps="true" />
 
 </LinearLayout>
