@@ -1,3 +1,3 @@
-- [ ] Change to fullscreen dialog
-- [ ] Use forground service to show remaining or upcoming time?
+- [x] Change to fullscreen dialog
+- [ ] Potential issue if phone turns off and the next are not scheduled?
 - [ ] Calculate next time when?

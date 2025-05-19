@@ -1,0 +1,44 @@
+package com.example.solar_alarm
+
+import android.app.Activity
+import android.os.Bundle
+import android.view.WindowManager
+import android.widget.Button
+import android.widget.Toast
+
+class AlarmActivity : Activity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true)
+            setTurnScreenOn(true)
+        } else {
+            @Suppress("DEPRECATION")
+            window.addFlags(
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+            )
+        }
+        // Hide status bar for fullscreen (API 30+)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            window.insetsController?.hide(android.view.WindowInsets.Type.statusBars())
+        } else {
+            @Suppress("DEPRECATION")
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
+        }
+        setContentView(R.layout.activity_alarm)
+
+        findViewById<Button>(R.id.dismissButton).setOnClickListener {
+            Toast.makeText(this, "Alarm dismissed", Toast.LENGTH_SHORT).show()
+            finish()
+        }
+        findViewById<Button>(R.id.snoozeButton).setOnClickListener {
+            Toast.makeText(this, "Snoozed for 5 minutes", Toast.LENGTH_SHORT).show()
+            // TODO: Implement snooze logic (e.g., reschedule alarm)
+            finish()
+        }
+    }
+}

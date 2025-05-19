@@ -8,6 +8,9 @@ import android.util.Log
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        Log.d("AlarmReceiver", SystemClock.elapsedRealtime().toString() + " in com.example.solar_alarm.AlarmReceiver onReceive()")
+        Log.d("AlarmReceiver", SystemClock.currentThreadTimeMillis().toString() + " in com.example.solar_alarm.AlarmReceiver onReceive()")
+        val alarmIntent = Intent(context, AlarmActivity::class.java)
+        alarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        context.startActivity(alarmIntent)
     }
 }
