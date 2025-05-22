@@ -4,9 +4,10 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import com.example.solar_alarm.utils.Alarm.Companion.setAlarm
+import com.example.solar_alarm.utils.Prayer
 
 class MainActivity : FlutterActivity() {
-    private val alarmChannel = "com.example.solar_alarm/alarm"
+    private val alarmChannel = "com.example.solar_alarm/main_channel"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -21,6 +22,13 @@ class MainActivity : FlutterActivity() {
                         val context = applicationContext
                         setAlarm(timeInMillis, alarmName, context)
                         result.success(null)
+                    }
+
+                    "getPrayerTimes" -> {
+                        val args = call.arguments as Map<*, *>;
+                        val timeInMillis = args["date"]!! as Long
+                        val prayerTimes = Prayer.getPrayerMillis(53.5461, -113.4938, timeInMillis)
+                        result.success(prayerTimes)
                     }
                 }
             }

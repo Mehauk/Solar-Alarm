@@ -2,47 +2,70 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:solar_alarm/platform/alarm_channel.dart';
-import 'package:solar_alarm/solar.dart';
+import 'package:solar_alarm/platform/prayer_channel.dart';
 
 final int rando = Random().nextInt(10000);
-
-void sendZenith() {
-  // Coordinates for Edmonton, Alberta, Canada
-  final latitude = 53.5461; // Edmonton latitude
-  final longitude = -113.4938; // Edmonton longitude
-
-  // Current UTC time (You can replace this with any specific UTC date if needed)
-  final now = DateTime.now().toUtc(); // Get the current UTC time
-
-  // Calculate solar noon for Edmonton
-  final solarNoon = calculateSolarNoon(latitude, longitude, now).toLocal();
-  final temp = solarNoon.add(Duration(minutes: 60));
-  print(temp);
-  if (!temp.isAfter(DateTime.now())) {
-    print("CANCELED");
-    return;
-  }
-
-  scheduleAlarm(temp, "Dhur");
-}
 
 void sendAlarm() {
   final int rando = Random().nextInt(10000);
   scheduleAlarm(DateTime.now().add(Duration(seconds: 10)), "MYname $rando");
-  print("SENT");
 }
 
 void main(List<String> args) {
-  runApp(
-    MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: TextButton(
-            onPressed: sendAlarm,
-            child: Text("SEND ALARM $rando"),
-          ),
+  runApp(MaterialApp(home: _Home()));
+}
+
+class _Home extends StatefulWidget {
+  const _Home();
+
+  @override
+  State<_Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<_Home> {
+  Map<dynamic, dynamic>? prayers;
+
+  _getPrayerTimes() async {
+    prayers = await getPrayerTimes(DateTime.now());
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children:
+                    prayers?.entries
+                        .map(
+                          (e) => Text(
+                            "${e.key} : ${DateTime.fromMillisecondsSinceEpoch(e.value)}",
+                          ),
+                        )
+                        .toList() ??
+                    [],
+              ),
+            ),
+            Expanded(
+              child: TextButton(
+                onPressed: sendAlarm,
+                child: Text("SEND ALARM $rando"),
+              ),
+            ),
+            Expanded(
+              child: TextButton(
+                onPressed: _getPrayerTimes,
+                child: Text("GET PRAYERS"),
+              ),
+            ),
+          ],
         ),
       ),
-    ),
-  );
+    );
+  }
 }

@@ -1,15 +1,14 @@
 import 'package:flutter/services.dart';
-
-const _platform = MethodChannel('com.example.solar_alarm/alarm');
+import 'package:solar_alarm/platform/_config.dart';
+import 'package:solar_alarm/utils/error_handling.dart';
 
 void scheduleAlarm(DateTime time, String alarmName) async {
-  print(time.millisecondsSinceEpoch);
   try {
-    await _platform.invokeMethod('setAlarm', {
+    await platform.invokeMethod('setAlarm', {
       'time': time.millisecondsSinceEpoch,
       'name': alarmName,
     });
   } on PlatformException catch (e) {
-    print("Failed to set alarm: '${e.message}'.");
+    errors.add("Failed to set alarm: '${e.message}'.");
   }
 }

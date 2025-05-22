@@ -1,11 +1,11 @@
 import 'dart:math';
 
-DateTime calculateSolarNoon(
-  double latitude,
-  double longitude,
-  DateTime dateUtc,
-) {
+DateTime calculateSolarNoon(double latitude, double longitude, int millisNow) {
   // Step 1: Get the day of the year
+  final DateTime dateUtc = DateTime.fromMillisecondsSinceEpoch(
+    millisNow,
+    isUtc: true,
+  );
   final dayOfYear =
       DateTime.utc(
         dateUtc.year,
@@ -13,9 +13,11 @@ DateTime calculateSolarNoon(
         dateUtc.day,
       ).difference(DateTime.utc(dateUtc.year, 1, 1)).inDays +
       1;
+  print("DAY $dayOfYear");
 
   // Step 2: Calculate the fractional year in radians
-  final gamma = 2 * pi / 365 * (dayOfYear - 1);
+  final gamma = (2 * pi / 365) * (dayOfYear - 1);
+  print("gamma $gamma");
 
   // Step 3: Calculate the Equation of Time (EoT)
   const scalingFactor =
@@ -37,6 +39,7 @@ DateTime calculateSolarNoon(
   final hours = solarNoonMinutes ~/ 60;
   final minutes = (solarNoonMinutes % 60).floor();
   final seconds = ((solarNoonMinutes % 1) * 60).round();
+  print("HMS: $hours:$minutes:$seconds");
 
   return DateTime.utc(
     dateUtc.year,
