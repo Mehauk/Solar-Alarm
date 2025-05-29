@@ -44,13 +44,7 @@ class Prayer {
                                 getTimeOffsetFromNoon(latitude, declinationAngle, 0.0).toLong() *
                                         60 *
                                         1000
-                        android.util.Log.d(
-                                "PrayerCalc",
-                                "latitude - MAX_SOLAR_DECLINATION - PI/2: ${Math.max(
-                                                        -18 * DEG_TO_RAD,
-                                                        latitude - MAX_SOLAR_DECLINATION - PI / 2
-                                                )/DEG_TO_RAD}"
-                        )
+
                         val timeDiffAt18Below =
                                 getTimeOffsetFromNoon(
                                                 latitude,
