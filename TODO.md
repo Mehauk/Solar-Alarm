@@ -3,7 +3,7 @@
 - [x] Issue with multiple alarms? maybe dont work if too close. (needed different IDs)
 - [ ] Set alarms for prayer
   - [x] Set name
-  - [ ] Fix issue with wrong dhur time. Check if system millis is correct? old was correct.
+  - [x] Fix issue with wrong dhur time. Check if system millis is correct? old was correct.
   - [ ] Set proper times
   - [ ] Set for next day/s
 - [ ] Potential issue if phone turns off and the next are not scheduled?
