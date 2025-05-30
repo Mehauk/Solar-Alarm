@@ -1,6 +1,5 @@
 package com.example.solar_alarm.utils
 
-import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
@@ -10,7 +9,6 @@ import com.example.solar_alarm.AlarmReceiver
 
 class Alarm {
     companion object {
-        @SuppressLint("MissingPermission")
         fun setAlarm(timeInMillis: Long, alarmName: String, context: Context) {
             val intent = Intent(context, AlarmReceiver::class.java)
             intent.putExtra("alarmName", alarmName)
