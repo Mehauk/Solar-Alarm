@@ -167,6 +167,13 @@ class AlarmActivity : Activity() {
             in 17..19 -> 0xFF1A1A2E.toInt() // Contrast for evening gradient
             else -> 0xFFFFFACD.toInt() // Contrast for night gradient
         }
+        val contrastingStrokeColor = when (currentHour) {
+            in 5..8 -> 0xFFB5FFFC.toInt()
+            in 9..11 -> 0xFFFFD700.toInt()
+            in 12..16 -> 0xFF00BFFF.toInt()
+            in 17..19 -> 0xFFFEB47B.toInt()
+            else -> 0xFF16213E.toInt()
+        }
 
         dismissButtonBackground.setColor(contrastingBackgroundColor)
         dismissButtonBackground.setStroke(4, contrastingBackgroundColor) // Set stroke color and width
