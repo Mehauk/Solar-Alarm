@@ -16,6 +16,7 @@
 - [x] Reset alarms after they go off (set extra long)
   - [x] Change to repeatInterval?
 - [ ] Sound
+- [ ] Use flutter ui for alarm
 - [ ] Not open app thing
 - [ ] TEST
   - [x] Alarm

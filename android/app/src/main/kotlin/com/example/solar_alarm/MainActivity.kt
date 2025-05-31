@@ -27,15 +27,17 @@ class MainActivity : FlutterActivity() {
                         }
 
                         "getPrayerTimes" -> {
-                            val prayerTimes = getPrayerAlarms(this)
-                            prayerTimes?.let {
-                                result.success(prayerTimes)
-                            } ?: {
-                                result.error(
-                                    "LOCATION_ERROR",
-                                    "Most likely failed to retrieve location",
-                                    null
-                                )
+                            getPrayerAlarms(this) { prayerTimes ->
+                                println("Prayer times 2: $prayerTimes")
+                                prayerTimes?.let {
+                                    result.success(prayerTimes)
+                                } ?: run {
+                                    result.error(
+                                        "LOCATION_ERROR",
+                                        "Most likely failed to retrieve location",
+                                        null
+                                    )
+                                }
                             }
                         }
 

@@ -65,30 +65,29 @@ class Prayer {
                 .toMap()
         }
 
-        fun getPrayerAlarms(context: Context): Map<String, Long>? {
+        fun getPrayerAlarms(context: Context, callback: (Map<String, Long>?) -> Unit) {
             val prefs = context.getSharedPreferences("location_prefs", Context.MODE_PRIVATE)
             val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-            var prayerTimes: Map<String, Long>? = null
+            if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            try {
-                if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-                    if (context is Activity) {
-                        ActivityCompat.requestPermissions(
-                            context,
-                            arrayOf(
-                                android.Manifest.permission.ACCESS_FINE_LOCATION,
-                                android.Manifest.permission.ACCESS_COARSE_LOCATION
-                            ),
-                            1001 // Request code
-                        )
-                    }
-
-                    return null // Return null until permissions are granted
+                if (context is Activity) {
+                    ActivityCompat.requestPermissions(
+                        context,
+                        arrayOf(
+                            android.Manifest.permission.ACCESS_FINE_LOCATION,
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION
+                        ),
+                        1001 // Request code
+                    )
                 }
 
+                callback(null) // Return null until permissions are granted
+                return
+            }
+
+            try {
                 val locationListener = object : LocationListener {
                     override fun onLocationChanged(location: Location) {
                         val latitude = location.latitude
@@ -100,7 +99,8 @@ class Prayer {
                             .putFloat("long", longitude.toFloat())
                             .apply()
 
-                        prayerTimes = getPrayerMillis(latitude, longitude)
+                        val prayerTimes = getPrayerMillis(latitude, longitude)
+                        callback(prayerTimes)
 
                         // Remove updates after first fix
                         locationManager.removeUpdates(this)
@@ -111,45 +111,47 @@ class Prayer {
                     }
 
                     override fun onProviderDisabled(provider: String) {
-                        throw IllegalStateException("Location provider disabled: $provider")
+                        callback(null)
                     }
                 }
 
                 if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                     locationManager.requestLocationUpdates(
-                        LocationManager.NETWORK_PROVIDER, 
-                        0L,   
-                        0f,    
+                        LocationManager.NETWORK_PROVIDER,
+                        0L,
+                        0f,
                         locationListener
                     )
                 } else {
                     promptUserToEnableLocation(context)
-                    return null
+                    callback(null)
                 }
             } catch (e: SecurityException) {
                 val latitude = prefs.getFloat("lat", 500.0F).toDouble()
                 val longitude = prefs.getFloat("long", 500.0F).toDouble()
 
                 if (latitude != 500.0 && longitude != 500.0) {
-                    prayerTimes = getPrayerMillis(latitude, longitude)
+                    val prayerTimes = getPrayerMillis(latitude, longitude)
+                    callback(prayerTimes)
+                } else {
+                    callback(null)
                 }
             }
-
-            return prayerTimes
         }
 
         fun setPrayerAlarms(context: Context): Map<String, Long>? {
-            getPrayerAlarms(context)?.let {
-                // listOf("Fajr", "Sunrise", "Dhuhr", "Asr", "Sunset", "Maghrib", "Isha")
-                setAlarm(it["Fajr"]!!, "Fajr", context, -1)
-                setAlarm(it["Dhuhr"]!!, "Dhuhr", context, -1)
-                setAlarm(it["Asr"]!!, "Asr", context, -1)
-                setAlarm(it["Maghrib"]!!, "Maghrib", context, -1)
-                setAlarm(it["Isha"]!!, "Isha", context, -1)
-                return it
+            var prayerTimes: Map<String, Long>? = null
+            getPrayerAlarms(context) { times ->
+                times?.let {
+                    setAlarm(it["Fajr"]!!, "Fajr", context, -1)
+                    setAlarm(it["Dhuhr"]!!, "Dhuhr", context, -1)
+                    setAlarm(it["Asr"]!!, "Asr", context, -1)
+                    setAlarm(it["Maghrib"]!!, "Maghrib", context, -1)
+                    setAlarm(it["Isha"]!!, "Isha", context, -1)
+                    prayerTimes = it
+                }
             }
-
-            return null
+            return prayerTimes
         }
 
         fun promptUserToEnableLocation(context: Context) {
