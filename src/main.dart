@@ -1,8 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:solar_alarm/platform/alarm_channel.dart';
-import 'package:solar_alarm/platform/prayer_channel.dart';
+import 'package:solar_alarm/platform/platform_channel.dart';
 
 final int rando = Random().nextInt(10000);
 

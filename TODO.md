@@ -1,11 +1,13 @@
 - [x] Change to fullscreen dialog (used setAlarmClock)
 - [x] Implement snooze
 - [x] Issue with multiple alarms? maybe dont work if too close. (needed different IDs)
-- [x] Set alarms for prayer
+- [ ] Set alarms for prayer
   - [x] Set name
   - [x] Fix issue with wrong dhur time. Check if system millis is correct? old was correct.
   - [x] Set proper times
   - [x] Set for next day/s
+  - [ ] enable disable
+  - [ ] custom offset / snooze behaviour
 - [ ] Set custom repeating alarms
   - [ ] Enable/disable
   - [ ] Disable period
