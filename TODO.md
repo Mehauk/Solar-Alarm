@@ -4,6 +4,26 @@
 - [ ] Set alarms for prayer
   - [x] Set name
   - [x] Fix issue with wrong dhur time. Check if system millis is correct? old was correct.
-  - [ ] Set proper times
+  - [x] Set proper times
   - [ ] Set for next day/s
+  - [ ] Set inexact alarm to reset prayer alarms
+- [ ] Set custom repeating alarms
+  - [ ] Enable/disable
+  - [ ] Disable period
 - [ ] Potential issue if phone turns off and the next are not scheduled?
+  - [ ] Reset ALL alarms on BOOT COMPLETED!!!!!!
+- [ ] Location dynamic
+- [ ] Ask for location perms
+- [x] Reset alarms after they go off (set extra long)
+  - [x] Change to repeatInterval?
+- [ ] Sound
+- [ ] Not open app thing
+- [ ] TEST
+  - [x] Alarm
+  - [x] Prayer Times
+  - [ ] Location 
+  - [ ] Alarm Repeat
+  - [ ] Alarm After Shutdown
+  - [ ] Prayer Alarms
+  - [ ] Prayer Alarms After Shutdown
+  - [ ] Correct Timing For Prayer Alarms

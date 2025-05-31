@@ -26,7 +26,7 @@ class _HomeState extends State<_Home> {
   Map<dynamic, dynamic>? prayers;
 
   _getPrayerTimes() async {
-    prayers = await getPrayerTimes(DateTime.now());
+    prayers = await getPrayerTimes();
     setState(() {});
   }
 

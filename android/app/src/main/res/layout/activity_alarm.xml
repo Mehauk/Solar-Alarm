@@ -21,7 +21,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:rotationX="15"
         android:text="Dismiss"
         android:textAllCaps="true" />
 
@@ -29,7 +28,6 @@
         android:id="@+id/snoozeButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:rotationX="-15"
         android:text="Snooze"
         android:textAllCaps="true" />
 

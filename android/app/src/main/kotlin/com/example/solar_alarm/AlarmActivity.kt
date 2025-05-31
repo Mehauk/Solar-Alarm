@@ -44,7 +44,8 @@ class AlarmActivity : Activity() {
             Toast.makeText(this, "Snoozed for 5 minutes", Toast.LENGTH_SHORT).show()
             val timeInMillis = System.currentTimeMillis() + (1_000 * 60 * 5)
             val context = applicationContext
-            setAlarm(timeInMillis, alarmName, context)
+            val snoozeName = alarmName.split("__SNOOZED")[0] + "__SNOOZED"
+            setAlarm(timeInMillis, snoozeName, context, null)
             finish()
         }
     }

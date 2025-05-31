@@ -2,11 +2,12 @@ import 'package:flutter/services.dart';
 import 'package:solar_alarm/platform/_config.dart';
 import 'package:solar_alarm/utils/error_handling.dart';
 
-Future<Map?> getPrayerTimes(DateTime date) async {
+Future<Map?> getPrayerTimes() async {
   try {
-    final prayers = await platform.invokeMethod('getPrayerTimes', {
-      "date": date.millisecondsSinceEpoch,
-    });
+    print("prayers");
+    final prayers = await platform.invokeMethod('getPrayerTimes');
+
+    print(prayers);
 
     return prayers as Map;
   } on PlatformException catch (e) {
