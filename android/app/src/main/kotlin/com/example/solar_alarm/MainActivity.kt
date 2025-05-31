@@ -27,7 +27,7 @@ class MainActivity : FlutterActivity() {
                         }
 
                         "getPrayerTimes" -> {
-                            val prayerTimes = getPrayerAlarms(context)
+                            val prayerTimes = getPrayerAlarms(this)
                             prayerTimes?.let {
                                 result.success(prayerTimes)
                             } ?: {
