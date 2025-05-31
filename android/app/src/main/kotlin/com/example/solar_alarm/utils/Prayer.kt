@@ -66,10 +66,7 @@ class Prayer {
         }
 
         fun getPrayerAlarms(context: Context): Map<String, Long>? {
-            println(1)
             val prefs = context.getSharedPreferences("location_prefs", Context.MODE_PRIVATE)
-
-            println(2)
             val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
             var prayerTimes: Map<String, Long>? = null
@@ -77,9 +74,7 @@ class Prayer {
             try {
                 if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                     ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    println("Location permissions not granted.")
 
-                    // Request permissions dynamically
                     if (context is Activity) {
                         ActivityCompat.requestPermissions(
                             context,
@@ -96,56 +91,46 @@ class Prayer {
 
                 val locationListener = object : LocationListener {
                     override fun onLocationChanged(location: Location) {
-                        println(3)
                         val latitude = location.latitude
                         val longitude = location.longitude
 
-                        println("Location obtained: lat=$latitude, long=$longitude")
                         prefs
                             .edit()
                             .putFloat("lat", latitude.toFloat())
                             .putFloat("long", longitude.toFloat())
                             .apply()
 
-                        // Use the location
                         prayerTimes = getPrayerMillis(latitude, longitude)
 
-                        println(4)
-                        println("Prayer times: $prayerTimes")
                         // Remove updates after first fix
                         locationManager.removeUpdates(this)
-                        println(5)
                     }
 
                     override fun onProviderEnabled(provider: String) {
-                        println("Provider enabled: $provider")
+                        // No action needed
                     }
 
                     override fun onProviderDisabled(provider: String) {
-                        println("Provider disabled: $provider")
+                        throw IllegalStateException("Location provider disabled: $provider")
                     }
                 }
 
-                println(6)
                 if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                     locationManager.requestLocationUpdates(
-                        LocationManager.NETWORK_PROVIDER, // Use NETWORK_PROVIDER for coarse location
-                        0L,     // minTime in milliseconds
-                        0f,     // minDistance in meters
+                        LocationManager.NETWORK_PROVIDER, 
+                        0L,   
+                        0f,    
                         locationListener
                     )
-                    println(7)
                 } else {
                     promptUserToEnableLocation(context)
-                    return null // Return null as location services are not enabled
+                    return null
                 }
             } catch (e: SecurityException) {
-                println("SecurityException: ${e.message}")
                 val latitude = prefs.getFloat("lat", 500.0F).toDouble()
                 val longitude = prefs.getFloat("long", 500.0F).toDouble()
 
                 if (latitude != 500.0 && longitude != 500.0) {
-                    println("Using last known location from preferences.")
                     prayerTimes = getPrayerMillis(latitude, longitude)
                 }
             }
