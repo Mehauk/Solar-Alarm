@@ -7,7 +7,7 @@ final int rando = Random().nextInt(10000);
 
 void sendAlarm() {
   final int rando = Random().nextInt(10000);
-  scheduleAlarm(DateTime.now().add(Duration(seconds: 10)), "MYname $rando");
+  scheduleAlarm(DateTime.now().add(Duration(seconds: 5)), "MYname $rando");
 }
 
 void main(List<String> args) {

@@ -40,19 +40,6 @@
         android:gravity="center_horizontal"
         android:maxWidth="300dp" />
 
-    <!-- Subtitle -->
-    <!-- <TextView
-        android:id="@+id/subtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Good morning! Time to start your day"
-        android:textSize="16sp"
-        android:textColor="#A0A0A0"
-        android:fontFamily="sans-serif-light"
-        android:layout_below="@id/alarmTitle"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="60dp" /> -->
-
     <!-- Buttons container -->
     <LinearLayout
         android:id="@+id/buttonContainer"
