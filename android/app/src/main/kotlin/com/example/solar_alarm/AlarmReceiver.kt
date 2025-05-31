@@ -22,6 +22,7 @@ class AlarmReceiver : BroadcastReceiver() {
             val alarmIntent = Intent(context, AlarmActivity::class.java)
             alarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             alarmIntent.putExtra("alarmName", alarmName)
+            alarmIntent.putExtra("alarmTime", alarmTime)
             context.startActivity(alarmIntent)
         }
 

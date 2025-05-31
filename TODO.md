@@ -1,23 +1,23 @@
 - [x] Change to fullscreen dialog (used setAlarmClock)
 - [x] Implement snooze
+- [x] Sound and Vbration
 - [x] Issue with multiple alarms? maybe dont work if too close. (needed different IDs)
-- [ ] Set alarms for prayer
+- [x] Set alarms for prayer
   - [x] Set name
   - [x] Fix issue with wrong dhur time. Check if system millis is correct? old was correct.
   - [x] Set proper times
   - [x] Set for next day/s
-  - [ ] enable disable
   - [ ] custom offset / snooze behaviour
-- [ ] Set custom repeating alarms
-  - [ ] Enable/disable
+- [ ] Alarm Features
   - [ ] Disable period
+  - [ ] Implement disable, mute, vibrate, sound statuses for individual alarms
+  - [ ] Snooze time addition
 - [x] Potential issue if phone turns off and the next are not scheduled?
   - [x] Reset ALL alarms on BOOT COMPLETED!!!!!!
 - [x] Location dynamic
 - [x] Ask for location perms (and device location)
 - [x] Reset alarms after they go off (set extra long)
   - [x] Change to repeatInterval?
-- [ ] Sound
 - [ ] Use flutter ui for alarm
 - [ ] Not open app thing
 - [ ] TEST
