@@ -1,14 +1,5 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:solar_alarm/platform/platform_channel.dart';
-
-final int rando = Random().nextInt(10000);
-
-void sendAlarm() {
-  final int rando = Random().nextInt(10000);
-  scheduleAlarm(DateTime.now().add(Duration(seconds: 5)), "MYname $rando");
-}
 
 void main(List<String> args) {
   runApp(MaterialApp(home: _Home()));
@@ -23,8 +14,21 @@ class _Home extends StatefulWidget {
 
 class _HomeState extends State<_Home> {
   Map<dynamic, dynamic>? prayers;
+  int seconds = 5;
 
-  _getPrayerTimes() async {
+  void sendAlarm() {
+    scheduleAlarm(
+      DateTime.now().add(Duration(seconds: seconds)),
+      "ALARM!",
+      Duration(seconds: seconds),
+    );
+  }
+
+  void sendCancelAlarm() {
+    cancelAlarm("ALARM!");
+  }
+
+  sendgetPrayerTimes() async {
     prayers = await getPrayerTimes();
     setState(() {});
   }
@@ -53,13 +57,37 @@ class _HomeState extends State<_Home> {
             Expanded(
               child: TextButton(
                 onPressed: sendAlarm,
-                child: Text("SEND ALARM $rando"),
+                child: Text("SEND ALARM"),
               ),
             ),
             Expanded(
               child: TextButton(
-                onPressed: _getPrayerTimes,
+                onPressed: sendCancelAlarm,
+                child: Text("CANCEL ALARM"),
+              ),
+            ),
+            Expanded(
+              child: TextButton(
+                onPressed: sendgetPrayerTimes,
                 child: Text("GET PRAYERS"),
+              ),
+            ),
+            Expanded(
+              child: TextButton(
+                onPressed: setPrayerTimes,
+                child: Text("SET PRAYERS"),
+              ),
+            ),
+            Expanded(
+              child: TextField(
+                decoration: InputDecoration(labelText: "Seconds"),
+                keyboardType: TextInputType.number,
+                controller: TextEditingController(text: seconds.toString()),
+                onChanged: (value) {
+                  setState(() {
+                    seconds = int.tryParse(value) ?? seconds;
+                  });
+                },
               ),
             ),
           ],

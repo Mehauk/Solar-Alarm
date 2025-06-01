@@ -106,50 +106,64 @@ class AlarmActivity : Activity() {
             setAlarm(timeInMillis, snoozeName, context, null)
             finish()
         }
+        changeAlarmUIBasedOnSolarTimes()
+    }
 
+    private fun changeAlarmUIBasedOnSolarTimes() {
         // Set background gradient based on the time of day
         val currentHour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
-        val backgroundDrawable = when (currentHour) {
-            in 5..8 -> GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(0xFFFFDEE9.toInt(), 0xFFB5FFFC.toInt()))
-            in 9..11 -> GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(0xFFFFFACD.toInt(), 0xFFFFD700.toInt()))
-            in 12..16 -> GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(0xFF87CEEB.toInt(), 0xFF00BFFF.toInt()))
-            in 17..19 -> GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(0xFFFF7E5F.toInt(), 0xFFFEB47B.toInt()))
-            else -> GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(0xFF1A1A2E.toInt(), 0xFF16213E.toInt()))
-        }
-        findViewById<RelativeLayout>(R.id.container).background = backgroundDrawable
 
         // Set text and button colors based on the time of day for better contrast
         val textColor: Int
         val buttonTextColor: Int
         val buttonBackgroundColor: Int
-
+        val backgroundDrawable: GradientDrawable
+                val contrastingBackgroundColor: Int
+        val contrastingStrokeColor: Int
+        
         when (currentHour) {
-            in 5..8 -> {
+            in 4..8 -> {
+                contrastingBackgroundColor = 0xFF1A1A2E.toInt() // Contrast for dawn gradient
+                contrastingStrokeColor = 0xFFB5FFFC.toInt()
                 textColor = 0xFF000000.toInt() // Black for dawn
                 buttonTextColor = 0xFF000000.toInt()
                 buttonBackgroundColor = 0xFFFFFFFF.toInt() // White
+                backgroundDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(0xFFFFDEE9.toInt(), 0xFFB5FFFC.toInt()))
             }
             in 9..11 -> {
+                contrastingBackgroundColor = 0xFF16213E.toInt() // Contrast for morning gradient
+                contrastingStrokeColor = 0xFFFFD700.toInt()
                 textColor = 0xFF000000.toInt() // Black for morning
                 buttonTextColor = 0xFF000000.toInt()
                 buttonBackgroundColor = 0xFFFFFFFF.toInt() // White
+                backgroundDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(0xFFFFFACD.toInt(), 0xFFFFD700.toInt()))
             }
-            in 12..16 -> {
+            in 12..17 -> {
+                contrastingBackgroundColor = 0xFF1A1A2E.toInt() // Contrast for afternoon gradient
+                contrastingStrokeColor = 0xFF00BFFF.toInt()
                 textColor = 0xFFFFFFFF.toInt() // White for afternoon
                 buttonTextColor = 0xFFFFFFFF.toInt()
                 buttonBackgroundColor = 0xFF000000.toInt() // Black
+                backgroundDrawable =GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(0xFF87CEEB.toInt(), 0xFF00BFFF.toInt()))
             }
-            in 17..19 -> {
+            in 18..20 -> {
+                                contrastingBackgroundColor = 0xFF1A1A2E.toInt() // Contrast for evening gradient
+                contrastingStrokeColor = 0xFFFEB47B.toInt()
                 textColor = 0xFFFFFFFF.toInt() // White for evening
                 buttonTextColor = 0xFFFFFFFF.toInt()
                 buttonBackgroundColor = 0xFF000000.toInt() // Black
+                backgroundDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(0xFFFF7E5F.toInt(), 0xFFFEB47B.toInt()))
             }
             else -> {
+                                contrastingBackgroundColor = 0xFFFFFACD.toInt() // Contrast for night gradient
+                contrastingStrokeColor = 0xFF16213E.toInt()
                 textColor = 0xFFFFFFFF.toInt() // White for night
                 buttonTextColor = 0xFFFFFFFF.toInt()
                 buttonBackgroundColor = 0xFF000000.toInt() // Black
+                backgroundDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(0xFF1A1A2E.toInt(), 0xFF16213E.toInt()))
             }
         }
+        findViewById<RelativeLayout>(R.id.container).background = backgroundDrawable
 
         findViewById<TextView>(R.id.timeText).setTextColor(textColor)
         findViewById<TextView>(R.id.alarmTitle).setTextColor(textColor)
@@ -160,20 +174,7 @@ class AlarmActivity : Activity() {
 
         // Update dismiss button to have contrasting background and stroke
         val dismissButtonBackground = ContextCompat.getDrawable(this, R.drawable.dismiss_button_background) as GradientDrawable
-        val contrastingBackgroundColor = when (currentHour) {
-            in 5..8 -> 0xFF1A1A2E.toInt() // Contrast for dawn gradient
-            in 9..11 -> 0xFF16213E.toInt() // Contrast for morning gradient
-            in 12..16 -> 0xFF1A1A2E.toInt() // Contrast for afternoon gradient
-            in 17..19 -> 0xFF1A1A2E.toInt() // Contrast for evening gradient
-            else -> 0xFFFFFACD.toInt() // Contrast for night gradient
-        }
-        val contrastingStrokeColor = when (currentHour) {
-            in 5..8 -> 0xFFB5FFFC.toInt()
-            in 9..11 -> 0xFFFFD700.toInt()
-            in 12..16 -> 0xFF00BFFF.toInt()
-            in 17..19 -> 0xFFFEB47B.toInt()
-            else -> 0xFF16213E.toInt()
-        }
+
 
         dismissButtonBackground.setColor(contrastingBackgroundColor)
         dismissButtonBackground.setStroke(4, contrastingBackgroundColor) // Set stroke color and width

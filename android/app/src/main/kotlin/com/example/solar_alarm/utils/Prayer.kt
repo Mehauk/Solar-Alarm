@@ -11,6 +11,7 @@ import com.example.solar_alarm.utils.Alarm.Companion.setAlarm
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import android.provider.Settings
+import com.example.solar_alarm.utils.Constants.Companion.PRAYER_RESET
 
 class Prayer {
     companion object {
@@ -140,15 +141,29 @@ class Prayer {
         }
 
         fun setPrayerAlarms(context: Context): Map<String, Long>? {
+            val dailyPrayers = setOf("Fajr", "Dhuhr", "Asr", "Maghrib", "Isha")
             var prayerTimes: Map<String, Long>? = null
             getPrayerAlarms(context) { times ->
                 times?.let {
-                    setAlarm(it["Fajr"]!!, "Fajr", context, -1)
-                    setAlarm(it["Dhuhr"]!!, "Dhuhr", context, -1)
-                    setAlarm(it["Asr"]!!, "Asr", context, -1)
-                    setAlarm(it["Maghrib"]!!, "Maghrib", context, -1)
-                    setAlarm(it["Isha"]!!, "Isha", context, -1)
-                    prayerTimes = it
+                    val currentTime = System.currentTimeMillis()
+                    it.filterKeys { prayerName -> prayerName in dailyPrayers } // Filter only daily prayers
+                        .forEach { (prayerName, time) ->
+                            if (time > currentTime) { // Only set alarms for future times
+                                setAlarm(time, prayerName, context, -1)
+                            }
+                        }
+                    prayerTimes = it.filterKeys { prayerName -> prayerName in dailyPrayers }
+
+                    // Set an alarm at the start of the next day (00:00:00)
+                    val calendar = Calendar.getInstance().apply {
+                        add(Calendar.DAY_OF_YEAR, 1)
+                        set(Calendar.HOUR_OF_DAY, 0)
+                        set(Calendar.MINUTE, 5)
+                        set(Calendar.SECOND, 0)
+                        set(Calendar.MILLISECOND, 0)
+                    }
+                    val startOfNextDayMillis = calendar.timeInMillis
+                    setAlarm(startOfNextDayMillis, PRAYER_RESET, context, 24 * 60 * 60 * 1000L)
                 }
             }
             return prayerTimes

@@ -7,6 +7,7 @@
   - [x] Fix issue with wrong dhur time. Check if system millis is correct? old was correct.
   - [x] Set proper times
   - [x] Set for next day/s
+  - [ ] Do not set expired alarms
   - [ ] custom offset / snooze behaviour
 - [ ] Alarm Features
   - [ ] Disable period
@@ -24,8 +25,9 @@
   - [x] Alarm
   - [x] Prayer Times
   - [x] Location 
-  - [ ] Alarm Repeat
-  - [ ] Alarm After Shutdown
-  - [ ] Prayer Alarms
+  - [x] Alarm Repeat
+  - [x] Alarm After Shutdown
+  - [x] Prayer Alarms
   - [ ] Prayer Alarms After Shutdown
-  - [ ] Correct Timing For Prayer Alarms
+  - [x] Correct Timing For Prayer Alarms
+  - [ ] Alarm Repeat After Shutdown

@@ -1,5 +1,6 @@
 package com.example.solar_alarm
 
+import com.example.solar_alarm.utils.Alarm.Companion.cancelAlarm
 import com.example.solar_alarm.utils.Alarm.Companion.setAlarm
 import com.example.solar_alarm.utils.Prayer.Companion.getPrayerAlarms
 import com.example.solar_alarm.utils.Prayer.Companion.setPrayerAlarms
@@ -21,9 +22,15 @@ class MainActivity : FlutterActivity() {
                             val args = call.arguments as Map<*, *>
                             val timeInMillis = args["time"]!! as Long
                             val alarmName = args["name"]!! as String
-                            val repeatInterval = args["repeatInterval"] as Long?
+                            val repeatInterval = (args["repeatInterval"] as? Number)?.toLong()
                             setAlarm(timeInMillis, alarmName, context, repeatInterval)
                             result.success(null)
+                        }
+
+                        "cancelAlarm" -> {
+                            val args = call.arguments as Map<*, *>
+                            val alarmName = args["name"]!! as String
+                            cancelAlarm(alarmName, context)
                         }
 
                         "getPrayerTimes" -> {
