@@ -41,7 +41,6 @@ class _ClockState extends State<Clock> {
   Prayer? _getCurrentPrayer(Prayers? timings) {
     if (timings == null) return null;
 
-    // Compare the current time with prayer timings to determine the current prayer
     final now = _currentTime;
     Prayer? currentPrayer;
 
@@ -53,6 +52,14 @@ class _ClockState extends State<Clock> {
         break;
       }
       currentPrayer = prayer;
+    }
+
+    if (currentPrayer == null) {
+      if (timings.midnight.subtract(const Duration(days: 1)).isAfter(now)) {
+        currentPrayer = Prayer.isha;
+      } else {
+        currentPrayer = Prayer.midnight;
+      }
     }
 
     return currentPrayer;
@@ -87,12 +94,7 @@ class _ClockState extends State<Clock> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 18.0),
-          child: SText.shadow(
-            formattedTime.$1,
-            fontSize: 84,
-            height: 0.85,
-            weight: STextWeight.medium,
-          ),
+          child: SText.shadow(formattedTime.$1, fontSize: 84, height: 0.85),
         ),
 
         if (_currentPrayer != null)
@@ -105,7 +107,7 @@ class _ClockState extends State<Clock> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   PrayerIcon(_currentPrayer!, radius: 16),
-                  SizedBox(width: 4),
+                  const SizedBox(width: 4),
                   SText(
                     _currentPrayer!.name.capitalized,
                     fontSize: 16,
@@ -118,12 +120,7 @@ class _ClockState extends State<Clock> {
         Positioned(
           bottom: 0,
           right: 0,
-          child: SText(
-            formattedTime.$2,
-            fontSize: 16,
-            weight: STextWeight.medium,
-            height: 1,
-          ),
+          child: SText(formattedTime.$2, fontSize: 16, height: 1),
         ),
       ],
     );

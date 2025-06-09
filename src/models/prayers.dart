@@ -28,7 +28,7 @@ class Prayers {
   ];
 
   DateTime get sunset => maghrib;
-  DateTime get midnight => dhuhr.add(Duration(hours: 12));
+  DateTime get midnight => dhuhr.add(const Duration(hours: 12));
 
   Prayers(Map<dynamic, dynamic> input)
     : fajr = DateTime.fromMillisecondsSinceEpoch(input["Fajr"]),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:solar_alarm/platform/platform_channel.dart';
 
+import 'components/alarms.dart';
 import 'components/clock.dart';
 import 'components/prayer_timings.dart';
 import 'globals.dart';
@@ -13,13 +14,13 @@ void main(List<String> args) {
       themeMode: ThemeMode.dark,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Color(0xFF646E82),
+          seedColor: const Color(0xFF646E82),
           brightness: Brightness.light,
         ),
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Color(0xFF8E98A1),
+          seedColor: const Color(0xFF8E98A1),
           brightness: Brightness.dark,
         ),
       ),
@@ -45,7 +46,7 @@ class _HomeState extends State<_Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -62,38 +63,7 @@ class _HomeState extends State<_Home> {
             SizedBox(height: 8),
             PrayerTimingsWidget(),
             SizedBox(height: 16),
-            Expanded(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Color(0xFF5D666D), Color(0x0023282D)],
-                  ),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 1.5),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        topRight: Radius.circular(16),
-                      ),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Color(0xFF363E46), Color(0xFF2C343C)],
-                      ),
-                    ),
-                    child: SizedBox(height: 300, width: double.maxFinite),
-                  ),
-                ),
-              ),
-            ),
+            Expanded(child: AlarmsWidget()),
           ],
         ),
       ),

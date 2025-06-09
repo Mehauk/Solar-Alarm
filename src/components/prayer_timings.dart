@@ -58,10 +58,21 @@ class _PrayerTiming extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        PrayerIcon(prayer, weight: PrayerIconWeight.thin),
-        SizedBox(width: 8),
-        SText(
-          "${prayer.name.capitalized} ${time.formattedTime.$1} ${time.formattedTime.$2}",
+        SizedBox(
+          width: 180,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              PrayerIcon(prayer, weight: PrayerIconWeight.thin, radius: 12),
+              const SizedBox(width: 8),
+              SText(prayer.name.capitalized, fontSize: 16),
+              const Expanded(child: SizedBox()),
+              SText(
+                "${time.formattedTime.$1} ${time.formattedTime.$2}",
+                fontSize: 16,
+              ),
+            ],
+          ),
         ),
       ],
     );

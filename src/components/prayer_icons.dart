@@ -55,7 +55,7 @@ class PrayerIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomPaint(
       size: Size.fromRadius(radius),
-      painter: prayer.painter(Color(0xFF8E98A1), weight),
+      painter: prayer.painter(const Color(0xFF8E98A1), weight),
     );
   }
 }
@@ -85,7 +85,7 @@ class _FajrIconPainter extends _CustomPainter {
           ..strokeWidth = weight.width;
 
     final rayLength = cx * 0.7;
-    final rayCount = 7;
+    const rayCount = 7;
     for (int i = 0; i < rayCount; i++) {
       final angle = ((pi + pi / 6) / rayCount) * i;
       final startX = cx + (cx * 0.45) * cos(angle);
@@ -134,7 +134,7 @@ class _SunriseIconPainter extends _CustomPainter {
           ..strokeWidth = weight.width;
 
     final rayLength = cx * 0.8;
-    final rayCount = 7;
+    const rayCount = 7;
     for (int i = 0; i < rayCount; i++) {
       final angle = (-(pi + pi / 6) / rayCount) * i;
       final startX = cx + (cx * 0.45) * cos(angle);
@@ -181,7 +181,7 @@ class _DhuhrIconPainter extends _CustomPainter {
           ..strokeWidth = weight.width;
 
     final rayLength = cx * 0.7;
-    final rayCount = 12;
+    const rayCount = 12;
     for (int i = 0; i < rayCount; i++) {
       final angle = (2 * pi / rayCount) * i;
       final startX = cx + (cx * 0.45) * cos(angle);
@@ -220,7 +220,7 @@ class _AsrIconPainter extends _CustomPainter {
 
     final rayLengthBig = cx * 0.7;
     final rayLength = cx * 0.6;
-    final rayCount = 7;
+    const rayCount = 7;
     for (int i = 0; i < rayCount; i++) {
       final rayLength0 = (i % 2 != 0) ? rayLengthBig : rayLength;
       final angle = ((pi + pi / 6) / rayCount) * i;
@@ -261,7 +261,7 @@ class _MaghribIconPainter extends _CustomPainter {
           ..strokeWidth = weight.width;
 
     final rayLength = cx * 0.65;
-    final rayCount = 7;
+    const rayCount = 7;
     for (int i = 0; i < rayCount; i++) {
       final angle = (-(pi + pi / 6) / rayCount) * i;
       final startX = cx + (cx * 0.45) * cos(angle);
@@ -356,7 +356,7 @@ class _MidNightIconPainter extends _CustomPainter {
 
     final rayLengthBig = cx * 0.7;
     final rayLength = cx * 0.6;
-    final rayCount = 5;
+    const rayCount = 5;
     for (int i = 0; i < rayCount; i++) {
       final rayLength0 = (i % 2 == 0) ? rayLengthBig : rayLength;
       final angle = ((pi - pi / 6) / rayCount) * (i + 1);
