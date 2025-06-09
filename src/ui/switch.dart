@@ -7,7 +7,7 @@ class SSwitch extends StatelessWidget {
   final void Function(bool) onChanged;
   final Size trackSize;
   final double trackRadius;
-  final List<BoxShadow>? enabledTrackGlow;
+  final bool enabledTrackShadow;
   final Gradient? enabledTrackGradient;
   final Gradient? disabledTrackGradient;
   final Size toggleSize;
@@ -21,7 +21,7 @@ class SSwitch extends StatelessWidget {
     required this.onChanged,
     this.trackSize = const Size(36, 14),
     this.trackRadius = 16,
-    this.enabledTrackGlow,
+    this.enabledTrackShadow = true,
     this.enabledTrackGradient,
     this.disabledTrackGradient,
     this.toggleSize = const Size(21, 21),
@@ -52,7 +52,16 @@ class SSwitch extends StatelessWidget {
             child: DecoratedBox(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(trackRadius),
-                boxShadow: enabledTrackGlow,
+                boxShadow:
+                    value && enabledTrackShadow
+                        ? [
+                          const BoxShadow(
+                            blurRadius: 10,
+                            color: Color(0xFFFD2A22),
+                            offset: Offset(0, 1),
+                          ),
+                        ]
+                        : null,
                 gradient:
                     value
                         ? const LinearGradient(
@@ -67,9 +76,10 @@ class SSwitch extends StatelessWidget {
             ),
           ),
           AnimatedPositioned(
-            duration: Durations.medium1,
-            right: value ? 0 : null,
-            left: value ? null : 0,
+            duration: Durations.short2,
+            curve: Curves.easeInOut,
+            right: value ? 0 : trackSize.width - toggleSize.width * 0.75,
+            left: value ? trackSize.width - toggleSize.width * 0.75 : 0,
             child: SizedBox(
               width: toggleSize.width,
               height: toggleSize.height,

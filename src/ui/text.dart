@@ -26,15 +26,17 @@ class SText extends StatelessWidget {
   final TextStyle textStyle;
   final STextWeight weight;
   final double height;
+  final Color color;
   SText(
     this.text, {
     super.key,
     this.fontSize,
     this.weight = STextWeight.medium,
     this.height = 1,
+    this.color = const Color(0xFF8E98A1),
   }) : textStyle = TextStyle(
          fontSize: fontSize,
-         color: const Color(0xFF8E98A1),
+         color: color,
          fontWeight: weight.w,
          height: height,
        );
@@ -45,9 +47,10 @@ class SText extends StatelessWidget {
     this.fontSize,
     this.weight = STextWeight.medium,
     this.height = 1,
+    this.color = const Color(0xFF8E98A1),
   }) : textStyle = TextStyle(
          fontSize: fontSize,
-         color: const Color(0xFF8E98A1),
+         color: color,
          fontWeight: weight.w,
          height: height,
          shadows: [
@@ -56,6 +59,23 @@ class SText extends StatelessWidget {
              color: Colors.black54,
              offset: Offset(4, 4),
            ),
+         ],
+       );
+
+  SText.glow(
+    this.text, {
+    super.key,
+    this.fontSize,
+    this.weight = STextWeight.medium,
+    this.height = 1,
+    this.color = const Color(0xFF8E98A1),
+  }) : textStyle = TextStyle(
+         fontSize: fontSize,
+         color: color,
+         fontWeight: weight.w,
+         height: height,
+         shadows: [
+           Shadow(blurRadius: 10, color: color, offset: const Offset(0, 1)),
          ],
        );
 

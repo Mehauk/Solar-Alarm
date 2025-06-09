@@ -1,3 +1,5 @@
+import '../models/calendar.dart';
+
 extension Caps on String {
   String get capitalized {
     if (length <= 1) return toUpperCase();
@@ -12,5 +14,17 @@ extension FormatTime on DateTime {
     final minute = this.minute.toString().padLeft(2, '0');
     final period = this.hour >= 12 ? 'PM' : 'AM';
     return ('$hour:$minute', period);
+  }
+
+  String get formattedDate {
+    final weekdays =
+        Weekday.orderedWeekdays.map((wd) => wd.threeChar.capitalized).toList();
+    final months =
+        Month.orderedMonths.map((m) => m.threeChar.capitalized).toList();
+
+    final weekday = weekdays[this.weekday % 7];
+    final day = this.day.toString().padLeft(2, '0');
+    final month = months[this.month - 1];
+    return '$weekday, $day $month';
   }
 }

@@ -4,25 +4,39 @@ class SIcon extends StatelessWidget {
   final IconData icon;
   final double radius;
   final List<Shadow>? shadows;
-  const SIcon(this.icon, {super.key, this.radius = 14}) : shadows = null;
+  final Color color;
+  const SIcon(
+    this.icon, {
+    super.key,
+    this.radius = 14,
+    this.color = const Color(0xFF8E98A1),
+  }) : shadows = null;
 
-  SIcon.shadow(this.icon, {super.key, this.radius = 14})
-    : shadows = [
-        const Shadow(
-          blurRadius: 20,
-          color: Colors.black54,
-          offset: Offset(4, 4),
-        ),
-      ];
+  SIcon.shadow(
+    this.icon, {
+    super.key,
+    this.radius = 14,
+    this.color = const Color(0xFF8E98A1),
+  }) : shadows = [
+         const Shadow(
+           blurRadius: 20,
+           color: Colors.black54,
+           offset: Offset(4, 4),
+         ),
+       ];
+
+  SIcon.glow(
+    this.icon, {
+    super.key,
+    this.radius = 14,
+    this.color = const Color(0xFF8E98A1),
+  }) : shadows = [
+         Shadow(blurRadius: 10, color: color, offset: const Offset(0, 1)),
+       ];
 
   @override
   Widget build(BuildContext context) {
-    return Icon(
-      icon,
-      size: radius * 2,
-      color: const Color(0xFF8E98A1),
-      shadows: shadows,
-    );
+    return Icon(icon, color: color, size: radius * 2, shadows: shadows);
   }
 }
 
