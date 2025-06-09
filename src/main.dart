@@ -5,8 +5,6 @@ import 'components/clock.dart';
 import 'globals.dart';
 
 void main(List<String> args) {
-  getPrayerTimes().then((value) => prayerTimingsObserver.modify(value));
-
   runApp(
     MaterialApp(
       home: const _Home(),
@@ -35,6 +33,12 @@ class _Home extends StatefulWidget {
 }
 
 class _HomeState extends State<_Home> {
+  @override
+  void initState() {
+    getPrayerTimes().then((value) => prayerTimingsObserver.modify(value));
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

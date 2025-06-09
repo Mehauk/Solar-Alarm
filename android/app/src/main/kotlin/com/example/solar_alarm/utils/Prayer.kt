@@ -28,8 +28,8 @@ class Prayer {
             prayTime.asrJuristic = prayTime.shafii
             prayTime.adjustHighLats = prayTime.angleBased
 
-            // Get the current date
-            val calendar = Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))
+            // Get the current date with the local timezone
+            val calendar = Calendar.getInstance()
             val year = calendar.get(Calendar.YEAR)
             val month = calendar.get(Calendar.MONTH) + 1 // Months are 0-based
             val day = calendar.get(Calendar.DAY_OF_MONTH)

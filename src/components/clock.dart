@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../globals.dart';
 import '../ui/icon.dart';
 import '../ui/text.dart';
 import '../utils/date_utils.dart';
@@ -16,12 +17,44 @@ class Clock extends StatefulWidget {
 class _ClockState extends State<Clock> {
   late DateTime _currentTime;
   late Timer _timer;
+  String? _currentPrayer;
+
+  late final void Function(Map<dynamic, dynamic>? data) _observer;
 
   @override
   void initState() {
     super.initState();
     _currentTime = DateTime.now();
     _startTimer();
+
+    _currentPrayer = _getCurrentPrayer(prayerTimingsObserver.data);
+
+    _observer = (prayerTimings) {
+      setState(() {
+        _currentPrayer = _getCurrentPrayer(prayerTimings);
+      });
+    };
+    prayerTimingsObserver.addObserver(_observer);
+  }
+
+  String? _getCurrentPrayer(Map<dynamic, dynamic>? prayerTimings) {
+    if (prayerTimings == null) return null;
+
+    // Compare the current time with prayer timings to determine the current prayer
+    final now = _currentTime;
+    String? currentPrayer;
+
+    for (var entry in prayerTimings.entries) {
+      final prayerName = entry.key;
+      final prayerTime = DateTime.fromMillisecondsSinceEpoch(entry.value);
+
+      if (now.isBefore(prayerTime)) {
+        break;
+      }
+      currentPrayer = prayerName;
+    }
+
+    return currentPrayer;
   }
 
   void _startTimer() {
@@ -29,7 +62,10 @@ class _ClockState extends State<Clock> {
     _timer = Timer(Duration(seconds: secondsUntilNextMinute), () {
       setState(() => _currentTime = DateTime.now());
       _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
-        setState(() => _currentTime = DateTime.now());
+        setState(() {
+          _currentTime = DateTime.now();
+          _currentPrayer = _getCurrentPrayer(prayerTimingsObserver.data);
+        });
       });
     });
   }
@@ -37,6 +73,7 @@ class _ClockState extends State<Clock> {
   @override
   void dispose() {
     _timer.cancel();
+    prayerTimingsObserver.removeObserver(_observer);
     super.dispose();
   }
 
@@ -56,18 +93,19 @@ class _ClockState extends State<Clock> {
           weight: STextWeight.medium,
         ),
 
-        Positioned(
-          bottom: -35,
-          left: 0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SIcon(Icons.wb_sunny_outlined, radius: 16),
-              SizedBox(width: 4),
-              SText("Dhuhr", fontSize: 16, weight: STextWeight.bold),
-            ],
+        if (_currentPrayer != null)
+          Positioned(
+            bottom: -35,
+            left: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SIcon(Icons.wb_sunny_outlined, radius: 16),
+                SizedBox(width: 4),
+                SText(_currentPrayer!, fontSize: 16, weight: STextWeight.bold),
+              ],
+            ),
           ),
-        ),
         Positioned(
           bottom: -16,
           right: 0,

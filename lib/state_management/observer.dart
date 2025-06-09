@@ -1,9 +1,13 @@
 final class Observer<T> {
   T _data;
+  T get data => _data;
 
   Observer(this._data);
 
-  List<void Function(T data)> observers = [];
+  final List<void Function(T data)> _observers = [];
+
+  void addObserver(void Function(T data) obs) => _observers.add(obs);
+  void removeObserver(void Function(T data) obs) => _observers.remove(obs);
 
   void modify(T newData) {
     _data = newData;
@@ -11,7 +15,7 @@ final class Observer<T> {
   }
 
   void _notifyObservers() {
-    for (var observe in observers) {
+    for (var observe in _observers) {
       observe(_data);
     }
   }
