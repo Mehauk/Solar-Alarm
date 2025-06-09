@@ -7,12 +7,14 @@
   - [x] Fix issue with wrong dhur time. Check if system millis is correct? old was correct.
   - [x] Set proper times
   - [x] Set for next day/s
-  - [ ] Do not set expired alarms
+  - [x] Do not set expired alarms
   - [ ] custom offset / snooze behaviour
 - [ ] Alarm Features
   - [ ] Disable period
   - [ ] Implement disable, mute, vibrate, sound statuses for individual alarms
   - [ ] Snooze time addition
+  - [ ] Disabled weekdays, dates
+  - [ ] Disable one off alarms after they have rung
 - [x] Potential issue if phone turns off and the next are not scheduled?
   - [x] Reset ALL alarms on BOOT COMPLETED!!!!!!
 - [x] Location dynamic
@@ -21,13 +23,14 @@
   - [x] Change to repeatInterval?
 - [ ] Use flutter ui for alarm
 - [ ] Not open app thing
-- [ ] TEST
+  - [ ] Use local ai?
+- [x] TEST
   - [x] Alarm
   - [x] Prayer Times
   - [x] Location 
   - [x] Alarm Repeat
   - [x] Alarm After Shutdown
   - [x] Prayer Alarms
-  - [ ] Prayer Alarms After Shutdown
+  - [x] Prayer Alarms After Shutdown
   - [x] Correct Timing For Prayer Alarms
-  - [ ] Alarm Repeat After Shutdown
+  - [x] Alarm Repeat After Shutdown
