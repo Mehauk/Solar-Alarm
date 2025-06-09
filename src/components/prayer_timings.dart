@@ -37,32 +37,12 @@ class _PrayerTimingsWidgetState extends State<PrayerTimingsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 300,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 24,
-            child: Stack(
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    for (var i = 0; i < (prayers?.ordered.length ?? 0); i++)
-                      PrayerIcon(prayers!.orderedPrayers[i], radius: 24),
-                  ],
-                ),
-                Center(
-                  child: Divider(color: const Color.fromARGB(57, 255, 193, 7)),
-                ),
-              ],
-            ),
-          ),
-          for (var i = 0; i < (prayers?.ordered.length ?? 0); i++)
-            _PrayerTiming(prayers!.orderedPrayers[i], prayers!.ordered[i]),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (var i = 0; i < (prayers?.ordered.length ?? 0); i++)
+          _PrayerTiming(prayers!.orderedPrayers[i], prayers!.ordered[i]),
+      ],
     );
   }
 }

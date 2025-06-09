@@ -62,13 +62,22 @@ class _FajrIconPainter extends CustomPainter {
     final rayLength = cx * 0.7;
     final rayCount = 7;
     for (int i = 0; i < rayCount; i++) {
-      final angle = (-(pi + pi / 6) / rayCount) * i;
+      final angle = ((pi + pi / 6) / rayCount) * i;
       final startX = cx + (cx * 0.45) * cos(angle);
       final startY = cy + (cx * 0.45) * sin(angle);
       final endX = cx + rayLength * cos(angle);
       final endY = cy + rayLength * sin(angle);
       canvas.drawLine(Offset(startX, startY), Offset(endX, endY), rayPaint);
     }
+
+    canvas.drawPoints(PointMode.lines, [
+      Offset(cx, cy),
+      Offset(cx, cy - cx * 0.5),
+      Offset(cx + cx * 0.25, cy - cx * 0.25),
+      Offset(cx, cy - cx * 0.5),
+      Offset(cx - cx * 0.25, cy - cx * 0.25),
+      Offset(cx, cy - cx * 0.5),
+    ], paint);
   }
 
   @override
@@ -109,11 +118,11 @@ class _SunriseIconPainter extends CustomPainter {
     }
 
     canvas.drawPoints(PointMode.lines, [
+      Offset(cx, cy + cx * 0.5),
       Offset(cx, cy),
-      Offset(cx + cx * 0.5, cy + cx * 0.5),
-      Offset(cx + cx * 0.5, cy + cx * 0.5),
-      Offset(cx - cx * 0.5, cy + cx * 0.5),
-      Offset(cx - cx * 0.5, cy + cx * 0.5),
+      Offset(cx + cx * 0.25, cy + cx * 0.25),
+      Offset(cx, cy),
+      Offset(cx - cx * 0.25, cy + cx * 0.25),
       Offset(cx, cy),
     ], paint);
   }
@@ -228,12 +237,13 @@ class _MaghribIconPainter extends CustomPainter {
       final endY = cy + rayLength * sin(angle);
       canvas.drawLine(Offset(startX, startY), Offset(endX, endY), rayPaint);
     }
+
     canvas.drawPoints(PointMode.lines, [
+      Offset(cx, cy),
       Offset(cx, cy + cx * 0.5),
-      Offset(cx + cx * 0.5, cy),
-      Offset(cx + cx * 0.5, cy),
-      Offset(cx - cx * 0.5, cy),
-      Offset(cx - cx * 0.5, cy),
+      Offset(cx + cx * 0.25, cy + cx * 0.25),
+      Offset(cx, cy + cx * 0.5),
+      Offset(cx - cx * 0.25, cy + cx * 0.25),
       Offset(cx, cy + cx * 0.5),
     ], paint);
   }
