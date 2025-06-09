@@ -3,6 +3,7 @@ import 'package:solar_alarm/platform/platform_channel.dart';
 
 import 'components/clock.dart';
 import 'globals.dart';
+import 'models/prayers.dart';
 
 void main(List<String> args) {
   runApp(
@@ -35,7 +36,9 @@ class _Home extends StatefulWidget {
 class _HomeState extends State<_Home> {
   @override
   void initState() {
-    getPrayerTimes().then((value) => prayerTimingsObserver.modify(value));
+    getPrayerTimes().then((value) {
+      if (value != null) prayerTimingsObserver.modify(Prayers(value));
+    });
     super.initState();
   }
 

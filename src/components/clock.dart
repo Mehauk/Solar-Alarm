@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../globals.dart';
-import '../ui/icon.dart';
+import '../models/prayers.dart';
 import '../ui/text.dart';
 import '../utils/date_utils.dart';
+import '../utils/extensions.dart';
+import 'prayer_icons.dart';
 
 class Clock extends StatefulWidget {
   const Clock({super.key});
@@ -17,9 +19,9 @@ class Clock extends StatefulWidget {
 class _ClockState extends State<Clock> {
   late DateTime _currentTime;
   late Timer _timer;
-  String? _currentPrayer;
+  Prayer? _currentPrayer;
 
-  late final void Function(Map<dynamic, dynamic>? data) _observer;
+  late final void Function(Prayers? data) _observer;
 
   @override
   void initState() {
@@ -37,21 +39,21 @@ class _ClockState extends State<Clock> {
     prayerTimingsObserver.addObserver(_observer);
   }
 
-  String? _getCurrentPrayer(Map<dynamic, dynamic>? prayerTimings) {
-    if (prayerTimings == null) return null;
+  Prayer? _getCurrentPrayer(Prayers? timings) {
+    if (timings == null) return null;
 
     // Compare the current time with prayer timings to determine the current prayer
     final now = _currentTime;
-    String? currentPrayer;
+    Prayer? currentPrayer;
 
-    for (var entry in prayerTimings.entries) {
-      final prayerName = entry.key;
-      final prayerTime = DateTime.fromMillisecondsSinceEpoch(entry.value);
+    for (var i = 0; i < timings.ordered.length; i++) {
+      final prayer = timings.orderedPrayers[i];
+      final time = timings.ordered[i];
 
-      if (now.isBefore(prayerTime)) {
+      if (now.isBefore(time)) {
         break;
       }
-      currentPrayer = prayerName;
+      currentPrayer = prayer;
     }
 
     return currentPrayer;
@@ -95,24 +97,32 @@ class _ClockState extends State<Clock> {
 
         if (_currentPrayer != null)
           Positioned(
-            bottom: -35,
+            top: -20,
             left: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SIcon(Icons.wb_sunny_outlined, radius: 16),
-                SizedBox(width: 4),
-                SText(_currentPrayer!, fontSize: 16, weight: STextWeight.bold),
-              ],
+            child: SizedBox(
+              height: 16,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  PrayerIcon(_currentPrayer!, radius: 16),
+                  SizedBox(width: 4),
+                  SText(
+                    _currentPrayer!.name.capitalized,
+                    fontSize: 16,
+                    weight: STextWeight.bold,
+                  ),
+                ],
+              ),
             ),
           ),
         Positioned(
-          bottom: -16,
+          bottom: -20,
           right: 0,
           child: SText(
             formattedTime.$2,
             fontSize: 16,
             weight: STextWeight.medium,
+            height: 1,
           ),
         ),
       ],
