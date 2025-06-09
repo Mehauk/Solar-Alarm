@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:solar_alarm/platform/platform_channel.dart';
 
 import 'components/clock.dart';
+import 'components/prayer_timings.dart';
 import 'globals.dart';
 import 'models/prayers.dart';
 
@@ -54,20 +55,46 @@ class _HomeState extends State<_Home> {
             // colors: [Color(0xFFEEF0F5), Color(0xffE2E4EA)],
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Column(
-            children: [
-              Container(
-                height: 240,
+        child: Column(
+          children: [
+            SizedBox(height: 60),
+            Clock(),
+            SizedBox(height: 8),
+            PrayerTimingsWidget(),
+            SizedBox(height: 16),
+            Expanded(
+              child: DecoratedBox(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF5D666D), Color(0x0023282D)],
+                  ),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
                 ),
-                child: Center(child: Clock()),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 1.5),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
+                      ),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xFF363E46), Color(0xFF2C343C)],
+                      ),
+                    ),
+                    child: SizedBox(height: 300, width: double.maxFinite),
+                  ),
+                ),
               ),
-              Expanded(child: SingleChildScrollView()),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

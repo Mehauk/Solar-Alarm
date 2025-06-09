@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import '../globals.dart';
 import '../models/prayers.dart';
 import '../ui/text.dart';
-import '../utils/date_utils.dart';
 import '../utils/extensions.dart';
 import 'prayer_icons.dart';
 
@@ -81,23 +80,24 @@ class _ClockState extends State<Clock> {
 
   @override
   Widget build(BuildContext context) {
-    (String time, String period) formattedTime = SDateUtils.formatTime(
-      _currentTime,
-    );
+    (String time, String period) formattedTime = _currentTime.formattedTime;
 
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        SText.shadow(
-          formattedTime.$1,
-          fontSize: 84,
-          height: 0.85,
-          weight: STextWeight.medium,
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 18.0),
+          child: SText.shadow(
+            formattedTime.$1,
+            fontSize: 84,
+            height: 0.85,
+            weight: STextWeight.medium,
+          ),
         ),
 
         if (_currentPrayer != null)
           Positioned(
-            top: -20,
+            top: 0,
             left: 0,
             child: SizedBox(
               height: 16,
@@ -116,7 +116,7 @@ class _ClockState extends State<Clock> {
             ),
           ),
         Positioned(
-          bottom: -20,
+          bottom: 0,
           right: 0,
           child: SText(
             formattedTime.$2,
