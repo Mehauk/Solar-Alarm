@@ -58,8 +58,8 @@ class _PrayerTiming extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        PrayerIcon(prayer),
-        SizedBox(width: 12),
+        PrayerIcon(prayer, weight: PrayerIconWeight.thin),
+        SizedBox(width: 8),
         SText(
           "${prayer.name.capitalized} ${time.formattedTime.$1} ${time.formattedTime.$2}",
         ),

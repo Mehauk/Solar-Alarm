@@ -6,22 +6,36 @@ import 'package:flutter/material.dart';
 import '../models/prayers.dart';
 
 extension on Prayer {
-  CustomPainter get painter {
+  _CustomPainter painter(Color color, PrayerIconWeight weight) {
     switch (this) {
       case Prayer.fajr:
-        return _FajrIconPainter();
+        return _FajrIconPainter(color, weight);
       case Prayer.sunrise:
-        return _SunriseIconPainter();
+        return _SunriseIconPainter(color, weight);
       case Prayer.dhuhr:
-        return _DhuhrIconPainter();
+        return _DhuhrIconPainter(color, weight);
       case Prayer.asr:
-        return _AsrIconPainter();
+        return _AsrIconPainter(color, weight);
       case Prayer.maghrib:
-        return _MaghribIconPainter();
+        return _MaghribIconPainter(color, weight);
       case Prayer.isha:
-        return _IshaIconPainter();
+        return _IshaIconPainter(color, weight);
       case Prayer.midnight:
-        return _MidNightIconPainter();
+        return _MidNightIconPainter(color, weight);
+    }
+  }
+}
+
+enum PrayerIconWeight {
+  thin,
+  normal;
+
+  double get width {
+    switch (this) {
+      case thin:
+        return 1.5;
+      case normal:
+        return 2.0;
     }
   }
 }
@@ -29,15 +43,26 @@ extension on Prayer {
 class PrayerIcon extends StatelessWidget {
   final Prayer prayer;
   final double radius;
-  const PrayerIcon(this.prayer, {super.key, this.radius = 12});
+  final PrayerIconWeight weight;
+  const PrayerIcon(
+    this.prayer, {
+    super.key,
+    this.radius = 12,
+    this.weight = PrayerIconWeight.normal,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(size: Size.fromRadius(radius), painter: prayer.painter);
+    return CustomPaint(
+      size: Size.fromRadius(radius),
+      painter: prayer.painter(Color(0xFF8E98A1), weight),
+    );
   }
 }
 
-class _FajrIconPainter extends CustomPainter {
+class _FajrIconPainter extends _CustomPainter {
+  _FajrIconPainter(super.color, super.weight);
+
   @override
   void paint(Canvas canvas, Size size) {
     final cx = size.width / 2;
@@ -46,8 +71,8 @@ class _FajrIconPainter extends CustomPainter {
     final paint =
         Paint()
           ..style = PaintingStyle.stroke
-          ..color = Color(0xFF8E98A1)
-          ..strokeWidth = 2.0;
+          ..color = color
+          ..strokeWidth = weight.width;
 
     final rect = Rect.fromCircle(center: Offset(cx, cy), radius: cx * 0.5);
 
@@ -56,8 +81,8 @@ class _FajrIconPainter extends CustomPainter {
     final rayPaint =
         Paint()
           ..style = PaintingStyle.stroke
-          ..color = Color(0xFF8E98A1)
-          ..strokeWidth = 2.0;
+          ..color = color
+          ..strokeWidth = weight.width;
 
     final rayLength = cx * 0.7;
     final rayCount = 7;
@@ -81,10 +106,12 @@ class _FajrIconPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _CustomPainter oldDelegate) => false;
 }
 
-class _SunriseIconPainter extends CustomPainter {
+class _SunriseIconPainter extends _CustomPainter {
+  _SunriseIconPainter(super.color, super.weight);
+
   @override
   void paint(Canvas canvas, Size size) {
     final cx = size.width / 2;
@@ -93,8 +120,8 @@ class _SunriseIconPainter extends CustomPainter {
     final paint =
         Paint()
           ..style = PaintingStyle.stroke
-          ..color = Color(0xFF8E98A1)
-          ..strokeWidth = 2.0;
+          ..color = color
+          ..strokeWidth = weight.width;
 
     final rect = Rect.fromCircle(center: Offset(cx, cy), radius: cx * 0.5);
 
@@ -103,8 +130,8 @@ class _SunriseIconPainter extends CustomPainter {
     final rayPaint =
         Paint()
           ..style = PaintingStyle.stroke
-          ..color = Color(0xFF8E98A1)
-          ..strokeWidth = 2.0;
+          ..color = color
+          ..strokeWidth = weight.width;
 
     final rayLength = cx * 0.8;
     final rayCount = 7;
@@ -128,10 +155,12 @@ class _SunriseIconPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _CustomPainter oldDelegate) => false;
 }
 
-class _DhuhrIconPainter extends CustomPainter {
+class _DhuhrIconPainter extends _CustomPainter {
+  _DhuhrIconPainter(super.color, super.weight);
+
   @override
   void paint(Canvas canvas, Size size) {
     final cx = size.width / 2;
@@ -140,16 +169,16 @@ class _DhuhrIconPainter extends CustomPainter {
     final paint =
         Paint()
           ..style = PaintingStyle.stroke
-          ..color = Color(0xFF8E98A1)
-          ..strokeWidth = 2.0;
+          ..color = color
+          ..strokeWidth = weight.width;
 
     canvas.drawCircle(Offset(cx, cy), cx * 0.45, paint);
 
     final rayPaint =
         Paint()
           ..style = PaintingStyle.stroke
-          ..color = Color(0xFF8E98A1)
-          ..strokeWidth = 2.0;
+          ..color = color
+          ..strokeWidth = weight.width;
 
     final rayLength = cx * 0.7;
     final rayCount = 12;
@@ -164,10 +193,12 @@ class _DhuhrIconPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _CustomPainter oldDelegate) => false;
 }
 
-class _AsrIconPainter extends CustomPainter {
+class _AsrIconPainter extends _CustomPainter {
+  _AsrIconPainter(super.color, super.weight);
+
   @override
   void paint(Canvas canvas, Size size) {
     final cx = size.width / 2;
@@ -176,16 +207,16 @@ class _AsrIconPainter extends CustomPainter {
     final paint =
         Paint()
           ..style = PaintingStyle.stroke
-          ..color = Color(0xFF8E98A1)
-          ..strokeWidth = 2.0;
+          ..color = color
+          ..strokeWidth = weight.width;
 
     canvas.drawCircle(Offset(cx, cy), cx * 0.45, paint);
 
     final rayPaint =
         Paint()
           ..style = PaintingStyle.stroke
-          ..color = Color(0xFF8E98A1)
-          ..strokeWidth = 2.0;
+          ..color = color
+          ..strokeWidth = weight.width;
 
     final rayLengthBig = cx * 0.7;
     final rayLength = cx * 0.6;
@@ -202,10 +233,12 @@ class _AsrIconPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _CustomPainter oldDelegate) => false;
 }
 
-class _MaghribIconPainter extends CustomPainter {
+class _MaghribIconPainter extends _CustomPainter {
+  _MaghribIconPainter(super.color, super.weight);
+
   @override
   void paint(Canvas canvas, Size size) {
     final cx = size.width / 2;
@@ -214,8 +247,8 @@ class _MaghribIconPainter extends CustomPainter {
     final paint =
         Paint()
           ..style = PaintingStyle.stroke
-          ..color = Color(0xFF8E98A1)
-          ..strokeWidth = 2.0;
+          ..color = color
+          ..strokeWidth = weight.width;
 
     final rect = Rect.fromCircle(center: Offset(cx, cy), radius: cx * 0.5);
 
@@ -224,8 +257,8 @@ class _MaghribIconPainter extends CustomPainter {
     final rayPaint =
         Paint()
           ..style = PaintingStyle.stroke
-          ..color = Color(0xFF8E98A1)
-          ..strokeWidth = 2.0;
+          ..color = color
+          ..strokeWidth = weight.width;
 
     final rayLength = cx * 0.65;
     final rayCount = 7;
@@ -249,10 +282,12 @@ class _MaghribIconPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _CustomPainter oldDelegate) => false;
 }
 
-class _IshaIconPainter extends CustomPainter {
+class _IshaIconPainter extends _CustomPainter {
+  _IshaIconPainter(super.color, super.weight);
+
   @override
   void paint(Canvas canvas, Size size) {
     final cx = size.width / 2;
@@ -261,8 +296,8 @@ class _IshaIconPainter extends CustomPainter {
     final paint =
         Paint()
           ..style = PaintingStyle.stroke
-          ..color = Color(0xFF8E98A1)
-          ..strokeWidth = 2.0;
+          ..color = color
+          ..strokeWidth = weight.width;
 
     final rect = Rect.fromCircle(center: Offset(cx, cy), radius: cx * 0.5);
 
@@ -281,10 +316,12 @@ class _IshaIconPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _CustomPainter oldDelegate) => false;
 }
 
-class _MidNightIconPainter extends CustomPainter {
+class _MidNightIconPainter extends _CustomPainter {
+  _MidNightIconPainter(super.color, super.weight);
+
   @override
   void paint(Canvas canvas, Size size) {
     final cx = size.width / 2;
@@ -293,8 +330,8 @@ class _MidNightIconPainter extends CustomPainter {
     final paint =
         Paint()
           ..style = PaintingStyle.stroke
-          ..color = Color(0xFF8E98A1)
-          ..strokeWidth = 2.0;
+          ..color = color
+          ..strokeWidth = weight.width;
 
     final rect = Rect.fromCircle(center: Offset(cx, cy), radius: cx * 0.5);
 
@@ -314,8 +351,8 @@ class _MidNightIconPainter extends CustomPainter {
     final rayPaint =
         Paint()
           ..style = PaintingStyle.stroke
-          ..color = Color(0xFF8E98A1)
-          ..strokeWidth = 2.0;
+          ..color = color
+          ..strokeWidth = weight.width;
 
     final rayLengthBig = cx * 0.7;
     final rayLength = cx * 0.6;
@@ -332,5 +369,14 @@ class _MidNightIconPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _CustomPainter oldDelegate) {
+    return oldDelegate.color != color || oldDelegate.weight != weight;
+  }
+}
+
+abstract class _CustomPainter extends CustomPainter {
+  Color color;
+  PrayerIconWeight weight;
+
+  _CustomPainter(this.color, this.weight);
 }
