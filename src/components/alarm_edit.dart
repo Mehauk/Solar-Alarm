@@ -4,7 +4,6 @@ import 'package:solar_alarm/models/calendar.dart';
 
 import '../ui/text.dart';
 import '../utils/extensions.dart';
-import 'alarms.dart';
 import 'background.dart';
 import 'clock.dart';
 
@@ -37,45 +36,57 @@ class _AlarmEditState extends State<AlarmEdit> {
       child: Background(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
-          child: Column(
-            children: [
-              AlarmTile(alarm, onTap: () {}, onToggle: (b) {}),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(width: 40),
-                  _TimeCapsule(
-                    time.hour12,
-                    editType: TimePart.hour,
-                    currentEdit: currentEdit,
-                    onTap: () => setState(() => currentEdit = TimePart.hour),
-                  ),
-                  SText(":", fontSize: 36),
-                  _TimeCapsule(
-                    time.minute,
-                    editType: TimePart.minute,
-                    currentEdit: currentEdit,
-                    onTap: () => setState(() => currentEdit = TimePart.minute),
-                  ),
-                  const SizedBox(width: 6),
-                  Column(
-                    children: [
-                      _TimeIndicatorWidget(
-                        DayPart.am,
-                        timeInd,
-                        () => setState(() => timeInd = DayPart.am),
-                      ),
-                      const SizedBox(height: 1),
-                      _TimeIndicatorWidget(
-                        DayPart.pm,
-                        timeInd,
-                        () => setState(() => timeInd = DayPart.pm),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(width: 40),
+                    _TimeCapsule(
+                      time.hour12,
+                      editType: TimePart.hour,
+                      currentEdit: currentEdit,
+                      onTap: () => setState(() => currentEdit = TimePart.hour),
+                    ),
+                    SText(":", fontSize: 36),
+                    _TimeCapsule(
+                      time.minute,
+                      editType: TimePart.minute,
+                      currentEdit: currentEdit,
+                      onTap:
+                          () => setState(() => currentEdit = TimePart.minute),
+                    ),
+                    const SizedBox(width: 6),
+                    Column(
+                      children: [
+                        _TimeIndicatorWidget(
+                          DayPart.am,
+                          timeInd,
+                          () => setState(() => timeInd = DayPart.am),
+                        ),
+                        const SizedBox(height: 1),
+                        _TimeIndicatorWidget(
+                          DayPart.pm,
+                          timeInd,
+                          () => setState(() => timeInd = DayPart.pm),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Clock(
+                  time: time,
+                  editingPart: currentEdit,
+                  onUpdate: (timeUpdate) {
+                    setState(() {
+                      time = timeUpdate;
+                    });
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

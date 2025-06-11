@@ -46,13 +46,25 @@ class _AlarmsWidgetState extends State<AlarmsWidget> {
                     SIconButton(
                       Icons.add,
                       onTap:
-                          () => showBottomSheet(
+                          () => showModalBottomSheet(
+                            enableDrag: false,
                             context: context,
                             builder: (context) => const AlarmEdit(),
                           ),
                     ),
                     const SizedBox(width: 4),
-                    SIconButton(Icons.more_horiz, onTap: () => print(1)),
+                    SIconButton(
+                      Icons.more_horiz,
+                      onTap:
+                          () => showDialog(
+                            context: context,
+                            builder: (context) {
+                              return TimePickerDialog(
+                                initialTime: TimeOfDay.now(),
+                              );
+                            },
+                          ),
+                    ),
                   ],
                 ),
               ],
