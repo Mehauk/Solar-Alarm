@@ -1,9 +1,10 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:solar_alarm/models/calendar.dart';
 
+part 'alarm.freezed.dart';
 part 'alarm.g.dart';
 
-enum AlarmStatus { mute, sound, delayed }
+enum AlarmStatus { vibrate, sound, delayed }
 
 @JsonSerializable()
 class Alarm {
