@@ -7,6 +7,10 @@ import '../ui/switch.dart';
 import '../ui/text.dart';
 import '../utils/extensions.dart';
 
+extension on Alarm {
+  DateTime get alarmDate => DateTime.fromMillisecondsSinceEpoch(timeInMillis);
+}
+
 class AlarmsWidget extends StatelessWidget {
   const AlarmsWidget({super.key});
 
@@ -32,16 +36,23 @@ class AlarmsWidget extends StatelessWidget {
               ],
             ),
           ),
-          const Expanded(
+          Expanded(
             child: SingleChildScrollView(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    AlarmTile(),
-                    AlarmTile(),
-                    AlarmTile(),
-                    AlarmTile(),
+                    AlarmTile(
+                      Alarm(
+                        name: "MyNameMyNamMyNamMyNam",
+                        timeInMillis:
+                            DateTime.now()
+                                .add(const Duration(hours: 2))
+                                .millisecondsSinceEpoch,
+                        enabled: true,
+                      ),
+                      onToggle: (bool) {},
+                    ),
                   ],
                 ),
               ),
@@ -100,42 +111,55 @@ class AlarmTile extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SText(alarm.alarmDate.formattedTime.$1, fontSize: 34),
-                          const SizedBox(width: 4),
-                          Column(
-                            children: [
-                              if (alarm.alarmDate.formattedTime.$2 == "AM") ...[
-                                SText.glow(
-                                  "AM",
-                                  fontSize: 16,
-                                  weight: STextWeight.thin,
-                                  color: const Color(0xFFFD251E),
-                                ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SText(alarm.name, fontSize: 22, maxLines: 1),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
                                 SText(
-                                  "PM",
-                                  fontSize: 16,
-                                  weight: STextWeight.thin,
+                                  alarm.alarmDate.formattedTime.$1,
+                                  fontSize: 34,
+                                ),
+                                const SizedBox(width: 4),
+                                Column(
+                                  children: [
+                                    if (alarm.alarmDate.formattedTime.$2 ==
+                                        "AM") ...[
+                                      SText.glow(
+                                        "AM",
+                                        fontSize: 16,
+                                        weight: STextWeight.thin,
+                                        color: const Color(0xFFFD251E),
+                                      ),
+                                      SText(
+                                        "PM",
+                                        fontSize: 16,
+                                        weight: STextWeight.thin,
+                                      ),
+                                    ],
+                                    if (alarm.alarmDate.formattedTime.$2 ==
+                                        "PM") ...[
+                                      SText(
+                                        "AM",
+                                        fontSize: 16,
+                                        weight: STextWeight.thin,
+                                      ),
+                                      SText.glow(
+                                        "PM",
+                                        fontSize: 16,
+                                        weight: STextWeight.thin,
+                                        color: const Color(0xFFFD251E),
+                                      ),
+                                    ],
+                                  ],
                                 ),
                               ],
-                              if (alarm.alarmDate.formattedTime.$2 == "PM") ...[
-                                SText(
-                                  "AM",
-                                  fontSize: 16,
-                                  weight: STextWeight.thin,
-                                ),
-                                SText.glow(
-                                  "PM",
-                                  fontSize: 16,
-                                  weight: STextWeight.thin,
-                                  color: const Color(0xFFFD251E),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ],
+                            ),
+                          ],
+                        ),
                       ),
                       Row(
                         mainAxisSize: MainAxisSize.min,

@@ -27,12 +27,14 @@ class SText extends StatelessWidget {
   final STextWeight weight;
   final double height;
   final Color color;
+  final int? maxLines;
   SText(
     this.text, {
     super.key,
     this.fontSize,
     this.weight = STextWeight.medium,
     this.height = 1,
+    this.maxLines,
     this.color = const Color(0xFF8E98A1),
   }) : textStyle = TextStyle(
          fontSize: fontSize,
@@ -47,6 +49,7 @@ class SText extends StatelessWidget {
     this.fontSize,
     this.weight = STextWeight.medium,
     this.height = 1,
+    this.maxLines,
     this.color = const Color(0xFF8E98A1),
   }) : textStyle = TextStyle(
          fontSize: fontSize,
@@ -68,6 +71,7 @@ class SText extends StatelessWidget {
     this.fontSize,
     this.weight = STextWeight.medium,
     this.height = 1,
+    this.maxLines,
     this.color = const Color(0xFF8E98A1),
   }) : textStyle = TextStyle(
          fontSize: fontSize,
@@ -81,6 +85,11 @@ class SText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(text, style: textStyle);
+    return Text(
+      text,
+      style: textStyle,
+      maxLines: maxLines,
+      overflow: TextOverflow.ellipsis,
+    );
   }
 }
