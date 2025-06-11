@@ -1,7 +1,8 @@
 package com.example.solar_alarm
 
-import com.example.solar_alarm.utils.Alarm.Companion.cancelAlarm
 import com.example.solar_alarm.utils.Alarm.Companion.setAlarm
+import com.example.solar_alarm.utils.Alarm.Companion.getAllAlarms
+import com.example.solar_alarm.utils.Alarm.Companion.cancelAlarm
 import com.example.solar_alarm.utils.Prayer.Companion.getPrayerAlarms
 import com.example.solar_alarm.utils.Prayer.Companion.setPrayerAlarms
 import io.flutter.embedding.android.FlutterActivity
@@ -20,10 +21,8 @@ class MainActivity : FlutterActivity() {
                     when (call.method) {
                         "setAlarm" -> {
                             val args = call.arguments as Map<*, *>
-                            val timeInMillis = args["time"]!! as Long
-                            val alarmName = args["name"]!! as String
-                            val repeatInterval = (args["repeatInterval"] as? Number)?.toLong()
-                            setAlarm(timeInMillis, alarmName, context, repeatInterval)
+                            val alarmJson = args["alarmJson"]!! as String
+                            setAlarm(alarmJson, context)
                             result.success(null)
                         }
 
@@ -31,13 +30,18 @@ class MainActivity : FlutterActivity() {
                             val args = call.arguments as Map<*, *>
                             val alarmName = args["name"]!! as String
                             cancelAlarm(alarmName, context)
+                            result.success(null)
+                        }
+
+                        "getAllAlarms" -> {
+                            result.success(getAllAlarms(context))
                         }
 
                         "getPrayerTimes" -> {
                             getPrayerAlarms(this) { prayerTimes ->
                                 println("Prayer times 2: $prayerTimes")
                                 prayerTimes?.let {
-                                    result.success(prayerTimes)
+                                    result.success(it)
                                 } ?: run {
                                     result.error(
                                         "LOCATION_ERROR",
@@ -51,7 +55,7 @@ class MainActivity : FlutterActivity() {
                         "setPrayerTimes" -> {
                             val prayerTimes = setPrayerAlarms(context)
                             prayerTimes?.let {
-                                result.success(prayerTimes)
+                                result.success(it)
                             } ?: {
                                 result.error(
                                     "LOCATION_ERROR",
@@ -60,6 +64,7 @@ class MainActivity : FlutterActivity() {
                                 )
                             }
                         }
+
                     }
                 }
     }

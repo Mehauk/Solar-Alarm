@@ -8,29 +8,34 @@
   - [x] Set proper times
   - [x] Set for next day/s
   - [x] Do not set expired alarms
-  - [ ] custom offset / snooze behaviour
-- [ ] Alarm Features
-  - [ ] Disable period
-  - [ ] Implement disable, mute, vibrate, sound statuses for individual alarms
-  - [ ] Snooze time addition
-  - [ ] Disabled weekdays, dates
-  - [ ] Disable one off alarms after they have rung
 - [x] Potential issue if phone turns off and the next are not scheduled?
   - [x] Reset ALL alarms on BOOT COMPLETED!!!!!!
 - [x] Location dynamic
 - [x] Ask for location perms (and device location)
 - [x] Reset alarms after they go off (set extra long)
   - [x] Change to repeatInterval?
-- [ ] Use flutter ui for alarm
-- [ ] Not open app thing
-  - [ ] Use local ai?
 - [x] TEST
-  - [x] Alarm
+  - [ ] Alarm
   - [x] Prayer Times
   - [x] Location 
-  - [x] Alarm Repeat
+  - [ ] Alarm Repeat
   - [x] Alarm After Shutdown
-  - [x] Prayer Alarms
+  - [ ] Prayer Alarms
   - [x] Prayer Alarms After Shutdown
   - [x] Correct Timing For Prayer Alarms
   - [x] Alarm Repeat After Shutdown
+  
+- [ ] Alarm Features 
+  - [ ] Custom offset / snooze behaviour for adhan alarms
+  - [ ] Disable period
+  - [ ] Implement disable, mute, vibrate, sound statuses for individual alarms
+  - [ ] Snooze time addition
+  - [ ] Disabled weekdays, dates
+  - [ ] Disable one off alarms after they have rung
+- [ ] Use flutter ui for alarm
+  - [x] Main Page
+  - [ ] Add/Edit Alarm dialog
+  - [ ] Alarm Features UI
+- [ ] Fix permissions 
+- [ ] Fix all NEEDS WORK comments
+- [ ] Alarm set collisions

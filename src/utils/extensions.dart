@@ -1,4 +1,4 @@
-import '../models/calendar.dart';
+import 'package:solar_alarm/models/calendar.dart';
 
 extension Caps on String {
   String get capitalized {

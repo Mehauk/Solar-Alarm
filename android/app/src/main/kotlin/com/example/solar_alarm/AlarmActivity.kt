@@ -14,7 +14,10 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.example.solar_alarm.utils.Alarm
 import com.example.solar_alarm.utils.Alarm.Companion.setAlarm
+import com.example.solar_alarm.utils.Constants.Companion.PRAYER_RESET
+import org.json.JSONObject
 
 class AlarmActivity : Activity() {
     private lateinit var mediaPlayer: MediaPlayer
@@ -45,10 +48,16 @@ class AlarmActivity : Activity() {
         setContentView(R.layout.activity_alarm)
 
         val alarmName = intent.getStringExtra("alarmName") ?: "ALARM!"
+        var alarmTime = System.currentTimeMillis()
+        Alarm.getAlarm(alarmName, applicationContext)?.let {
+            val alarm = JSONObject(it)
+            alarmTime = alarm.getString("timeInMillis").toLong()
+        }
+
+
         findViewById<TextView>(R.id.alarmTitle).text = alarmName
 
         // Retrieve the alarm time and display it
-        val alarmTime = intent.getLongExtra("alarmTime", 0)
         val formattedTime = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault()).format(java.util.Date(alarmTime))
         findViewById<TextView>(R.id.timeText).text = formattedTime
 
@@ -98,12 +107,16 @@ class AlarmActivity : Activity() {
                 finish()
             }
         }
+
         findViewById<Button>(R.id.snoozeButton).setOnClickListener {
             Toast.makeText(this, "Snoozed for 5 minutes", Toast.LENGTH_SHORT).show()
             val timeInMillis = System.currentTimeMillis() + (1_000 * 5)
             val context = applicationContext
-            val snoozeName = alarmName.split("__SNOOZED")[0] + "__SNOOZED"
-            setAlarm(timeInMillis, snoozeName, context, null)
+            val map = mapOf(
+                "name" to alarmName.split("__SNOOZED")[0] + "__SNOOZED",
+                "timeInMillis" to timeInMillis.toString()
+            )
+            setAlarm(JSONObject(map).toString(), context, false)
             finish()
         }
         changeAlarmUIBasedOnSolarTimes()
@@ -116,7 +129,7 @@ class AlarmActivity : Activity() {
         // Set text and button colors based on the time of day for better contrast
         val textColor: Int
         val buttonTextColor: Int
-        val buttonBackgroundColor: Int
+//        val buttonBackgroundColor: Int
         val backgroundDrawable: GradientDrawable
                 val contrastingBackgroundColor: Int
         val contrastingStrokeColor: Int
@@ -127,7 +140,7 @@ class AlarmActivity : Activity() {
                 contrastingStrokeColor = 0xFFB5FFFC.toInt()
                 textColor = 0xFF000000.toInt() // Black for dawn
                 buttonTextColor = 0xFF000000.toInt()
-                buttonBackgroundColor = 0xFFFFFFFF.toInt() // White
+//                buttonBackgroundColor = 0xFFFFFFFF.toInt() // White
                 backgroundDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(0xFFFFDEE9.toInt(), 0xFFB5FFFC.toInt()))
             }
             in 9..11 -> {
@@ -135,7 +148,7 @@ class AlarmActivity : Activity() {
                 contrastingStrokeColor = 0xFFFFD700.toInt()
                 textColor = 0xFF000000.toInt() // Black for morning
                 buttonTextColor = 0xFF000000.toInt()
-                buttonBackgroundColor = 0xFFFFFFFF.toInt() // White
+//                buttonBackgroundColor = 0xFFFFFFFF.toInt() // White
                 backgroundDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(0xFFFFFACD.toInt(), 0xFFFFD700.toInt()))
             }
             in 12..17 -> {
@@ -143,7 +156,7 @@ class AlarmActivity : Activity() {
                 contrastingStrokeColor = 0xFF00BFFF.toInt()
                 textColor = 0xFFFFFFFF.toInt() // White for afternoon
                 buttonTextColor = 0xFFFFFFFF.toInt()
-                buttonBackgroundColor = 0xFF000000.toInt() // Black
+//                buttonBackgroundColor = 0xFF000000.toInt() // Black
                 backgroundDrawable =GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(0xFF87CEEB.toInt(), 0xFF00BFFF.toInt()))
             }
             in 18..20 -> {
@@ -151,7 +164,7 @@ class AlarmActivity : Activity() {
                 contrastingStrokeColor = 0xFFFEB47B.toInt()
                 textColor = 0xFFFFFFFF.toInt() // White for evening
                 buttonTextColor = 0xFFFFFFFF.toInt()
-                buttonBackgroundColor = 0xFF000000.toInt() // Black
+//                buttonBackgroundColor = 0xFF000000.toInt() // Black
                 backgroundDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(0xFFFF7E5F.toInt(), 0xFFFEB47B.toInt()))
             }
             else -> {
@@ -159,7 +172,7 @@ class AlarmActivity : Activity() {
                 contrastingStrokeColor = 0xFF16213E.toInt()
                 textColor = 0xFFFFFFFF.toInt() // White for night
                 buttonTextColor = 0xFFFFFFFF.toInt()
-                buttonBackgroundColor = 0xFF000000.toInt() // Black
+//                buttonBackgroundColor = 0xFF000000.toInt() // Black
                 backgroundDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(0xFF1A1A2E.toInt(), 0xFF16213E.toInt()))
             }
         }

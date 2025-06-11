@@ -4,21 +4,26 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import com.example.solar_alarm.AlarmReceiver
+import com.example.solar_alarm.utils.Constants.Companion.ALARM_PREFIX
 import com.example.solar_alarm.utils.Constants.Companion.PRAYER_RESET
+import org.json.JSONObject
 
 class Alarm {
     companion object {
-        fun setAlarm(timeInMillis: Long, alarmName: String, context: Context, repeatInterval: Long?) {
-            val intent = Intent(context, AlarmReceiver::class.java)
-            intent.putExtra("alarmName", alarmName)
-            intent.putExtra("alarmTime", timeInMillis)
+        private fun getAlarmPrefs(context: Context): SharedPreferences {
+            return context.getSharedPreferences("alarm_prefs", Context.MODE_PRIVATE)
+        }
 
-            repeatInterval?.let {
-                if (repeatInterval > 0L) {
-                    intent.putExtra("alarmRepeatInterval", it)
-                }
-            }
+        fun setAlarm(alarmJson: String, context: Context, save: Boolean = true) {
+            val intent = Intent(context, AlarmReceiver::class.java)
+
+            val alarm = JSONObject(alarmJson)
+            val alarmName = alarm.getString("name")
+            val timeInMillis = alarm.getString("timeInMillis").toLong()
+
+            intent.putExtra("alarmName", alarmName)
 
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
@@ -32,16 +37,18 @@ class Alarm {
             val aci = AlarmManager.AlarmClockInfo(timeInMillis, pendingIntent)
             alarmManager.setAlarmClock(aci, pendingIntent)
 
-            println("Alarm $alarmName set for: $timeInMillis ($repeatInterval)")
+            if (save) getAlarmPrefs(context).edit().putString("$ALARM_PREFIX$alarmName", alarmJson).apply()
+        }
 
-            val prefs = context.getSharedPreferences("alarm_prefs", Context.MODE_PRIVATE).edit()
-            prefs.putLong("alarm_time_$alarmName", timeInMillis)
+        fun getAlarm(alarmName: String, context: Context): String? {
+            return getAlarmPrefs(context).getString("$ALARM_PREFIX$alarmName", null)
+        }
 
-            repeatInterval?.let {
-                prefs.putLong("alarm_repeat_interval_$alarmName", it)
-            }
-
-            prefs.apply()
+        fun getAllAlarms(context: Context): List<String> {
+            val prefs = getAlarmPrefs(context)
+            return prefs.all
+                .filter { (k, v) -> k.startsWith(ALARM_PREFIX) && !k.contains(PRAYER_RESET) && v is String }
+                .mapNotNull { (_, v) -> v as? String }
         }
 
         fun cancelAlarm(alarmName: String, context: Context) {
@@ -56,32 +63,34 @@ class Alarm {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             alarmManager.cancel(pendingIntent)
 
-            val prefs = context.getSharedPreferences("alarm_prefs", Context.MODE_PRIVATE).edit()
-            prefs.remove("alarm_time_$alarmName")
-            prefs.remove("alarm_repeat_interval_$alarmName")
-            prefs.apply()
+            getAlarmPrefs(context).edit().remove(alarmName).apply()
 
             println("Alarm $alarmName canceled and removed from preferences.")
         }
 
+        // NEEDS WORK!!!!
+        fun disableAlarm(alarmName: String, context: Context) {
+
+        }
+
+        // NEEDS WORK!!!!
         fun rescheduleAllAlarms(context: Context) {
-            val prefs = context.getSharedPreferences("alarm_prefs", Context.MODE_PRIVATE)
+            val prefs = getAlarmPrefs(context)
             val allEntries = prefs.all
 
             for ((key, value) in allEntries) {
 
-                if (key.startsWith("alarm_time_") && value is Long) {
-                    val alarmName = key.removePrefix("alarm_time_")
-                    val repeatInterval = prefs.getLong("alarm_repeat_interval_$alarmName", 0)
+                if (key.startsWith(ALARM_PREFIX) && value is String) {
+                    val alarmName = key.removePrefix(ALARM_PREFIX)
+                    val timeInMillis = JSONObject(value).getString("timeInMillis").toLong()
 
-                    // Optional: skip expired alarms
-                    if (System.currentTimeMillis() < value) {
-                        setAlarm(value, alarmName, context, repeatInterval)
+                    if (System.currentTimeMillis() < timeInMillis) {
+                        setAlarm(value, context)
                         println("Alarm Rescheduled alarm: $alarmName")
                     }
 
                     else if (key.contains(PRAYER_RESET)) {
-                        setAlarm(value, alarmName, context, repeatInterval)
+                        setAlarm(value, context)
                         println("Alarm Rescheduled prayer reset: $alarmName")
                     }
 

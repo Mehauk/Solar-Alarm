@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:solar_alarm/models/alarm.dart';
+import 'package:solar_alarm/models/calendar.dart';
 
-import '../models/calendar.dart';
 import '../ui/icon.dart';
 import '../ui/switch.dart';
 import '../ui/text.dart';
@@ -31,33 +32,16 @@ class AlarmsWidget extends StatelessWidget {
               ],
             ),
           ),
-          Expanded(
+          const Expanded(
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    AlarmTile(
-                      repeatDays: {Weekday.monday, Weekday.thursday},
-                      alarmDate: DateTime.now().add(
-                        const Duration(days: 1, hours: 3),
-                      ),
-                    ),
-                    AlarmTile(
-                      alarmDate: DateTime.now()
-                          .add(const Duration(days: 2))
-                          .subtract(const Duration(hours: 4)),
-                    ),
-                    AlarmTile(
-                      repeatInterval: 24 * 60 * 60 * 1000,
-                      alarmDate: DateTime.now().add(
-                        const Duration(days: 3, hours: 2),
-                      ),
-                    ),
-                    AlarmTile(
-                      repeatInterval: 24 * 60 * 60 * 1000,
-                      alarmDate: DateTime.now().add(const Duration(days: 1)),
-                    ),
+                    AlarmTile(),
+                    AlarmTile(),
+                    AlarmTile(),
+                    AlarmTile(),
                   ],
                 ),
               ),
@@ -69,33 +53,17 @@ class AlarmsWidget extends StatelessWidget {
   }
 }
 
-class AlarmTile extends StatefulWidget {
-  final DateTime alarmDate;
-  final Set<Weekday>? repeatDays;
-  final int? repeatInterval;
+class AlarmTile extends StatelessWidget {
+  final Alarm alarm;
+  final void Function(bool) onToggle;
 
-  const AlarmTile({
-    super.key,
-    required this.alarmDate,
-    this.repeatDays,
-    this.repeatInterval,
-  }) : assert(
-         (repeatDays != null ? 1 : 0) + (repeatInterval != null ? 1 : 0) <= 1,
-         'Only one of repeatDays, or repeatInterval can be provided.',
-       );
-
-  @override
-  State<AlarmTile> createState() => _AlarmTileState();
-}
-
-class _AlarmTileState extends State<AlarmTile> {
-  bool enabled = true;
+  const AlarmTile(this.alarm, {super.key, required this.onToggle});
 
   @override
   Widget build(BuildContext context) {
     return AnimatedOpacity(
       duration: Durations.short2,
-      opacity: enabled ? 1 : 0.9,
+      opacity: alarm.enabled ? 1 : 0.9,
       child: Padding(
         padding: const EdgeInsets.only(bottom: 18),
         child: Material(
@@ -135,15 +103,11 @@ class _AlarmTileState extends State<AlarmTile> {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          SText(
-                            widget.alarmDate.formattedTime.$1,
-                            fontSize: 34,
-                          ),
+                          SText(alarm.alarmDate.formattedTime.$1, fontSize: 34),
                           const SizedBox(width: 4),
                           Column(
                             children: [
-                              if (widget.alarmDate.formattedTime.$2 ==
-                                  "AM") ...[
+                              if (alarm.alarmDate.formattedTime.$2 == "AM") ...[
                                 SText.glow(
                                   "AM",
                                   fontSize: 16,
@@ -156,8 +120,7 @@ class _AlarmTileState extends State<AlarmTile> {
                                   weight: STextWeight.thin,
                                 ),
                               ],
-                              if (widget.alarmDate.formattedTime.$2 ==
-                                  "PM") ...[
+                              if (alarm.alarmDate.formattedTime.$2 == "PM") ...[
                                 SText(
                                   "AM",
                                   fontSize: 16,
@@ -177,25 +140,29 @@ class _AlarmTileState extends State<AlarmTile> {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          if (widget.repeatDays != null)
-                            _RepeatingDaysIndicator(widget.repeatDays!),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              if (alarm.repeatDays != null)
+                                _RepeatingDaysIndicator(alarm.repeatDays!),
 
-                          if (widget.repeatInterval != null)
-                            _RepeatingIntervalIndicator(widget.repeatInterval!),
+                              if (alarm.repeatInterval != null)
+                                _RepeatingIntervalIndicator(
+                                  alarm.repeatInterval!,
+                                ),
 
-                          if (widget.repeatDays == null &&
-                              widget.repeatInterval == null)
-                            SText(
-                              widget.alarmDate.formattedDate,
-                              fontSize: 12,
-                              weight: STextWeight.normal,
-                            ),
+                              if (alarm.repeatDays == null &&
+                                  alarm.repeatInterval == null)
+                                SText(
+                                  alarm.alarmDate.formattedDate,
+                                  fontSize: 12,
+                                  weight: STextWeight.normal,
+                                ),
+                            ],
+                          ),
 
                           const SizedBox(width: 12),
-                          SSwitch(
-                            enabled,
-                            onChanged: (v) => setState(() => enabled = v),
-                          ),
+                          SSwitch(alarm.enabled, onChanged: onToggle),
                         ],
                       ),
                     ],

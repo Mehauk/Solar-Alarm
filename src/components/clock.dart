@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../globals.dart';
-import '../models/prayers.dart';
+import 'package:solar_alarm/models/prayers.dart';
 import '../ui/text.dart';
 import '../utils/extensions.dart';
 import 'prayer_icons.dart';

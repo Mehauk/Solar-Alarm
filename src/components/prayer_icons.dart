@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import '../models/prayers.dart';
+import 'package:solar_alarm/models/prayers.dart';
 
 extension on Prayer {
   _CustomPainter painter(Color color, PrayerIconWeight weight) {

@@ -7,27 +7,39 @@ import android.os.SystemClock
 import com.example.solar_alarm.utils.Alarm
 import com.example.solar_alarm.utils.Constants.Companion.PRAYER_RESET
 import com.example.solar_alarm.utils.Prayer
+import org.json.JSONObject
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         println("AlarmReceiver " + SystemClock.currentThreadTimeMillis().toString() + " in com.example.solar_alarm.AlarmReceiver onReceive()")
         val alarmName = intent.getStringExtra("alarmName")
-        val alarmTime = intent.getLongExtra("alarmTime", 0)
-        val repeatInterval = intent.getLongExtra("alarmRepeatInterval", 0)
 
-        if (alarmName!!.contains(PRAYER_RESET)) {
+        if (alarmName == PRAYER_RESET) {
             Prayer.setPrayerAlarms(context)
         } else {
-            val alarmIntent = Intent(context, AlarmActivity::class.java)
-            alarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            alarmIntent.putExtra("alarmName", alarmName)
-            alarmIntent.putExtra("alarmTime", alarmTime)
-            context.startActivity(alarmIntent)
+            Alarm.getAlarm(alarmName!!, context)?.let {
+                val alarm = JSONObject(it)
+                val alarmIntent = Intent(context, AlarmActivity::class.java)
+                alarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                alarmIntent.putExtra("alarmName", alarmName)
+
+                context.startActivity(alarmIntent)
+
+                val repeatInterval = alarm.optString("repeatInterval").toLongOrNull()
+
+                if (repeatInterval != null && repeatInterval > 1000L) {
+                    alarm.put(
+                        "timeInMillis",
+                        alarm.getString("timeInMillis").toLong() + repeatInterval
+                    )
+                    println("alarm $alarmName set to reset $repeatInterval")
+                    Alarm.setAlarm(alarm.toString(), context)
+                } else {
+                    Alarm.disableAlarm(alarmName, context)
+                }
+            }
+
         }
 
-        println("alarm $alarmName set to reset $repeatInterval")
-        if (repeatInterval > 1000L) {
-            Alarm.setAlarm(alarmTime + repeatInterval, alarmName, context, repeatInterval)
-        }
     }
 }

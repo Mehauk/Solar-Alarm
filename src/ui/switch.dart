@@ -57,7 +57,7 @@ class SSwitch extends StatelessWidget {
                         ? [
                           const BoxShadow(
                             blurRadius: 10,
-                            color: Color(0xFFFD2A22),
+                            color: Color(0xAAFD2A22),
                             offset: Offset(0, 1),
                           ),
                         ]

@@ -12,6 +12,7 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import android.provider.Settings
 import com.example.solar_alarm.utils.Constants.Companion.PRAYER_RESET
+import org.json.JSONObject
 
 class Prayer {
     companion object {
@@ -151,7 +152,11 @@ class Prayer {
                     it.filterKeys { prayerName -> prayerName in dailyPrayers } // Filter only daily prayers
                         .forEach { (prayerName, time) ->
                             if (time > currentTime) { // Only set alarms for future times
-                                setAlarm(time, prayerName, context, -1)
+                                val prayerMap = mapOf(
+                                    "name" to prayerName,
+                                    "timeInMillis" to time.toString(),
+                                )
+                                setAlarm(JSONObject(prayerMap).toString(), context, false)
                             }
                         }
                     prayerTimes = it.filterKeys { prayerName -> prayerName in dailyPrayers }
@@ -165,13 +170,17 @@ class Prayer {
                         set(Calendar.MILLISECOND, 0)
                     }
                     val startOfNextDayMillis = calendar.timeInMillis
-                    setAlarm(startOfNextDayMillis, PRAYER_RESET, context, 24 * 60 * 60 * 1000L)
+                    val map = mapOf(
+                        "name" to PRAYER_RESET,
+                        "timeInMillis" to startOfNextDayMillis.toString()
+                    )
+                    setAlarm(JSONObject(map).toString(), context, false)
                 }
             }
             return prayerTimes
         }
 
-        fun promptUserToEnableLocation(context: Context) {
+        private fun promptUserToEnableLocation(context: Context) {
             val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) &&

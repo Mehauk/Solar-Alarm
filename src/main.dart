@@ -5,7 +5,7 @@ import 'components/alarms.dart';
 import 'components/clock.dart';
 import 'components/prayer_timings.dart';
 import 'globals.dart';
-import 'models/prayers.dart';
+import 'package:solar_alarm/models/prayers.dart';
 
 void main(List<String> args) {
   runApp(

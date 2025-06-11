@@ -1,17 +1,12 @@
 import 'package:flutter/services.dart';
+import 'package:solar_alarm/models/alarm.dart';
 
 const mainChannel = MethodChannel('com.example.solar_alarm/main_channel');
 
-Future<void> scheduleAlarm(
-  DateTime time,
-  String alarmName,
-  Duration repeatInterval,
-) async {
+Future<void> scheduleAlarm(Alarm alarm) async {
   try {
     await mainChannel.invokeMethod('setAlarm', {
-      'time': time.millisecondsSinceEpoch,
-      'name': alarmName,
-      'repeatInterval': repeatInterval.inMilliseconds,
+      'alarmJson': alarm.toJson.toString(),
     });
   } on PlatformException catch (e) {
     print("Failed to set alarm: '${e.message}'.");
