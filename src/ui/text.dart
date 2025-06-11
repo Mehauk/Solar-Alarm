@@ -34,7 +34,7 @@ class SText extends StatelessWidget {
     this.fontSize,
     this.weight = STextWeight.medium,
     this.height = 1,
-    this.maxLines,
+    this.maxLines = 1,
     this.color = const Color(0xFF8E98A1),
   }) : textStyle = TextStyle(
          fontSize: fontSize,
@@ -49,7 +49,7 @@ class SText extends StatelessWidget {
     this.fontSize,
     this.weight = STextWeight.medium,
     this.height = 1,
-    this.maxLines,
+    this.maxLines = 1,
     this.color = const Color(0xFF8E98A1),
   }) : textStyle = TextStyle(
          fontSize: fontSize,
@@ -71,7 +71,7 @@ class SText extends StatelessWidget {
     this.fontSize,
     this.weight = STextWeight.medium,
     this.height = 1,
-    this.maxLines,
+    this.maxLines = 1,
     this.color = const Color(0xFF8E98A1),
   }) : textStyle = TextStyle(
          fontSize: fontSize,

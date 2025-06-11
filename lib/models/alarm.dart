@@ -1,10 +1,28 @@
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:solar_alarm/models/calendar.dart';
 
 part 'alarm.freezed.dart';
 part 'alarm.g.dart';
 
-enum AlarmStatus { vibrate, sound, delayed }
+enum AlarmStatus {
+  vibrate,
+  sound,
+  delayed;
+
+  static List<AlarmStatus> get ordered => [vibrate, sound, delayed];
+
+  IconData get icon {
+    switch (this) {
+      case vibrate:
+        return Icons.vibration;
+      case AlarmStatus.sound:
+        return Icons.volume_up;
+      case AlarmStatus.delayed:
+        return Icons.timer_off_outlined;
+    }
+  }
+}
 
 @freezed
 abstract class Alarm with _$Alarm {

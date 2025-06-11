@@ -44,11 +44,14 @@ class AlarmsWidget extends StatelessWidget {
                   children: [
                     AlarmTile(
                       Alarm(
-                        name: "MyNameMyNamMyNamMyNam",
+                        name: "MyNameMyNameMyName",
                         timeInMillis:
                             DateTime.now()
                                 .add(const Duration(hours: 2))
                                 .millisecondsSinceEpoch,
+                        // repeatInterval: 1000 * 60 * 60,
+                        repeatDays: {Weekday.friday},
+                        statuses: {AlarmStatus.sound, AlarmStatus.vibrate},
                         enabled: true,
                       ),
                       onToggle: (bool) {},
@@ -111,84 +114,82 @@ class AlarmTile extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SText(alarm.name, fontSize: 22, maxLines: 1),
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SText(
-                                  alarm.alarmDate.formattedTime.$1,
-                                  fontSize: 34,
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SText(alarm.alarmDate.formattedTime.$1, fontSize: 34),
+                          const SizedBox(width: 4),
+                          Column(
+                            children: [
+                              if (alarm.alarmDate.formattedTime.$2 == "AM") ...[
+                                SText.glow(
+                                  "AM",
+                                  fontSize: 16,
+                                  weight: STextWeight.thin,
+                                  color: const Color(0xFFFD251E),
                                 ),
-                                const SizedBox(width: 4),
-                                Column(
-                                  children: [
-                                    if (alarm.alarmDate.formattedTime.$2 ==
-                                        "AM") ...[
-                                      SText.glow(
-                                        "AM",
-                                        fontSize: 16,
-                                        weight: STextWeight.thin,
-                                        color: const Color(0xFFFD251E),
-                                      ),
-                                      SText(
-                                        "PM",
-                                        fontSize: 16,
-                                        weight: STextWeight.thin,
-                                      ),
-                                    ],
-                                    if (alarm.alarmDate.formattedTime.$2 ==
-                                        "PM") ...[
-                                      SText(
-                                        "AM",
-                                        fontSize: 16,
-                                        weight: STextWeight.thin,
-                                      ),
-                                      SText.glow(
-                                        "PM",
-                                        fontSize: 16,
-                                        weight: STextWeight.thin,
-                                        color: const Color(0xFFFD251E),
-                                      ),
-                                    ],
-                                  ],
+                                SText(
+                                  "PM",
+                                  fontSize: 16,
+                                  weight: STextWeight.thin,
                                 ),
                               ],
+                              if (alarm.alarmDate.formattedTime.$2 == "PM") ...[
+                                SText(
+                                  "AM",
+                                  fontSize: 16,
+                                  weight: STextWeight.thin,
+                                ),
+                                SText.glow(
+                                  "PM",
+                                  fontSize: 16,
+                                  weight: STextWeight.thin,
+                                  color: const Color(0xFFFD251E),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Flexible(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SText(alarm.name, fontSize: 16),
+                                  const SizedBox(height: 2),
+                                  _AlarmStatusesIndicator(alarm.statuses),
+                                ],
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
+                      const SizedBox(width: 6),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              if (alarm.repeatDays != null)
-                                _RepeatingDaysIndicator(alarm.repeatDays!),
+                          if (alarm.repeatDays != null)
+                            _RepeatingDaysIndicator(alarm.repeatDays!),
 
-                              if (alarm.repeatInterval != null)
-                                _RepeatingIntervalIndicator(
-                                  alarm.repeatInterval!,
-                                ),
+                          if (alarm.repeatInterval != null)
+                            _RepeatingIntervalIndicator(alarm.repeatInterval!),
 
-                              if (alarm.repeatDays == null &&
-                                  alarm.repeatInterval == null)
-                                SText(
-                                  alarm.alarmDate.formattedDate,
-                                  fontSize: 12,
-                                  weight: STextWeight.normal,
-                                ),
-                            ],
+                          const SizedBox(height: 2),
+                          SText(
+                            alarm.alarmDate.formattedDate,
+                            fontSize: 12,
+                            weight: STextWeight.normal,
                           ),
-
-                          const SizedBox(width: 12),
-                          SSwitch(alarm.enabled, onChanged: onToggle),
                         ],
                       ),
+                      const SizedBox(width: 6),
+                      SSwitch(alarm.enabled, onChanged: onToggle),
                     ],
                   ),
                 ),
@@ -217,6 +218,37 @@ class _RepeatingIntervalIndicator extends StatelessWidget {
           weight: STextWeight.normal,
         ),
       ],
+    );
+  }
+}
+
+class _AlarmStatusesIndicator extends StatelessWidget {
+  final Set<AlarmStatus> statuses;
+
+  const _AlarmStatusesIndicator(this.statuses);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children:
+          AlarmStatus.ordered
+              .map((as) {
+                if (statuses.contains(as)) {
+                  return SIcon.glow(
+                    as.icon,
+                    color: const Color(0xFFFD251E),
+                    radius: 7,
+                  );
+                } else {
+                  return SIcon(
+                    as.icon,
+                    radius: 7,
+                    color: const Color(0x888E98A1),
+                  );
+                }
+              })
+              .expand((w) => [w, const SizedBox(width: 4)])
+              .toList(),
     );
   }
 }
