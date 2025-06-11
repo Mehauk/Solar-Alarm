@@ -6,17 +6,32 @@ import '../ui/icon.dart';
 import '../ui/switch.dart';
 import '../ui/text.dart';
 import '../utils/extensions.dart';
+import 'alarm_edit.dart';
+import 'background.dart';
 
-extension on Alarm {
-  DateTime get alarmDate => DateTime.fromMillisecondsSinceEpoch(timeInMillis);
-}
-
-class AlarmsWidget extends StatelessWidget {
+class AlarmsWidget extends StatefulWidget {
   const AlarmsWidget({super.key});
 
   @override
+  State<AlarmsWidget> createState() => _AlarmsWidgetState();
+}
+
+class _AlarmsWidgetState extends State<AlarmsWidget> {
+  List<Alarm> alarms = [
+    Alarm(
+      name: "MyNameMyNameMyName",
+      timeInMillis:
+          DateTime.now().add(const Duration(hours: 2)).millisecondsSinceEpoch,
+      // repeatInterval: 1000 * 60 * 60,
+      repeatDays: {Weekday.friday},
+      statuses: {AlarmStatus.sound, AlarmStatus.vibrate},
+      enabled: true,
+    ),
+  ];
+
+  @override
   Widget build(BuildContext context) {
-    return _Background(
+    return Background(
       child: Column(
         children: [
           Padding(
@@ -28,7 +43,14 @@ class AlarmsWidget extends StatelessWidget {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    SIconButton(Icons.add, onTap: () => print(1)),
+                    SIconButton(
+                      Icons.add,
+                      onTap:
+                          () => showBottomSheet(
+                            context: context,
+                            builder: (context) => const AlarmEdit(),
+                          ),
+                    ),
                     const SizedBox(width: 4),
                     SIconButton(Icons.more_horiz, onTap: () => print(1)),
                   ],
@@ -41,22 +63,24 @@ class AlarmsWidget extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
-                  children: [
-                    AlarmTile(
-                      Alarm(
-                        name: "MyNameMyNameMyName",
-                        timeInMillis:
-                            DateTime.now()
-                                .add(const Duration(hours: 2))
-                                .millisecondsSinceEpoch,
-                        // repeatInterval: 1000 * 60 * 60,
-                        repeatDays: {Weekday.friday},
-                        statuses: {AlarmStatus.sound, AlarmStatus.vibrate},
-                        enabled: true,
-                      ),
-                      onToggle: (bool) {},
-                    ),
-                  ],
+                  children:
+                      alarms
+                          .asMap()
+                          .entries
+                          .map(
+                            (e) => AlarmTile(
+                              e.value,
+                              onTap: () {},
+                              onToggle: (b) {
+                                setState(() {
+                                  alarms[e.key] = alarms[e.key].copyWith(
+                                    enabled: b,
+                                  );
+                                });
+                              },
+                            ),
+                          )
+                          .toList(),
                 ),
               ),
             ),
@@ -69,9 +93,15 @@ class AlarmsWidget extends StatelessWidget {
 
 class AlarmTile extends StatelessWidget {
   final Alarm alarm;
-  final void Function(bool) onToggle;
+  final void Function() onTap;
+  final void Function(bool value) onToggle;
 
-  const AlarmTile(this.alarm, {super.key, required this.onToggle});
+  const AlarmTile(
+    this.alarm, {
+    super.key,
+    required this.onTap,
+    required this.onToggle,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -117,77 +147,54 @@ class AlarmTile extends StatelessWidget {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          SText(alarm.alarmDate.formattedTime.$1, fontSize: 34),
+                          SText(alarm.date.formattedTime.$1, fontSize: 34),
                           const SizedBox(width: 4),
                           Column(
                             children: [
-                              if (alarm.alarmDate.formattedTime.$2 == "AM") ...[
-                                SText.glow(
-                                  "AM",
-                                  fontSize: 16,
-                                  weight: STextWeight.thin,
-                                  color: const Color(0xFFFD251E),
-                                ),
-                                SText(
-                                  "PM",
-                                  fontSize: 16,
-                                  weight: STextWeight.thin,
-                                ),
-                              ],
-                              if (alarm.alarmDate.formattedTime.$2 == "PM") ...[
-                                SText(
-                                  "AM",
-                                  fontSize: 16,
-                                  weight: STextWeight.thin,
-                                ),
-                                SText.glow(
-                                  "PM",
-                                  fontSize: 16,
-                                  weight: STextWeight.thin,
-                                  color: const Color(0xFFFD251E),
-                                ),
-                              ],
+                              SText(
+                                "AM",
+                                fontSize: 16,
+                                weight: STextWeight.thin,
+                                color:
+                                    alarm.date.formattedTime.$2 == "AM"
+                                        ? const Color(0xFFFD251E)
+                                        : const Color(0xFF8E98A1),
+                                glow: alarm.date.formattedTime.$2 == "AM",
+                              ),
+                              SText(
+                                "PM",
+                                fontSize: 16,
+                                weight: STextWeight.thin,
+                                color:
+                                    alarm.date.formattedTime.$2 == "PM"
+                                        ? const Color(0xFFFD251E)
+                                        : const Color(0xFF8E98A1),
+                                glow: alarm.date.formattedTime.$2 == "PM",
+                              ),
                             ],
                           ),
                         ],
                       ),
                       const SizedBox(width: 6),
-                      Expanded(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Flexible(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SText(alarm.name, fontSize: 16),
-                                  const SizedBox(height: 2),
-                                  _AlarmStatusesIndicator(alarm.statuses),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 6),
                       Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           if (alarm.repeatDays != null)
-                            _RepeatingDaysIndicator(alarm.repeatDays!),
+                            RepeatingDaysIndicator(alarm.repeatDays!),
 
                           if (alarm.repeatInterval != null)
-                            _RepeatingIntervalIndicator(alarm.repeatInterval!),
+                            RepeatingIntervalIndicator(alarm.repeatInterval!),
 
-                          const SizedBox(height: 2),
-                          SText(
-                            alarm.alarmDate.formattedDate,
-                            fontSize: 12,
-                            weight: STextWeight.normal,
-                          ),
+                          if (alarm.noRepeat)
+                            SText(
+                              alarm.date.formattedDate,
+                              fontSize: 12,
+                              weight: STextWeight.normal,
+                            ),
                         ],
                       ),
+                      const SizedBox(width: 6),
+                      Expanded(child: AlarmStatusesIndicator(alarm.statuses)),
                       const SizedBox(width: 6),
                       SSwitch(alarm.enabled, onChanged: onToggle),
                     ],
@@ -202,9 +209,34 @@ class AlarmTile extends StatelessWidget {
   }
 }
 
-class _RepeatingIntervalIndicator extends StatelessWidget {
+class AlarmStatusesIndicator extends StatelessWidget {
+  final Set<AlarmStatus> statuses;
+
+  const AlarmStatusesIndicator(this.statuses, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children:
+          AlarmStatus.ordered.map((as) {
+            if (statuses.contains(as)) {
+              return SIcon.glow(
+                as.icon,
+                color: const Color(0xFFFD251E),
+                radius: 11,
+              );
+            } else {
+              return SIcon(as.icon, radius: 11, color: const Color(0x888E98A1));
+            }
+          }).toList(),
+    );
+  }
+}
+
+class RepeatingIntervalIndicator extends StatelessWidget {
   final int interval;
-  const _RepeatingIntervalIndicator(this.interval);
+  const RepeatingIntervalIndicator(this.interval, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -222,100 +254,27 @@ class _RepeatingIntervalIndicator extends StatelessWidget {
   }
 }
 
-class _AlarmStatusesIndicator extends StatelessWidget {
-  final Set<AlarmStatus> statuses;
-
-  const _AlarmStatusesIndicator(this.statuses);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children:
-          AlarmStatus.ordered
-              .map((as) {
-                if (statuses.contains(as)) {
-                  return SIcon.glow(
-                    as.icon,
-                    color: const Color(0xFFFD251E),
-                    radius: 7,
-                  );
-                } else {
-                  return SIcon(
-                    as.icon,
-                    radius: 7,
-                    color: const Color(0x888E98A1),
-                  );
-                }
-              })
-              .expand((w) => [w, const SizedBox(width: 4)])
-              .toList(),
-    );
-  }
-}
-
-class _RepeatingDaysIndicator extends StatelessWidget {
+class RepeatingDaysIndicator extends StatelessWidget {
   final Set<Weekday> repeatDays;
 
-  const _RepeatingDaysIndicator(this.repeatDays);
+  const RepeatingDaysIndicator(this.repeatDays, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children:
           Weekday.orderedWeekdays.map((wd) {
-            if (repeatDays.contains(wd)) {
-              return SText.glow(
-                "\u2009${wd.oneChar.capitalized}",
-                fontSize: 12,
-                weight: STextWeight.normal,
-                color: const Color(0xFFFD251E),
-              );
-            }
             return SText(
               "\u2009${wd.oneChar.capitalized}",
               fontSize: 12,
               weight: STextWeight.normal,
+              color:
+                  repeatDays.contains(wd)
+                      ? const Color(0xFFFD251E)
+                      : const Color(0xFF8E98A1),
+              glow: repeatDays.contains(wd),
             );
           }).toList(),
-    );
-  }
-}
-
-class _Background extends StatelessWidget {
-  final Widget child;
-  const _Background({required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF5D666D), Color(0x0023282D)],
-        ),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(top: 1.5),
-        child: DecoratedBox(
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(16),
-              topRight: Radius.circular(16),
-            ),
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xFF363E46), Color(0xFF2C343C)],
-            ),
-          ),
-          child: child,
-        ),
-      ),
     );
   }
 }

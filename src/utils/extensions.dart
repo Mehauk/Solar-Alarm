@@ -1,13 +1,14 @@
+import 'package:flutter/material.dart';
 import 'package:solar_alarm/models/calendar.dart';
 
-extension Caps on String {
+extension FormatString on String {
   String get capitalized {
     if (length <= 1) return toUpperCase();
     return this[0].toUpperCase() + substring(1);
   }
 }
 
-extension FormatTime on DateTime {
+extension FormatDateTime on DateTime {
   (String time, String period) get formattedTime {
     final hourInt = this.hour % 12 == 0 ? 12 : this.hour % 12;
     final hour = hourInt.toString().padLeft(2, '0');
@@ -26,5 +27,13 @@ extension FormatTime on DateTime {
     final day = this.day.toString().padLeft(2, '0');
     final month = months[this.month - 1];
     return '$weekday, $day $month';
+  }
+}
+
+extension FormatTime on TimeOfDay {
+  int get hour12 {
+    final hour12 = hour % 12;
+    if (hour12 == 0) return 12;
+    return hour12;
   }
 }

@@ -25,19 +25,37 @@ enum AlarmStatus {
 }
 
 @freezed
-abstract class Alarm with _$Alarm {
-  @Assert(
-    "(repeatDays != null ? 1 : 0) + (repeatInterval != null ? 1 : 0) <= 1",
-    'Only one of repeatDays, or repeatInterval can be provided.',
-  )
-  const factory Alarm({
-    required String name,
-    required bool enabled,
-    required int timeInMillis,
-    int? repeatInterval,
-    Set<Weekday>? repeatDays,
-    @Default({}) Set<AlarmStatus> statuses,
-  }) = _Alarm;
+@JsonSerializable()
+class Alarm with _$Alarm {
+  @override
+  final DateTime date;
+  @override
+  final String name;
+  @override
+  final bool enabled;
+  @override
+  final int timeInMillis;
+  @override
+  final int? repeatInterval;
+  @override
+  final Set<Weekday>? repeatDays;
+  @override
+  final Set<AlarmStatus> statuses;
 
+  Alarm({
+    required this.name,
+    required this.enabled,
+    required this.timeInMillis,
+    this.repeatInterval,
+    this.repeatDays,
+    this.statuses = const {},
+  }) : date = DateTime.fromMillisecondsSinceEpoch(timeInMillis),
+       assert(
+         (repeatDays != null ? 1 : 0) + (repeatInterval != null ? 1 : 0) <= 1,
+         'Only one of repeatDays, or repeatInterval can be provided.',
+       );
+
+  bool get noRepeat => repeatDays == null && repeatInterval == null;
   factory Alarm.fromJson(Map<String, dynamic> json) => _$AlarmFromJson(json);
+  Map<String, dynamic> get toJson => _$AlarmToJson(this);
 }

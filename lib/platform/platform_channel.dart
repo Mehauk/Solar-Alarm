@@ -6,7 +6,7 @@ const mainChannel = MethodChannel('com.example.solar_alarm/main_channel');
 Future<void> scheduleAlarm(Alarm alarm) async {
   try {
     await mainChannel.invokeMethod('setAlarm', {
-      'alarmJson': alarm.toJson().toString(),
+      'alarmJson': alarm.toJson.toString(),
     });
   } on PlatformException catch (e) {
     print("Failed to set alarm: '${e.message}'.");

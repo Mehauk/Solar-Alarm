@@ -28,6 +28,8 @@ class SText extends StatelessWidget {
   final double height;
   final Color color;
   final int? maxLines;
+  final bool shadow;
+  final bool glow;
   SText(
     this.text, {
     super.key,
@@ -35,21 +37,8 @@ class SText extends StatelessWidget {
     this.weight = STextWeight.medium,
     this.height = 1,
     this.maxLines = 1,
-    this.color = const Color(0xFF8E98A1),
-  }) : textStyle = TextStyle(
-         fontSize: fontSize,
-         color: color,
-         fontWeight: weight.w,
-         height: height,
-       );
-
-  SText.shadow(
-    this.text, {
-    super.key,
-    this.fontSize,
-    this.weight = STextWeight.medium,
-    this.height = 1,
-    this.maxLines = 1,
+    this.shadow = false,
+    this.glow = false,
     this.color = const Color(0xFF8E98A1),
   }) : textStyle = TextStyle(
          fontSize: fontSize,
@@ -57,29 +46,14 @@ class SText extends StatelessWidget {
          fontWeight: weight.w,
          height: height,
          shadows: [
-           const Shadow(
-             blurRadius: 20,
-             color: Colors.black54,
-             offset: Offset(4, 4),
-           ),
-         ],
-       );
-
-  SText.glow(
-    this.text, {
-    super.key,
-    this.fontSize,
-    this.weight = STextWeight.medium,
-    this.height = 1,
-    this.maxLines = 1,
-    this.color = const Color(0xFF8E98A1),
-  }) : textStyle = TextStyle(
-         fontSize: fontSize,
-         color: color,
-         fontWeight: weight.w,
-         height: height,
-         shadows: [
-           Shadow(blurRadius: 10, color: color, offset: const Offset(0, 1)),
+           if (shadow)
+             const Shadow(
+               blurRadius: 20,
+               color: Colors.black54,
+               offset: Offset(4, 4),
+             ),
+           if (glow)
+             Shadow(blurRadius: 20, color: color, offset: const Offset(0, 1)),
          ],
        );
 

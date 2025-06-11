@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:solar_alarm/models/prayers.dart';
 import 'package:solar_alarm/platform/platform_channel.dart';
 
 import 'components/alarms.dart';
 import 'components/clock.dart';
 import 'components/prayer_timings.dart';
 import 'globals.dart';
-import 'package:solar_alarm/models/prayers.dart';
 
 void main(List<String> args) {
   runApp(
@@ -59,7 +59,7 @@ class _HomeState extends State<_Home> {
         child: Column(
           children: [
             SizedBox(height: 60),
-            Clock(),
+            DigitalClock(),
             SizedBox(height: 8),
             PrayerTimingsWidget(),
             SizedBox(height: 16),
