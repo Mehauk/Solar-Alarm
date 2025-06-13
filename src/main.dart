@@ -39,7 +39,7 @@ class _HomeState extends State<_Home> {
   @override
   void initState() {
     getPrayerTimes().then((value) {
-      if (value != null) prayerTimingsObserver.modify(PrayerTimings(value));
+      if (value != null) prayerTimingsObserver.update(PrayerTimings(value));
     });
     super.initState();
   }

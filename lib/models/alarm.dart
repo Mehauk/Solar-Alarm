@@ -38,7 +38,7 @@ class Alarm with _$Alarm {
   @override
   final int? repeatInterval;
   @override
-  final Set<Weekday>? repeatDays;
+  final Set<Weekday> repeatDays;
   @override
   final Set<AlarmStatus> statuses;
 
@@ -47,16 +47,26 @@ class Alarm with _$Alarm {
     required this.enabled,
     required this.timeInMillis,
     this.repeatInterval,
-    this.repeatDays,
+    this.repeatDays = const {},
     this.statuses = const {},
   }) : date = DateTime.fromMillisecondsSinceEpoch(timeInMillis),
        assert(
-         (repeatDays != null ? 1 : 0) + (repeatInterval != null ? 1 : 0) <= 1,
+         (repeatDays.isNotEmpty ? 1 : 0) + (repeatInterval != null ? 1 : 0) <=
+             1,
          'Only one of repeatDays, or repeatInterval can be provided.',
        );
 
   TimeOfDay get time => TimeOfDay.fromDateTime(date);
-  bool get noRepeat => repeatDays == null && repeatInterval == null;
+  bool get noRepeat => repeatDays.isEmpty && repeatInterval == null;
+
   factory Alarm.fromJson(Map<String, dynamic> json) => _$AlarmFromJson(json);
   Map<String, dynamic> get toJson => _$AlarmToJson(this);
+
+  @override
+  bool operator ==(Object other) {
+    return other is Alarm && name == other.name;
+  }
+
+  @override
+  int get hashCode => name.hashCode;
 }

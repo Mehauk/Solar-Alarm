@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:solar_alarm/models/alarm.dart';
 import 'package:solar_alarm/models/calendar.dart';
 
+import '../globals.dart';
 import '../ui/button.dart';
 import '../ui/icon.dart';
 import '../ui/text.dart';
@@ -27,10 +28,94 @@ class _AlarmEditState extends State<AlarmEdit> {
   TimePart currentEdit = TimePart.hour;
   DayPeriod timeInd = DayPeriod.am;
 
+  TextEditingController nameController = TextEditingController();
+
+  void saveChanges() {
+    Alarm newAlarm = alarm.copyWith(enabled: true);
+    List<Alarm> newAlarms = [...alarmsObserver.data];
+    if (widget.alarm != null || newAlarms.contains(alarm)) {
+      newAlarms[newAlarms.indexOf(alarm)] = newAlarm;
+      alarmsObserver.update(newAlarms);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          padding: EdgeInsets.zero,
+          backgroundColor: Colors.transparent,
+          content: GradientBorderedBox(
+            backgroundGradient: const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFF363E46), Color.fromARGB(255, 22, 26, 31)],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: SText(
+                  "Updated ${newAlarm.name.isNotEmpty ? newAlarm.name : "Unamed Alarm"}",
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    } else {
+      newAlarms.add(newAlarm);
+      alarmsObserver.update(newAlarms);
+    }
+  }
+
+  void updateDate(DateTime date) {
+    final TimeOfDay alarmTime = alarm.time;
+    DateTime newDate = date.copyWith(
+      hour: alarmTime.hour,
+      minute: alarmTime.minute,
+    );
+    setState(() {
+      alarm = alarm.copyWith(timeInMillis: newDate.millisecondsSinceEpoch);
+    });
+  }
+
+  void updateTime(TimeOfDay timeUpdate) {
+    setState(() {
+      DateTime date = alarm.date.copyWith(
+        hour: (timeUpdate.hour + (timeInd == DayPeriod.pm ? 12 : 0)) % 24,
+        minute: timeUpdate.minute,
+        second: 0,
+      );
+      alarm = alarm.copyWith(timeInMillis: date.millisecondsSinceEpoch);
+    });
+  }
+
+  void updateDayPeriod(DayPeriod period) {
+    timeInd = period;
+    updateTime(alarm.time);
+  }
+
+  void updateStatus(AlarmStatus status) {
+    setState(() {
+      if (alarm.statuses.contains(status)) {
+        alarm = alarm.copyWith(statuses: {...alarm.statuses}..remove(status));
+      } else {
+        alarm = alarm.copyWith(statuses: {...alarm.statuses}..add(status));
+      }
+    });
+  }
+
+  void updateRepeatingDay(Weekday day) {
+    setState(() {
+      if (alarm.repeatDays.contains(day)) {
+        alarm = alarm.copyWith(repeatDays: {...alarm.repeatDays}..remove(day));
+      } else {
+        alarm = alarm.copyWith(repeatDays: {...alarm.repeatDays}..add(day));
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     alarm = widget.alarm ?? alarm;
+    nameController.value = TextEditingValue(text: alarm.name);
   }
 
   @override
@@ -55,18 +140,7 @@ class _AlarmEditState extends State<AlarmEdit> {
                       clockDiameter: 150,
                       time: TimeOfDay.fromDateTime(alarm.date),
                       editingPart: currentEdit,
-                      onUpdate: (timeUpdate) {
-                        setState(() {
-                          DateTime date = alarm.date.copyWith(
-                            hour: timeUpdate.hour,
-                            minute: timeUpdate.minute,
-                            second: 0,
-                          );
-                          alarm = alarm.copyWith(
-                            timeInMillis: date.millisecondsSinceEpoch,
-                          );
-                        });
-                      },
+                      onUpdate: updateTime,
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -74,10 +148,33 @@ class _AlarmEditState extends State<AlarmEdit> {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            SText(alarm.date.formattedDate),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (alarm.date.deicticWord != null)
+                                  SText(alarm.date.deicticWord!, fontSize: 12),
+                                SText(alarm.date.formattedDate, fontSize: 12),
+                              ],
+                            ),
                             const SizedBox(width: 4),
                             IconButton(
-                              onPressed: () => print(1),
+                              onPressed:
+                                  () => showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) {
+                                      return CalendarDatePicker(
+                                        initialDate: alarm.date,
+                                        firstDate: DateTime.now(),
+                                        lastDate: DateTime.now().add(
+                                          const Duration(days: 365 * 100),
+                                        ),
+                                        onDateChanged: (date) {
+                                          updateDate(date);
+                                          Navigator.pop(context);
+                                        },
+                                      );
+                                    },
+                                  ),
                               icon: const SIcon(Icons.calendar_month),
                             ),
                           ],
@@ -110,13 +207,13 @@ class _AlarmEditState extends State<AlarmEdit> {
                                 _TimeIndicatorWidget(
                                   DayPeriod.am,
                                   timeInd,
-                                  () => setState(() => timeInd = DayPeriod.am),
+                                  updateDayPeriod,
                                 ),
                                 const SizedBox(height: 1),
                                 _TimeIndicatorWidget(
                                   DayPeriod.pm,
                                   timeInd,
-                                  () => setState(() => timeInd = DayPeriod.pm),
+                                  updateDayPeriod,
                                 ),
                               ],
                             ),
@@ -125,23 +222,42 @@ class _AlarmEditState extends State<AlarmEdit> {
                         ),
                         const SizedBox(height: 16),
 
-                        RepeatingDaysIndicator(
-                          alarm.repeatDays ?? {},
-                          fontSize: 16,
-                          padding: 5.5,
+                        Material(
+                          color: Colors.transparent,
+                          child: RepeatingDaysIndicator(
+                            alarm.repeatDays,
+                            fontSize: 16,
+                            padding: 5.5,
+                            onDayToggled: updateRepeatingDay,
+                          ),
                         ),
 
                         const SizedBox(height: 16),
-                        const SizedBox(
-                          height: 40,
+                        SizedBox(
                           width: 170,
-                          child: STextField(labelText: "Enter alarm name"),
+                          child: STextField(
+                            labelText: "Enter alarm name",
+                            controller: nameController,
+                          ),
+                        ),
+
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: 170,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: AlarmStatusesIndicator(
+                              alarm.statuses,
+                              onTap: updateStatus,
+                              enabled: true,
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ],
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -164,7 +280,10 @@ class _AlarmEditState extends State<AlarmEdit> {
                       ),
                     ),
                     SButton(
-                      onTap: () => print(1),
+                      onTap: () {
+                        saveChanges();
+                        Navigator.pop(context);
+                      },
                       child: SizedBox(
                         width: 50,
                         child: Center(child: SText("Save", fontSize: 22)),
@@ -184,13 +303,13 @@ class _AlarmEditState extends State<AlarmEdit> {
 class _TimeIndicatorWidget extends StatelessWidget {
   final DayPeriod indicator;
   final DayPeriod currentInd;
-  final void Function() onTap;
+  final void Function(DayPeriod) onTap;
   const _TimeIndicatorWidget(this.indicator, this.currentInd, this.onTap);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () => onTap(indicator),
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius:
@@ -312,16 +431,38 @@ class AlarmStatusesIndicator extends StatelessWidget {
   }
 }
 
+class RepeatingIntervalIndicator extends StatelessWidget {
+  final int interval;
+  const RepeatingIntervalIndicator(this.interval, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const SIcon(Icons.repeat, radius: 6, color: Color(0xFFFD251E)),
+        const SizedBox(width: 4),
+        SText(
+          Duration(milliseconds: interval).toString().split(".")[0],
+          fontSize: 12,
+          weight: STextWeight.normal,
+        ),
+      ],
+    );
+  }
+}
+
 class RepeatingDaysIndicator extends StatelessWidget {
   final Set<Weekday> repeatDays;
   final double fontSize;
   final double padding;
+  final void Function(Weekday)? onDayToggled;
 
   const RepeatingDaysIndicator(
     this.repeatDays, {
     super.key,
     this.fontSize = 12,
     this.padding = 0,
+    this.onDayToggled,
   });
 
   @override
@@ -330,16 +471,19 @@ class RepeatingDaysIndicator extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children:
           Weekday.orderedWeekdays.map((wd) {
-            return Padding(
-              padding: EdgeInsets.all(padding),
-              child: SText(
-                "\u2009${wd.oneChar.capitalized}",
-                fontSize: fontSize,
-                weight: STextWeight.normal,
-                color:
-                    repeatDays.contains(wd)
-                        ? const Color(0xFFFD251E)
-                        : const Color(0xFF8E98A1),
+            return InkWell(
+              onTap: onDayToggled != null ? () => onDayToggled!(wd) : null,
+              child: Padding(
+                padding: EdgeInsets.all(padding),
+                child: SText(
+                  "\u2009${wd.oneChar.capitalized}",
+                  fontSize: fontSize,
+                  weight: STextWeight.normal,
+                  color:
+                      repeatDays.contains(wd)
+                          ? const Color(0xFFFD251E)
+                          : const Color(0xFF8E98A1),
+                ),
               ),
             );
           }).toList(),

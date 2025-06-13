@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:solar_alarm/models/alarm.dart';
-import 'package:solar_alarm/models/calendar.dart';
 
+import '../globals.dart';
 import '../ui/icon.dart';
 import '../ui/switch.dart';
 import '../ui/text.dart';
@@ -17,17 +17,26 @@ class AlarmsWidget extends StatefulWidget {
 }
 
 class _AlarmsWidgetState extends State<AlarmsWidget> {
-  List<Alarm> alarms = [
-    Alarm(
-      name: "MyName",
-      timeInMillis:
-          DateTime.now().add(const Duration(hours: 2)).millisecondsSinceEpoch,
-      // repeatInterval: 1000 * 60 * 60,
-      repeatDays: {Weekday.friday},
-      statuses: {AlarmStatus.sound, AlarmStatus.vibrate},
-      enabled: true,
-    ),
-  ];
+  List<Alarm> alarms = [];
+  late final void Function(List<Alarm>) obs;
+
+  @override
+  void initState() {
+    super.initState();
+
+    alarms = alarmsObserver.data;
+    obs = (newAlarms) {
+      setState(() => alarms = newAlarms);
+    };
+
+    alarmsObserver.addObserver(obs);
+  }
+
+  @override
+  void dispose() {
+    alarmsObserver.removeObserver(obs);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,13 +111,14 @@ class _AlarmsWidgetState extends State<AlarmsWidget> {
                                 setState(() {
                                   if (alarms[e.key].statuses.contains(status)) {
                                     alarms[e.key] = alarms[e.key].copyWith(
-                                      statuses: {...alarms[e.key].statuses}
-                                        ..remove(status),
+                                      statuses:
+                                          alarms[e.key].statuses
+                                            ..remove(status),
                                     );
                                   } else {
                                     alarms[e.key] = alarms[e.key].copyWith(
-                                      statuses: {...alarms[e.key].statuses}
-                                        ..add(status),
+                                      statuses:
+                                          alarms[e.key].statuses..add(status),
                                     );
                                   }
                                 });
@@ -221,20 +231,13 @@ class AlarmTile extends StatelessWidget {
                               ],
                             ),
                             const Expanded(child: SizedBox()),
-                            if (alarm.repeatDays == null)
-                              SText(
-                                alarm.date.formattedDate,
-                                fontSize: 12,
-                                weight: STextWeight.normal,
-                              ),
 
                             if (alarm.repeatInterval != null) ...[
                               const SizedBox(width: 4),
                               RepeatingIntervalIndicator(alarm.repeatInterval!),
                             ],
 
-                            if (alarm.repeatDays != null)
-                              RepeatingDaysIndicator(alarm.repeatDays!),
+                            RepeatingDaysIndicator(alarm.repeatDays),
 
                             const SizedBox(width: 6),
                             SSwitch(alarm.enabled, onChanged: onToggle),
@@ -258,26 +261,6 @@ class AlarmTile extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class RepeatingIntervalIndicator extends StatelessWidget {
-  final int interval;
-  const RepeatingIntervalIndicator(this.interval, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const SIcon(Icons.repeat, radius: 6, color: Color(0xFFFD251E)),
-        const SizedBox(width: 4),
-        SText(
-          Duration(milliseconds: interval).toString().split(".")[0],
-          fontSize: 12,
-          weight: STextWeight.normal,
-        ),
-      ],
     );
   }
 }

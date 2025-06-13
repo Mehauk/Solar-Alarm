@@ -28,6 +28,25 @@ extension FormatDateTime on DateTime {
     final month = months[this.month - 1];
     return '$weekday, $day $month';
   }
+
+  String? get deicticWord {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final target = DateTime(year, month, day);
+
+    final difference = target.difference(today).inDays;
+
+    switch (difference) {
+      case 0:
+        return 'Today';
+      case 1:
+        return 'Tomorrow';
+      case -1:
+        return 'Yesterday';
+      default:
+        return null; // fallback
+    }
+  }
 }
 
 extension FormatTime on TimeOfDay {

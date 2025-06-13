@@ -16,7 +16,7 @@ class _DigitalClockState extends State<DigitalClock> {
 
   void setCurrentPrayer(Prayer? prayer) {
     _currentPrayer = prayer;
-    currentPrayerObserver.modify(_currentPrayer);
+    currentPrayerObserver.update(_currentPrayer);
   }
 
   @override
