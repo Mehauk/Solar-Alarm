@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:solar_alarm/models/alarm.dart';
 import 'package:solar_alarm/models/calendar.dart';
+import 'package:solar_alarm/platform/platform_channel.dart';
 
 import '../globals.dart';
 import '../ui/button.dart';
@@ -30,38 +31,61 @@ class _AlarmEditState extends State<AlarmEdit> {
 
   TextEditingController nameController = TextEditingController();
 
-  void saveChanges() {
+  void deleteAlarm(BuildContext context) async {
+    Alarm newAlarm = alarm;
+    List<Alarm> newAlarms = [...alarmsObserver.data];
+
+    if (widget.alarm != null) {
+      newAlarms.remove(widget.alarm);
+      await cancelAlarm(newAlarm.name);
+    }
+
+    alarmsObserver.update(newAlarms);
+    showSnackbar("Deleted Alarm: ${newAlarm.name}");
+    if (context.mounted) {
+      Navigator.pop(context);
+    }
+  }
+
+  Future<void> saveChanges(BuildContext context) async {
     Alarm newAlarm = alarm.copyWith(enabled: true);
     List<Alarm> newAlarms = [...alarmsObserver.data];
-    if (widget.alarm != null || newAlarms.contains(alarm)) {
-      newAlarms[newAlarms.indexOf(alarm)] = newAlarm;
-      alarmsObserver.update(newAlarms);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          padding: EdgeInsets.zero,
-          backgroundColor: Colors.transparent,
-          content: GradientBorderedBox(
-            backgroundGradient: const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xFF363E46), Color.fromARGB(255, 22, 26, 31)],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: SText(
-                  "Updated ${newAlarm.name.isNotEmpty ? newAlarm.name : "Unamed Alarm"}",
-                  fontSize: 16,
-                ),
-              ),
-            ),
+
+    if (widget.alarm != null) {
+      newAlarms.remove(widget.alarm);
+      await cancelAlarm(newAlarm.name);
+    }
+
+    final replaceIndex = newAlarms.indexOf(newAlarm);
+    if (replaceIndex >= 0) {
+      newAlarms.removeAt(replaceIndex);
+      showSnackbar("Replaced Alarm: ${newAlarm.name}");
+    }
+
+    await setAlarm(newAlarm);
+    newAlarms.add(newAlarm);
+    alarmsObserver.update(newAlarms);
+    if (context.mounted) Navigator.pop(context, newAlarm);
+  }
+
+  void showSnackbar(String text) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        padding: EdgeInsets.zero,
+        backgroundColor: Colors.transparent,
+        content: GradientBorderedBox(
+          backgroundGradient: const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF363E46), Color.fromARGB(255, 22, 26, 31)],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Center(child: SText(text, fontSize: 16)),
           ),
         ),
-      );
-    } else {
-      newAlarms.add(newAlarm);
-      alarmsObserver.update(newAlarms);
-    }
+      ),
+    );
   }
 
   void updateDate(DateTime date) {
@@ -115,7 +139,17 @@ class _AlarmEditState extends State<AlarmEdit> {
   void initState() {
     super.initState();
     alarm = widget.alarm ?? alarm;
+    timeInd = alarm.date.formattedTime.$2;
     nameController.value = TextEditingValue(text: alarm.name);
+    nameController.addListener(() {
+      setState(() => alarm = alarm.copyWith(name: nameController.text.trim()));
+    });
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    super.dispose();
   }
 
   @override
@@ -129,8 +163,20 @@ class _AlarmEditState extends State<AlarmEdit> {
             padding: const EdgeInsets.all(18.0),
             child: Column(
               children: [
-                SText("Set Alarm", fontSize: 18),
-                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SText("Set Alarm", fontSize: 18),
+                    InkWell(
+                      onTap: () => deleteAlarm(context),
+                      child: const SIcon(
+                        Icons.delete_forever_outlined,
+                        radius: 14,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
                 Wrap(
                   runSpacing: 12,
                   spacing: 12,
@@ -236,12 +282,12 @@ class _AlarmEditState extends State<AlarmEdit> {
                         SizedBox(
                           width: 170,
                           child: STextField(
-                            labelText: "Enter alarm name",
+                            labelText: "Name required",
                             controller: nameController,
                           ),
                         ),
 
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 8),
                         SizedBox(
                           width: 170,
                           child: Material(
@@ -280,10 +326,10 @@ class _AlarmEditState extends State<AlarmEdit> {
                       ),
                     ),
                     SButton(
-                      onTap: () {
-                        saveChanges();
-                        Navigator.pop(context);
-                      },
+                      onTap:
+                          alarm.name.isEmpty
+                              ? null
+                              : () => saveChanges(context),
                       child: SizedBox(
                         width: 50,
                         child: Center(child: SText("Save", fontSize: 22)),

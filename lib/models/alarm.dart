@@ -12,16 +12,11 @@ enum AlarmStatus {
 
   static List<AlarmStatus> get ordered => [vibrate, sound, delayed];
 
-  IconData get icon {
-    switch (this) {
-      case vibrate:
-        return Icons.vibration;
-      case AlarmStatus.sound:
-        return Icons.volume_up;
-      case AlarmStatus.delayed:
-        return Icons.timer_off_outlined;
-    }
-  }
+  IconData get icon => switch (this) {
+    vibrate => Icons.vibration,
+    AlarmStatus.sound => Icons.volume_up,
+    AlarmStatus.delayed => Icons.timer_off_outlined,
+  };
 }
 
 @freezed

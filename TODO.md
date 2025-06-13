@@ -30,12 +30,14 @@
   - [ ] Disable period
   - [ ] Implement disable, mute, vibrate, sound statuses for individual alarms
   - [ ] Snooze time addition
-  - [ ] Disabled weekdays, dates
   - [ ] Disable one off alarms after they have rung
-- [ ] Use flutter ui for alarm
+  - [x] Delete Alarm
+  - [x] Fix no name alarm?
+  - [x] Scroll to new
+- [x] Use flutter ui for alarm
   - [x] Main Page
-  - [ ] Add/Edit Alarm dialog
-  - [ ] Alarm Features UI
+  - [x] Add/Edit Alarm dialog
+  - [x] Alarm Features UI
 - [ ] Fix permissions 
 - [ ] Fix all NEEDS WORK comments
 - [ ] Alarm set collisions

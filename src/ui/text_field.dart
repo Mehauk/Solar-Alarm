@@ -28,7 +28,9 @@ class STextField extends StatelessWidget {
         controller: controller,
         decoration: InputDecoration(
           labelText: labelText,
+          labelStyle: const TextStyle(color: Color(0xFF8E98A1)),
           hintText: hintText,
+          hintStyle: const TextStyle(color: Color(0xFF8E98A1)),
           filled: true,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,

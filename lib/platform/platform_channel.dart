@@ -3,7 +3,8 @@ import 'package:solar_alarm/models/alarm.dart';
 
 const mainChannel = MethodChannel('com.example.solar_alarm/main_channel');
 
-Future<void> scheduleAlarm(Alarm alarm) async {
+Future<void> setAlarm(Alarm alarm) async {
+  print(alarm.toJson);
   try {
     await mainChannel.invokeMethod('setAlarm', {
       'alarmJson': alarm.toJson.toString(),

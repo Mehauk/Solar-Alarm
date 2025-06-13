@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:solar_alarm/models/alarm.dart';
+import 'package:solar_alarm/platform/platform_channel.dart';
 
 import '../globals.dart';
 import '../ui/icon.dart';
@@ -17,16 +18,25 @@ class AlarmsWidget extends StatefulWidget {
 }
 
 class _AlarmsWidgetState extends State<AlarmsWidget> {
+  final Map<Alarm, GlobalKey> _alarmKeys = {};
   List<Alarm> alarms = [];
   late final void Function(List<Alarm>) obs;
+
+  final ScrollController controller = ScrollController();
 
   @override
   void initState() {
     super.initState();
 
     alarms = alarmsObserver.data;
+    for (var a in alarms) {
+      _alarmKeys[a] = GlobalKey();
+    }
     obs = (newAlarms) {
       setState(() => alarms = newAlarms);
+      for (var a in alarms) {
+        _alarmKeys[a] = GlobalKey();
+      }
     };
 
     alarmsObserver.addObserver(obs);
@@ -54,13 +64,24 @@ class _AlarmsWidgetState extends State<AlarmsWidget> {
                   children: [
                     SIconButton(
                       Icons.add,
-                      onTap:
-                          () => showModalBottomSheet(
-                            enableDrag: false,
-                            isScrollControlled: true,
-                            context: context,
-                            builder: (context) => const AlarmEdit(),
-                          ),
+                      onTap: () async {
+                        final res = await showModalBottomSheet<Alarm?>(
+                          enableDrag: false,
+                          isScrollControlled: true,
+                          context: context,
+                          builder: (context) => const AlarmEdit(),
+                        );
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          final key = _alarmKeys[res];
+                          if (key?.currentContext != null) {
+                            Scrollable.ensureVisible(
+                              key!.currentContext!,
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeOut,
+                            );
+                          }
+                        });
+                      },
                     ),
                     // const SizedBox(width: 4),
                     // SIconButton(
@@ -82,6 +103,7 @@ class _AlarmsWidgetState extends State<AlarmsWidget> {
           ),
           Expanded(
             child: SingleChildScrollView(
+              controller: controller,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
@@ -90,38 +112,46 @@ class _AlarmsWidgetState extends State<AlarmsWidget> {
                           .asMap()
                           .entries
                           .map(
-                            (e) => AlarmTile(
-                              e.value,
-                              onTap:
-                                  () => showModalBottomSheet(
-                                    enableDrag: false,
-                                    isScrollControlled: true,
-                                    context: context,
-                                    builder:
-                                        (context) => AlarmEdit(alarm: e.value),
-                                  ),
-                              onToggle: (b) {
-                                setState(() {
-                                  alarms[e.key] = alarms[e.key].copyWith(
-                                    enabled: b,
-                                  );
-                                });
-                              },
-                              onStatusTap: (status) {
-                                setState(() {
-                                  if (alarms[e.key].statuses.contains(status)) {
+                            (e) => KeyedSubtree(
+                              key: _alarmKeys[e.value],
+                              child: AlarmTile(
+                                e.value,
+                                onTap:
+                                    () => showModalBottomSheet(
+                                      enableDrag: false,
+                                      isScrollControlled: true,
+                                      context: context,
+                                      builder:
+                                          (context) =>
+                                              AlarmEdit(alarm: e.value),
+                                    ),
+                                onToggle: (alarmEnabled) {
+                                  setState(() {
                                     alarms[e.key] = alarms[e.key].copyWith(
-                                      statuses: {...alarms[e.key].statuses}
-                                        ..remove(status),
+                                      enabled: alarmEnabled,
                                     );
-                                  } else {
-                                    alarms[e.key] = alarms[e.key].copyWith(
-                                      statuses: {...alarms[e.key].statuses}
-                                        ..add(status),
-                                    );
-                                  }
-                                });
-                              },
+                                  });
+                                  setAlarm(alarms[e.key]);
+                                },
+                                onStatusTap: (status) {
+                                  setState(() {
+                                    if (alarms[e.key].statuses.contains(
+                                      status,
+                                    )) {
+                                      alarms[e.key] = alarms[e.key].copyWith(
+                                        statuses: {...alarms[e.key].statuses}
+                                          ..remove(status),
+                                      );
+                                    } else {
+                                      alarms[e.key] = alarms[e.key].copyWith(
+                                        statuses: {...alarms[e.key].statuses}
+                                          ..add(status),
+                                      );
+                                    }
+                                  });
+                                  setAlarm(alarms[e.key]);
+                                },
+                              ),
                             ),
                           )
                           .expand((w) => [w, const SizedBox(height: 18)])
@@ -232,15 +262,16 @@ class AlarmTile extends StatelessWidget {
                             ),
                             const Expanded(child: SizedBox()),
 
-                            SText(alarm.date.formattedDate, fontSize: 12),
+                            if (alarm.repeatDays.isEmpty)
+                              SText(alarm.date.formattedDate, fontSize: 12),
 
-                            if (alarm.repeatInterval != null) ...[
+                            if (alarm.repeatDays.isEmpty &&
+                                alarm.repeatInterval != null) ...[
                               const SizedBox(width: 4),
                               RepeatingIntervalIndicator(alarm.repeatInterval!),
                             ],
 
                             if (alarm.repeatDays.isNotEmpty) ...[
-                              const SizedBox(width: 4),
                               RepeatingDaysIndicator(alarm.repeatDays),
                             ],
 
