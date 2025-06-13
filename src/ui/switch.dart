@@ -37,57 +37,57 @@ class SSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => onChanged(!value),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          SizedBox(
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        SizedBox(
+          width: trackSize.width,
+          height: trackSize.height,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(trackRadius),
+              boxShadow:
+                  value && enabledTrackShadow
+                      ? [
+                        const BoxShadow(
+                          blurRadius: 10,
+                          color: Color(0xAAFD2A22),
+                          offset: Offset(0, 1),
+                        ),
+                      ]
+                      : null,
+              gradient:
+                  value
+                      ? const LinearGradient(
+                        begin: Alignment.topRight,
+                        end: Alignment.bottomRight,
+                        colors: [Color(0xFFFD2A22), Color(0xFFFE6C57)],
+                      )
+                      : const LinearGradient(
+                        colors: [Color(0xFF282F35), Color(0xFF282F35)],
+                      ),
+            ),
+          ),
+        ),
+        AnimatedPositioned(
+          duration: Durations.short2,
+          curve: Curves.easeInOut,
+          right: value ? 0 : trackSize.width - toggleSize.width * 0.75,
+          left: value ? trackSize.width - toggleSize.width * 0.75 : 0,
+          child: SizedBox(
+            width: toggleSize.width,
+            height: toggleSize.height,
+            child: toggle,
+          ),
+        ),
+        GestureDetector(
+          onTap: () => onChanged(!value),
+          child: SizedBox(
             height: max(trackSize.height, toggleSize.height),
             width: trackSize.width + (0.25 * toggleSize.width),
           ),
-          SizedBox(
-            width: trackSize.width,
-            height: trackSize.height,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(trackRadius),
-                boxShadow:
-                    value && enabledTrackShadow
-                        ? [
-                          const BoxShadow(
-                            blurRadius: 10,
-                            color: Color(0xAAFD2A22),
-                            offset: Offset(0, 1),
-                          ),
-                        ]
-                        : null,
-                gradient:
-                    value
-                        ? const LinearGradient(
-                          begin: Alignment.topRight,
-                          end: Alignment.bottomRight,
-                          colors: [Color(0xFFFD2A22), Color(0xFFFE6C57)],
-                        )
-                        : const LinearGradient(
-                          colors: [Color(0xFF282F35), Color(0xFF282F35)],
-                        ),
-              ),
-            ),
-          ),
-          AnimatedPositioned(
-            duration: Durations.short2,
-            curve: Curves.easeInOut,
-            right: value ? 0 : trackSize.width - toggleSize.width * 0.75,
-            left: value ? trackSize.width - toggleSize.width * 0.75 : 0,
-            child: SizedBox(
-              width: toggleSize.width,
-              height: toggleSize.height,
-              child: toggle,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

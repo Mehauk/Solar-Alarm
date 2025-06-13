@@ -15,7 +15,11 @@ enum TimePart { hour, minute }
 
 enum DayPart { am, pm }
 
+const oneTwelfth = (2 * pi / 12);
+const oneSixtyth = (2 * pi / 60);
+
 class Clock extends StatelessWidget {
+  final double clockDiameter;
   final TimeOfDay time;
   final TimePart editingPart;
   final void Function(TimeOfDay timeUpdate) onUpdate;
@@ -24,11 +28,75 @@ class Clock extends StatelessWidget {
     required this.time,
     required this.editingPart,
     required this.onUpdate,
+    this.clockDiameter = 176,
   });
+
+  void updateHour(double dx, double dy) {
+    final theta = atan(dy / dx);
+    double angle;
+    if (dx >= 0) {
+      if (theta < 0) {
+        angle = theta + 2 * pi;
+      } else {
+        angle = theta;
+      }
+    } else {
+      if (theta < 0) {
+        angle = pi + theta;
+      } else {
+        angle = pi + theta;
+      }
+    }
+    double gamma = 0;
+    int hour = 3;
+    while (gamma < 2 * pi) {
+      gamma += oneTwelfth;
+      if (gamma > angle) {
+        if (gamma - angle < oneTwelfth / 2) {
+          hour += 1;
+        }
+        onUpdate(TimeOfDay(hour: hour, minute: time.minute));
+        return;
+      }
+      hour += 1;
+    }
+  }
+
+  void updateMinute(double dx, double dy) {
+    final theta = atan(dy / dx);
+    double angle;
+    if (dx >= 0) {
+      if (theta < 0) {
+        angle = theta + 2 * pi;
+      } else {
+        angle = theta;
+      }
+    } else {
+      if (theta < 0) {
+        angle = pi + theta;
+      } else {
+        angle = pi + theta;
+      }
+    }
+    double gamma = 0;
+    int minute = 15;
+    while (gamma < 2 * pi) {
+      gamma += oneSixtyth;
+      if (gamma > angle) {
+        if (gamma - angle < oneSixtyth / 2) {
+          minute += 1;
+          minute = minute % 60;
+        }
+        onUpdate(TimeOfDay(hour: time.hour, minute: minute));
+        return;
+      }
+      minute += 1;
+      minute = minute % 60;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    const double clockDiameter = 176;
     return Material(
       clipBehavior: Clip.none,
       shape: const CircleBorder(),
@@ -96,10 +164,9 @@ class Clock extends StatelessWidget {
                                 final dy =
                                     (-(clockDiameter / 2) +
                                         details.localPosition.dy);
-
-                                final bool right = dx >= 0;
-
-                                print(atan(dy / dx));
+                                (editingPart == TimePart.hour)
+                                    ? updateHour(dx, dy)
+                                    : updateMinute(dx, dy);
                               },
                               onVerticalDragUpdate: (details) {
                                 final dx =
@@ -108,25 +175,21 @@ class Clock extends StatelessWidget {
                                 final dy =
                                     (-(clockDiameter / 2) +
                                         details.localPosition.dy);
-                                print(atan(dy / dx));
-                                onUpdate(
-                                  TimeOfDay(
-                                    hour: time.hour + 1,
-                                    minute: time.minute,
-                                  ),
-                                );
+                                (editingPart == TimePart.hour)
+                                    ? updateHour(dx, dy)
+                                    : updateMinute(dx, dy);
                               },
                               child: CustomPaint(
-                                size: const Size(clockDiameter, clockDiameter),
+                                size: Size(clockDiameter, clockDiameter),
                                 painter: _ClockHandPainter(time, editingPart),
                               ),
                             ),
                           ),
                         ),
                       ),
-                      const IgnorePointer(
+                      IgnorePointer(
                         child: DecoratedBox(
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             shape: BoxShape.circle,
                             gradient: RadialGradient(
                               center: Alignment(0.5, 0.4),
@@ -218,7 +281,7 @@ class _ClockHandPainter extends CustomPainter {
     final radius = size.width / 2;
 
     final int hour = time.hour % 12;
-    final hourAngle = (-pi / 2) + hour * (2 * pi / 12);
+    final hourAngle = (-pi / 2) + hour * oneTwelfth;
 
     final hourHandLength = radius * 0.5;
     final hourPaint =
@@ -246,7 +309,7 @@ class _ClockHandPainter extends CustomPainter {
     );
 
     final int minute = time.minute;
-    final minuteAngle = (-pi / 2) + minute * (2 * pi / 60);
+    final minuteAngle = (-pi / 2) + minute * oneSixtyth;
     final minuteHandLength = radius * 0.7;
 
     final minutePaint =
