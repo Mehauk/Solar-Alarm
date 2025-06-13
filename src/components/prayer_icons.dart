@@ -2,7 +2,6 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-
 import 'package:solar_alarm/models/prayers.dart';
 
 extension on Prayer {
@@ -44,18 +43,20 @@ class PrayerIcon extends StatelessWidget {
   final Prayer prayer;
   final double radius;
   final PrayerIconWeight weight;
+  final Color color;
   const PrayerIcon(
     this.prayer, {
     super.key,
     this.radius = 12,
     this.weight = PrayerIconWeight.normal,
+    this.color = const Color(0xFF8E98A1),
   });
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
       size: Size.fromRadius(radius),
-      painter: prayer.painter(const Color(0xFF8E98A1), weight),
+      painter: prayer.painter(color, weight),
     );
   }
 }

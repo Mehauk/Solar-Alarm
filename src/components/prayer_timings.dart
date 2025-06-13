@@ -14,24 +14,33 @@ class PrayerTimingsWidget extends StatefulWidget {
 }
 
 class _PrayerTimingsWidgetState extends State<PrayerTimingsWidget> {
-  Prayers? prayers;
-  late final void Function(Prayers? data) _observer;
+  PrayerTimings? _prayers;
+  Prayer? _currentPrayer;
+  late final void Function(PrayerTimings? data) _prayersObserver;
+  late final void Function(Prayer? data) _currentPrayerObserver;
 
   @override
   void initState() {
     super.initState();
 
-    prayers = prayerTimingsObserver.data;
+    _prayers = prayerTimingsObserver.data;
 
-    _observer = (prayerTimings) {
-      setState(() => prayers = prayerTimings);
+    _prayersObserver = (prayerTimings) {
+      setState(() => _prayers = prayerTimings);
     };
-    prayerTimingsObserver.addObserver(_observer);
+
+    prayerTimingsObserver.addObserver(_prayersObserver);
+
+    _currentPrayerObserver = (prayer) {
+      setState(() => _currentPrayer = prayer);
+    };
+    currentPrayerObserver.addObserver(_currentPrayerObserver);
   }
 
   @override
   void dispose() {
-    prayerTimingsObserver.removeObserver(_observer);
+    prayerTimingsObserver.removeObserver(_prayersObserver);
+    currentPrayerObserver.removeObserver(_currentPrayerObserver);
     super.dispose();
   }
 
@@ -40,8 +49,12 @@ class _PrayerTimingsWidgetState extends State<PrayerTimingsWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (var i = 0; i < (prayers?.ordered.length ?? 0); i++)
-          _PrayerTiming(prayers!.orderedPrayers[i], prayers!.ordered[i]),
+        for (var i = 0; i < (_prayers?.ordered.length ?? 0); i++)
+          _PrayerTiming(
+            _prayers!.orderedPrayers[i],
+            _prayers!.ordered[i],
+            _currentPrayer,
+          ),
       ],
     );
   }
@@ -49,9 +62,10 @@ class _PrayerTimingsWidgetState extends State<PrayerTimingsWidget> {
 
 class _PrayerTiming extends StatelessWidget {
   final Prayer prayer;
+  final Prayer? currentPrayer;
   final DateTime time;
 
-  const _PrayerTiming(this.prayer, this.time);
+  const _PrayerTiming(this.prayer, this.time, this.currentPrayer);
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +73,7 @@ class _PrayerTiming extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
-          width: 200,
+          width: 220,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -68,8 +82,17 @@ class _PrayerTiming extends StatelessWidget {
               SText(prayer.name.capitalized, fontSize: 16),
               const Expanded(child: SizedBox()),
               SText(
-                "${time.formattedTime.$1} ${time.formattedTime.$2}",
+                "${time.formattedTime.$1} ${time.formattedTime.$2.uname}",
                 fontSize: 16,
+              ),
+              SText(
+                "I",
+                fontSize: 24,
+                color:
+                    currentPrayer == prayer
+                        ? const Color(0xFF8E98A1)
+                        : Colors.transparent,
+                glow: true,
               ),
             ],
           ),

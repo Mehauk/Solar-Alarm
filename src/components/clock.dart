@@ -13,8 +13,6 @@ part 'digital_clock.dart';
 
 enum TimePart { hour, minute }
 
-enum DayPart { am, pm }
-
 const oneTwelfth = (2 * pi / 12);
 const oneSixtyth = (2 * pi / 60);
 

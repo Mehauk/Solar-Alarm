@@ -1,6 +1,6 @@
 enum Prayer { fajr, sunrise, dhuhr, asr, maghrib, isha, midnight }
 
-class Prayers {
+class PrayerTimings {
   final DateTime fajr;
   final DateTime sunrise;
   final DateTime dhuhr;
@@ -30,7 +30,32 @@ class Prayers {
   DateTime get sunset => maghrib;
   DateTime get midnight => dhuhr.add(const Duration(hours: 12));
 
-  Prayers(Map<dynamic, dynamic> input)
+  Prayer prayerAtTime(DateTime time) {
+    final now = time;
+    Prayer? currentPrayer;
+
+    for (var i = 0; i < ordered.length; i++) {
+      final prayer = orderedPrayers[i];
+      final time = ordered[i];
+
+      if (now.isBefore(time)) {
+        break;
+      }
+      currentPrayer = prayer;
+    }
+
+    if (currentPrayer == null) {
+      if (midnight.subtract(const Duration(days: 1)).isAfter(now)) {
+        currentPrayer = Prayer.isha;
+      } else {
+        currentPrayer = Prayer.midnight;
+      }
+    }
+
+    return currentPrayer;
+  }
+
+  PrayerTimings(Map<dynamic, dynamic> input)
     : fajr = DateTime.fromMillisecondsSinceEpoch(input["Fajr"]),
       sunrise = DateTime.fromMillisecondsSinceEpoch(input["Sunrise"]),
       dhuhr = DateTime.fromMillisecondsSinceEpoch(input["Dhuhr"]),
@@ -42,7 +67,7 @@ class Prayers {
 
   @override
   bool operator ==(Object other) {
-    return other is Prayers && other.ordered == ordered;
+    return other is PrayerTimings && other.ordered == ordered;
   }
 
   @override

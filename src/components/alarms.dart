@@ -7,7 +7,7 @@ import '../ui/switch.dart';
 import '../ui/text.dart';
 import '../utils/extensions.dart';
 import 'alarm_edit.dart';
-import 'background.dart';
+import 'gradient_bordered_box.dart';
 
 class AlarmsWidget extends StatefulWidget {
   const AlarmsWidget({super.key});
@@ -19,7 +19,7 @@ class AlarmsWidget extends StatefulWidget {
 class _AlarmsWidgetState extends State<AlarmsWidget> {
   List<Alarm> alarms = [
     Alarm(
-      name: "MyNameMyNameMyName",
+      name: "MyName",
       timeInMillis:
           DateTime.now().add(const Duration(hours: 2)).millisecondsSinceEpoch,
       // repeatInterval: 1000 * 60 * 60,
@@ -31,11 +31,11 @@ class _AlarmsWidgetState extends State<AlarmsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Background(
+    return GradientBorderedBox(
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 36),
+            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 36),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -48,6 +48,7 @@ class _AlarmsWidgetState extends State<AlarmsWidget> {
                       onTap:
                           () => showModalBottomSheet(
                             enableDrag: false,
+                            isScrollControlled: true,
                             context: context,
                             builder: (context) => const AlarmEdit(),
                           ),
@@ -82,12 +83,34 @@ class _AlarmsWidgetState extends State<AlarmsWidget> {
                           .map(
                             (e) => AlarmTile(
                               e.value,
-                              onTap: () {},
+                              onTap:
+                                  () => showModalBottomSheet(
+                                    enableDrag: false,
+                                    isScrollControlled: true,
+                                    context: context,
+                                    builder:
+                                        (context) => AlarmEdit(alarm: e.value),
+                                  ),
                               onToggle: (b) {
                                 setState(() {
                                   alarms[e.key] = alarms[e.key].copyWith(
                                     enabled: b,
                                   );
+                                });
+                              },
+                              onStatusTap: (status) {
+                                setState(() {
+                                  if (alarms[e.key].statuses.contains(status)) {
+                                    alarms[e.key] = alarms[e.key].copyWith(
+                                      statuses: {...alarms[e.key].statuses}
+                                        ..remove(status),
+                                    );
+                                  } else {
+                                    alarms[e.key] = alarms[e.key].copyWith(
+                                      statuses: {...alarms[e.key].statuses}
+                                        ..add(status),
+                                    );
+                                  }
                                 });
                               },
                             ),
@@ -107,141 +130,134 @@ class AlarmTile extends StatelessWidget {
   final Alarm alarm;
   final void Function() onTap;
   final void Function(bool value) onToggle;
+  final void Function(AlarmStatus status) onStatusTap;
 
   const AlarmTile(
     this.alarm, {
     super.key,
     required this.onTap,
     required this.onToggle,
+    required this.onStatusTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return AnimatedOpacity(
       duration: Durations.short2,
-      opacity: alarm.enabled ? 1 : 0.9,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 18),
-        child: Material(
-          elevation: 10,
-          clipBehavior: Clip.antiAlias,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+      opacity: alarm.enabled ? 1 : 0.7,
+      child: Material(
+        elevation: 10,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: GradientBorderedBox(
+          borderRadius: BorderRadius.circular(16),
+          border: const EdgeInsets.all(1.0),
+          borderGradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF5D666D), Color(0xFF363E46)],
           ),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFF5D666D), Color(0xFF363E46)],
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(1.0),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Color(0xFF3F4850), Color(0xFF363E46)],
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 14,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SText(alarm.date.formattedTime.$1, fontSize: 34),
-                          const SizedBox(width: 4),
-                          Column(
-                            children: [
-                              SText(
-                                "AM",
-                                fontSize: 16,
-                                weight: STextWeight.thin,
-                                color:
-                                    alarm.date.formattedTime.$2 == "AM"
-                                        ? const Color(0xFFFD251E)
-                                        : const Color(0xFF8E98A1),
-                                glow: alarm.date.formattedTime.$2 == "AM",
-                              ),
-                              SText(
-                                "PM",
-                                fontSize: 16,
-                                weight: STextWeight.thin,
-                                color:
-                                    alarm.date.formattedTime.$2 == "PM"
-                                        ? const Color(0xFFFD251E)
-                                        : const Color(0xFF8E98A1),
-                                glow: alarm.date.formattedTime.$2 == "PM",
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(width: 6),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          if (alarm.repeatDays != null)
-                            RepeatingDaysIndicator(alarm.repeatDays!),
-
-                          if (alarm.repeatInterval != null)
-                            RepeatingIntervalIndicator(alarm.repeatInterval!),
-
-                          if (alarm.noRepeat)
-                            SText(
-                              alarm.date.formattedDate,
-                              fontSize: 12,
-                              weight: STextWeight.normal,
+          backgroundGradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF3F4850), Color(0xFF363E46)],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onTap,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(15, 15, 15, 11),
+                child: Column(
+                  children: [
+                    Column(
+                      children: [
+                        SText(
+                          alarm.name.toUpperCase(),
+                          fontSize: 16,
+                          shadow: true,
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SText(
+                                  alarm.date.formattedTime.$1,
+                                  fontSize: 34,
+                                ),
+                                const SizedBox(width: 4),
+                                Column(
+                                  children: [
+                                    SText(
+                                      "AM",
+                                      fontSize: 16,
+                                      weight: STextWeight.thin,
+                                      color:
+                                          alarm.date.formattedTime.$2 ==
+                                                  DayPeriod.am
+                                              ? const Color(0xFFFD251E)
+                                              : const Color(0xFF8E98A1),
+                                      glow:
+                                          alarm.date.formattedTime.$2 ==
+                                          DayPeriod.am,
+                                    ),
+                                    SText(
+                                      "PM",
+                                      fontSize: 16,
+                                      weight: STextWeight.thin,
+                                      color:
+                                          alarm.date.formattedTime.$2 ==
+                                                  DayPeriod.pm
+                                              ? const Color(0xFFFD251E)
+                                              : const Color(0xFF8E98A1),
+                                      glow:
+                                          alarm.date.formattedTime.$2 ==
+                                          DayPeriod.pm,
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                        ],
+                            const Expanded(child: SizedBox()),
+                            if (alarm.repeatDays == null)
+                              SText(
+                                alarm.date.formattedDate,
+                                fontSize: 12,
+                                weight: STextWeight.normal,
+                              ),
+
+                            if (alarm.repeatInterval != null) ...[
+                              const SizedBox(width: 4),
+                              RepeatingIntervalIndicator(alarm.repeatInterval!),
+                            ],
+
+                            if (alarm.repeatDays != null)
+                              RepeatingDaysIndicator(alarm.repeatDays!),
+
+                            const SizedBox(width: 6),
+                            SSwitch(alarm.enabled, onChanged: onToggle),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: 140,
+                      child: AlarmStatusesIndicator(
+                        alarm.statuses,
+                        onTap: onStatusTap,
+                        enabled: alarm.enabled,
                       ),
-                      const SizedBox(width: 6),
-                      Expanded(child: AlarmStatusesIndicator(alarm.statuses)),
-                      const SizedBox(width: 6),
-                      SSwitch(alarm.enabled, onChanged: onToggle),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
         ),
       ),
-    );
-  }
-}
-
-class AlarmStatusesIndicator extends StatelessWidget {
-  final Set<AlarmStatus> statuses;
-
-  const AlarmStatusesIndicator(this.statuses, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children:
-          AlarmStatus.ordered.map((as) {
-            if (statuses.contains(as)) {
-              return SIcon.glow(
-                as.icon,
-                color: const Color(0xFFFD251E),
-                radius: 11,
-              );
-            } else {
-              return SIcon(as.icon, radius: 11, color: const Color(0x888E98A1));
-            }
-          }).toList(),
     );
   }
 }
@@ -254,7 +270,7 @@ class RepeatingIntervalIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        SIcon.glow(Icons.repeat, radius: 6, color: const Color(0xFFFD251E)),
+        const SIcon(Icons.repeat, radius: 6, color: Color(0xFFFD251E)),
         const SizedBox(width: 4),
         SText(
           Duration(milliseconds: interval).toString().split(".")[0],
@@ -262,31 +278,6 @@ class RepeatingIntervalIndicator extends StatelessWidget {
           weight: STextWeight.normal,
         ),
       ],
-    );
-  }
-}
-
-class RepeatingDaysIndicator extends StatelessWidget {
-  final Set<Weekday> repeatDays;
-
-  const RepeatingDaysIndicator(this.repeatDays, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children:
-          Weekday.orderedWeekdays.map((wd) {
-            return SText(
-              "\u2009${wd.oneChar.capitalized}",
-              fontSize: 12,
-              weight: STextWeight.normal,
-              color:
-                  repeatDays.contains(wd)
-                      ? const Color(0xFFFD251E)
-                      : const Color(0xFF8E98A1),
-              glow: repeatDays.contains(wd),
-            );
-          }).toList(),
     );
   }
 }

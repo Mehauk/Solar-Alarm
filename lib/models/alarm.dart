@@ -55,6 +55,7 @@ class Alarm with _$Alarm {
          'Only one of repeatDays, or repeatInterval can be provided.',
        );
 
+  TimeOfDay get time => TimeOfDay.fromDateTime(date);
   bool get noRepeat => repeatDays == null && repeatInterval == null;
   factory Alarm.fromJson(Map<String, dynamic> json) => _$AlarmFromJson(json);
   Map<String, dynamic> get toJson => _$AlarmToJson(this);

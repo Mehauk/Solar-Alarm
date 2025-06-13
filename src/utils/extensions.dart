@@ -9,11 +9,11 @@ extension FormatString on String {
 }
 
 extension FormatDateTime on DateTime {
-  (String time, String period) get formattedTime {
+  (String time, DayPeriod period) get formattedTime {
     final hourInt = this.hour % 12 == 0 ? 12 : this.hour % 12;
     final hour = hourInt.toString().padLeft(2, '0');
     final minute = this.minute.toString().padLeft(2, '0');
-    final period = this.hour >= 12 ? 'PM' : 'AM';
+    final period = this.hour >= 12 ? DayPeriod.pm : DayPeriod.am;
     return ('$hour:$minute', period);
   }
 
@@ -36,4 +36,8 @@ extension FormatTime on TimeOfDay {
     if (hour12 == 0) return 12;
     return hour12;
   }
+}
+
+extension FormatDayPeriod on DayPeriod {
+  String get uname => name.toUpperCase();
 }

@@ -12,7 +12,12 @@ class _DigitalClockState extends State<DigitalClock> {
   late Timer _timer;
   Prayer? _currentPrayer;
 
-  late final void Function(Prayers? data) _observer;
+  late final void Function(PrayerTimings? data) _observer;
+
+  void setCurrentPrayer(Prayer? prayer) {
+    _currentPrayer = prayer;
+    currentPrayerObserver.modify(_currentPrayer);
+  }
 
   @override
   void initState() {
@@ -20,41 +25,14 @@ class _DigitalClockState extends State<DigitalClock> {
     _currentTime = DateTime.now();
     _startTimer();
 
-    _currentPrayer = _getCurrentPrayer(prayerTimingsObserver.data);
+    setCurrentPrayer(prayerTimingsObserver.data?.prayerAtTime(_currentTime));
 
     _observer = (prayerTimings) {
       setState(() {
-        _currentPrayer = _getCurrentPrayer(prayerTimings);
+        setCurrentPrayer(prayerTimings?.prayerAtTime(_currentTime));
       });
     };
     prayerTimingsObserver.addObserver(_observer);
-  }
-
-  Prayer? _getCurrentPrayer(Prayers? timings) {
-    if (timings == null) return null;
-
-    final now = _currentTime;
-    Prayer? currentPrayer;
-
-    for (var i = 0; i < timings.ordered.length; i++) {
-      final prayer = timings.orderedPrayers[i];
-      final time = timings.ordered[i];
-
-      if (now.isBefore(time)) {
-        break;
-      }
-      currentPrayer = prayer;
-    }
-
-    if (currentPrayer == null) {
-      if (timings.midnight.subtract(const Duration(days: 1)).isAfter(now)) {
-        currentPrayer = Prayer.isha;
-      } else {
-        currentPrayer = Prayer.midnight;
-      }
-    }
-
-    return currentPrayer;
   }
 
   void _startTimer() {
@@ -64,7 +42,9 @@ class _DigitalClockState extends State<DigitalClock> {
       _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
         setState(() {
           _currentTime = DateTime.now();
-          _currentPrayer = _getCurrentPrayer(prayerTimingsObserver.data);
+          setCurrentPrayer(
+            prayerTimingsObserver.data?.prayerAtTime(_currentTime),
+          );
         });
       });
     });
@@ -79,7 +59,7 @@ class _DigitalClockState extends State<DigitalClock> {
 
   @override
   Widget build(BuildContext context) {
-    (String time, String period) formattedTime = _currentTime.formattedTime;
+    (String time, DayPeriod period) formattedTime = _currentTime.formattedTime;
 
     return Stack(
       clipBehavior: Clip.none,
@@ -117,7 +97,7 @@ class _DigitalClockState extends State<DigitalClock> {
         Positioned(
           bottom: 0,
           right: 0,
-          child: SText(formattedTime.$2, fontSize: 16, height: 1),
+          child: SText(formattedTime.$2.uname, fontSize: 16, height: 1),
         ),
       ],
     );
