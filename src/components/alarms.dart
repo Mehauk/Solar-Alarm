@@ -62,19 +62,19 @@ class _AlarmsWidgetState extends State<AlarmsWidget> {
                             builder: (context) => const AlarmEdit(),
                           ),
                     ),
-                    const SizedBox(width: 4),
-                    SIconButton(
-                      Icons.more_horiz,
-                      onTap:
-                          () => showDialog(
-                            context: context,
-                            builder: (context) {
-                              return TimePickerDialog(
-                                initialTime: TimeOfDay.now(),
-                              );
-                            },
-                          ),
-                    ),
+                    // const SizedBox(width: 4),
+                    // SIconButton(
+                    //   Icons.more_horiz,
+                    //   onTap:
+                    //       () => showDialog(
+                    //         context: context,
+                    //         builder: (context) {
+                    //           return TimePickerDialog(
+                    //             initialTime: TimeOfDay.now(),
+                    //           );
+                    //         },
+                    //       ),
+                    // ),
                   ],
                 ),
               ],
@@ -111,20 +111,20 @@ class _AlarmsWidgetState extends State<AlarmsWidget> {
                                 setState(() {
                                   if (alarms[e.key].statuses.contains(status)) {
                                     alarms[e.key] = alarms[e.key].copyWith(
-                                      statuses:
-                                          alarms[e.key].statuses
-                                            ..remove(status),
+                                      statuses: {...alarms[e.key].statuses}
+                                        ..remove(status),
                                     );
                                   } else {
                                     alarms[e.key] = alarms[e.key].copyWith(
-                                      statuses:
-                                          alarms[e.key].statuses..add(status),
+                                      statuses: {...alarms[e.key].statuses}
+                                        ..add(status),
                                     );
                                   }
                                 });
                               },
                             ),
                           )
+                          .expand((w) => [w, const SizedBox(height: 18)])
                           .toList(),
                 ),
               ),
@@ -232,12 +232,17 @@ class AlarmTile extends StatelessWidget {
                             ),
                             const Expanded(child: SizedBox()),
 
+                            SText(alarm.date.formattedDate, fontSize: 12),
+
                             if (alarm.repeatInterval != null) ...[
                               const SizedBox(width: 4),
                               RepeatingIntervalIndicator(alarm.repeatInterval!),
                             ],
 
-                            RepeatingDaysIndicator(alarm.repeatDays),
+                            if (alarm.repeatDays.isNotEmpty) ...[
+                              const SizedBox(width: 4),
+                              RepeatingDaysIndicator(alarm.repeatDays),
+                            ],
 
                             const SizedBox(width: 6),
                             SSwitch(alarm.enabled, onChanged: onToggle),
