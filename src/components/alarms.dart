@@ -131,7 +131,7 @@ class _AlarmsWidgetState extends State<AlarmsWidget> {
                                       enabled: alarmEnabled,
                                     );
                                   });
-                                  setAlarm(alarms[e.key]);
+                                  PlatformChannel.setAlarm(alarms[e.key]);
                                 },
                                 onStatusTap: (status) {
                                   setState(() {
@@ -151,7 +151,7 @@ class _AlarmsWidgetState extends State<AlarmsWidget> {
 
                                     print(alarms[e.key].statuses);
                                   });
-                                  setAlarm(alarms[e.key]);
+                                  PlatformChannel.setAlarm(alarms[e.key]);
                                 },
                               ),
                             ),

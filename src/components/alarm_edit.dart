@@ -37,7 +37,7 @@ class _AlarmEditState extends State<AlarmEdit> {
 
     if (widget.alarm != null) {
       newAlarms.remove(widget.alarm);
-      await cancelAlarm(newAlarm.name);
+      await PlatformChannel.cancelAlarm(newAlarm.name);
     }
 
     alarmsObserver.update(newAlarms);
@@ -53,7 +53,7 @@ class _AlarmEditState extends State<AlarmEdit> {
 
     if (widget.alarm != null) {
       newAlarms.remove(widget.alarm);
-      await cancelAlarm(newAlarm.name);
+      await PlatformChannel.cancelAlarm(newAlarm.name);
     }
 
     final replaceIndex = newAlarms.indexOf(newAlarm);
@@ -62,7 +62,7 @@ class _AlarmEditState extends State<AlarmEdit> {
       showSnackbar("Replaced Alarm: ${newAlarm.name}");
     }
 
-    await setAlarm(newAlarm);
+    await PlatformChannel.setAlarm(newAlarm);
     newAlarms.add(newAlarm);
     alarmsObserver.update(newAlarms);
     if (context.mounted) Navigator.pop(context, newAlarm);

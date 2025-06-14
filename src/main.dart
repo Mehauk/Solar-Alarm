@@ -38,9 +38,12 @@ class _Home extends StatefulWidget {
 class _HomeState extends State<_Home> {
   @override
   void initState() {
-    getPrayerTimes().then((value) {
+    PlatformChannel.getPrayerTimes().then((value) {
       if (value != null) prayerTimingsObserver.update(PrayerTimings(value));
     });
+
+    PlatformChannel.getAllAlarms().then((value) => print(value));
+
     super.initState();
   }
 

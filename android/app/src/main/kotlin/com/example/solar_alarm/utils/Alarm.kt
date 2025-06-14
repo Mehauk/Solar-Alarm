@@ -48,7 +48,12 @@ class Alarm {
             val prefs = getAlarmPrefs(context)
             return prefs.all
                 .filter { (k, v) -> k.startsWith(ALARM_PREFIX) && !k.contains(PRAYER_RESET) && v is String }
-                .mapNotNull { (_, v) -> v as? String }
+                .mapNotNull { (_, v) ->
+                    println("VVVVV")
+                    println(v)
+                    (v as? String)?.let { json -> println(JSONObject(json)).toString() }
+                    (v as? String)?.let { json -> JSONObject(json).toString() }
+                }
         }
 
         fun cancelAlarm(alarmName: String, context: Context) {

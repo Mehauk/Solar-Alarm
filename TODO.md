@@ -39,7 +39,7 @@
   - [x] Add/Edit Alarm dialog
   - [x] Alarm Features UI
   - [ ] Adhan Features UI
-  - [ ] Refetch all alarms on resume
+  - [ ] Refetch all alarms on resume and restart
 - [ ] Fix permissions 
 - [ ] Fix all NEEDS WORK comments
 - [ ] Alarm set collisions
