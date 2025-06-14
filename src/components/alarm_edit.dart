@@ -8,7 +8,7 @@ import '../ui/button.dart';
 import '../ui/icon.dart';
 import '../ui/text.dart';
 import '../ui/text_field.dart';
-import '../utils/extensions.dart';
+import '../utils/formatting_extensions.dart';
 import 'clock.dart';
 import 'gradient_bordered_box.dart';
 
@@ -452,24 +452,91 @@ class AlarmStatusesIndicator extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children:
-          AlarmStatus.ordered.map((as) {
-            final Widget child;
-            if (statuses.contains(as)) {
+          AlarmStatus.ordered.map((as0) {
+            Widget child;
+            if (statuses.contains(as0)) {
               child = SIcon(
-                as.icon,
+                as0.icon,
                 color: const Color(0xFFFD251E),
                 radius: 11,
               );
             } else {
               child = SIcon(
-                as.icon,
+                as0.icon,
                 radius: 11,
                 color: const Color(0x888E98A1),
               );
             }
+
+            if (as0 is DelayedStatus && statuses.contains(as0)) {
+              final delay =
+                  (statuses.firstWhere((s) => s == as0) as DelayedStatus);
+              if (delay.date.isBefore(DateTime.now())) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  onTap(as0);
+                });
+              }
+              child = SizedBox(
+                width: 22,
+                height: 22,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.center,
+                  children: [
+                    child,
+                    if (enabled)
+                      Positioned(
+                        right: -110,
+                        child: SizedBox(
+                          width: 100,
+                          child: SText(
+                            "Canceled untill ${delay.date.formattedDateWithYear}",
+                            maxLines: 2,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            }
+
             return InkWell(
               borderRadius: BorderRadius.circular(12),
-              onTap: enabled ? () => onTap(as) : null,
+              onTap:
+                  enabled
+                      ? () async {
+                        if (as0 is DelayedStatus && !statuses.contains(as0)) {
+                          final tomorrow = DateTime.now().add(
+                            const Duration(days: 1),
+                          );
+                          final date = await showModalBottomSheet<DateTime?>(
+                            context: context,
+                            builder: (context) {
+                              return CalendarDatePicker(
+                                initialDate: tomorrow,
+                                firstDate: tomorrow,
+                                lastDate: DateTime.now().add(
+                                  const Duration(days: 365 * 100),
+                                ),
+                                onDateChanged:
+                                    (DateTime value) =>
+                                        Navigator.pop(context, value),
+                              );
+                            },
+                          );
+
+                          print(date?.formattedDate);
+                          print(date?.millisecondsSinceEpoch);
+
+                          if (date != null) {
+                            onTap(DelayedStatus(date.millisecondsSinceEpoch));
+                          }
+                        } else {
+                          onTap(as0);
+                        }
+                      }
+                      : null,
               child: Padding(padding: const EdgeInsets.all(6.0), child: child),
             );
           }).toList(),

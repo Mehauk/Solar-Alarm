@@ -29,6 +29,21 @@ extension FormatDateTime on DateTime {
     return '$weekday, $day $month';
   }
 
+  String get formattedDateWithYear {
+    final weekdays =
+        Weekday.orderedWeekdays.map((wd) => wd.threeChar.capitalized).toList();
+
+    final months =
+        Month.orderedMonths.map((m) => m.threeChar.capitalized).toList();
+
+    final weekday = weekdays[this.weekday % 7];
+    final day = this.day.toString().padLeft(2, '0');
+    final month = months[this.month - 1];
+    final year = this.year;
+
+    return '$weekday, $day $month $year';
+  }
+
   String? get deicticWord {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);

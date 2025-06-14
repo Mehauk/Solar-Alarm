@@ -5,57 +5,59 @@ import 'package:solar_alarm/models/calendar.dart';
 part 'alarm.freezed.dart';
 part 'alarm.g.dart';
 
-enum AlarmStatus {
-  vibrate,
-  sound,
-  delayed;
+@freezed
+sealed class AlarmStatus with _$AlarmStatus {
+  const AlarmStatus._();
 
-  static List<AlarmStatus> get ordered => [vibrate, sound, delayed];
+  const factory AlarmStatus.vibrate() = VibrateStatus;
+  const factory AlarmStatus.sound() = SoundStatus;
+  const factory AlarmStatus.delayed(int delayedUntil) = DelayedStatus;
+
+  factory AlarmStatus.fromJson(Map<String, dynamic> json) =>
+      _$AlarmStatusFromJson(json);
 
   IconData get icon => switch (this) {
-    vibrate => Icons.vibration,
-    AlarmStatus.sound => Icons.volume_up,
-    AlarmStatus.delayed => Icons.timer_off_outlined,
+    VibrateStatus() => Icons.vibration,
+    SoundStatus() => Icons.volume_up,
+    DelayedStatus() => Icons.timer_off_outlined,
   };
+
+  static const List<AlarmStatus> ordered = [
+    AlarmStatus.vibrate(),
+    AlarmStatus.sound(),
+    AlarmStatus.delayed(0),
+  ];
+
+  @override
+  bool operator ==(Object other) {
+    return other is AlarmStatus && runtimeType == other.runtimeType;
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+}
+
+extension DelayedStatusDateTime on DelayedStatus {
+  DateTime get date => DateTime.fromMillisecondsSinceEpoch(delayedUntil);
 }
 
 @freezed
-@JsonSerializable()
-class Alarm with _$Alarm {
-  @override
-  final DateTime date;
-  @override
-  final String name;
-  @override
-  final bool enabled;
-  @override
-  final int timeInMillis;
-  @override
-  final int? repeatInterval;
-  @override
-  final Set<Weekday> repeatDays;
-  @override
-  final Set<AlarmStatus> statuses;
+abstract class Alarm with _$Alarm {
+  const Alarm._();
 
-  Alarm({
-    required this.name,
-    required this.enabled,
-    required this.timeInMillis,
-    this.repeatInterval,
-    this.repeatDays = const {},
-    this.statuses = const {},
-  }) : date = DateTime.fromMillisecondsSinceEpoch(timeInMillis),
-       assert(
-         (repeatDays.isNotEmpty ? 1 : 0) + (repeatInterval != null ? 1 : 0) <=
-             1,
-         'Only one of repeatDays, or repeatInterval can be provided.',
-       );
+  const factory Alarm({
+    required String name,
+    required bool enabled,
+    required int timeInMillis,
+    int? repeatInterval,
+    @Default({}) Set<Weekday> repeatDays,
+    @AlarmStatusSetConverter() @Default({}) Set<AlarmStatus> statuses,
+  }) = _Alarm;
 
+  DateTime get date => DateTime.fromMillisecondsSinceEpoch(timeInMillis);
   TimeOfDay get time => TimeOfDay.fromDateTime(date);
-  bool get noRepeat => repeatDays.isEmpty && repeatInterval == null;
 
   factory Alarm.fromJson(Map<String, dynamic> json) => _$AlarmFromJson(json);
-  Map<String, dynamic> get toJson => _$AlarmToJson(this);
 
   @override
   bool operator ==(Object other) {
@@ -64,4 +66,17 @@ class Alarm with _$Alarm {
 
   @override
   int get hashCode => name.hashCode;
+}
+
+class AlarmStatusSetConverter
+    implements JsonConverter<Set<AlarmStatus>, List<Map<String, dynamic>>> {
+  const AlarmStatusSetConverter();
+
+  @override
+  Set<AlarmStatus> fromJson(List<Map<String, dynamic>> json) =>
+      json.map(AlarmStatus.fromJson).toSet();
+
+  @override
+  List<Map<String, dynamic>> toJson(Set<AlarmStatus> object) =>
+      object.map((s) => s.toJson()).toList();
 }

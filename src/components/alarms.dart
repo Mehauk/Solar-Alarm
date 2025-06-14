@@ -6,7 +6,7 @@ import '../globals.dart';
 import '../ui/icon.dart';
 import '../ui/switch.dart';
 import '../ui/text.dart';
-import '../utils/extensions.dart';
+import '../utils/formatting_extensions.dart';
 import 'alarm_edit.dart';
 import 'gradient_bordered_box.dart';
 
@@ -148,6 +148,8 @@ class _AlarmsWidgetState extends State<AlarmsWidget> {
                                           ..add(status),
                                       );
                                     }
+
+                                    print(alarms[e.key].statuses);
                                   });
                                   setAlarm(alarms[e.key]);
                                 },

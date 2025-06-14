@@ -6,7 +6,7 @@ import 'package:solar_alarm/models/prayers.dart';
 
 import '../globals.dart';
 import '../ui/text.dart';
-import '../utils/extensions.dart';
+import '../utils/formatting_extensions.dart';
 import 'prayer_icons.dart';
 
 part 'digital_clock.dart';

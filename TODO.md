@@ -38,6 +38,8 @@
   - [x] Main Page
   - [x] Add/Edit Alarm dialog
   - [x] Alarm Features UI
+  - [ ] Adhan Features UI
+  - [ ] Refetch all alarms on resume
 - [ ] Fix permissions 
 - [ ] Fix all NEEDS WORK comments
 - [ ] Alarm set collisions
