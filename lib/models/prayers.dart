@@ -37,6 +37,14 @@ class Prayers {
     midnight,
   ];
 
+  static List<Prayer> get actual => [
+    Prayer.fajr,
+    Prayer.dhuhr,
+    Prayer.asr,
+    Prayer.maghrib,
+    Prayer.isha,
+  ];
+
   static List<Prayer> get _orderedPrayers => [
     Prayer.fajr,
     Prayer.sunrise,

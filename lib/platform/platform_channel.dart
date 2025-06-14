@@ -25,7 +25,6 @@ abstract class PlatformChannel {
     List<Alarm> alarms = [];
     try {
       final res = await mainChannel.invokeMethod<List<Object?>>('getAllAlarms');
-      print(res);
       alarms =
           res?.whereType<String>().map((jsonString) {
             dynamic json = jsonDecode(jsonString);
@@ -51,8 +50,6 @@ abstract class PlatformChannel {
   static Future<void> setPrayeralarms() async {
     try {
       await mainChannel.invokeMethod('setPrayerAlarms');
-    } on PlatformException catch (e) {
-      print("Failed to set prayers: '${e.message}'.");
-    }
+    } on PlatformException catch (_) {}
   }
 }
