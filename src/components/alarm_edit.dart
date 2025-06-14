@@ -71,14 +71,16 @@ class _AlarmEditState extends State<AlarmEdit> {
   void showSnackbar(String text) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
+        elevation: 20,
+        behavior: SnackBarBehavior.floating,
         padding: EdgeInsets.zero,
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).size.height - 100,
+          right: 20,
+          left: 20,
+        ),
         backgroundColor: Colors.transparent,
         content: GradientBorderedBox(
-          backgroundGradient: const LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF363E46), Color.fromARGB(255, 22, 26, 31)],
-          ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Center(child: SText(text, fontSize: 16)),
@@ -525,9 +527,6 @@ class AlarmStatusesIndicator extends StatelessWidget {
                               );
                             },
                           );
-
-                          print(date?.formattedDate);
-                          print(date?.millisecondsSinceEpoch);
 
                           if (date != null) {
                             onTap(DelayedStatus(date.millisecondsSinceEpoch));

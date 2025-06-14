@@ -2,65 +2,55 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:solar_alarm/models/alarm.dart';
+import 'package:solar_alarm/models/prayers.dart';
 
 const mainChannel = MethodChannel('com.example.solar_alarm/main_channel');
 
 abstract class PlatformChannel {
-  // NEEDS WORK!!!!! undo comments
   static Future<void> setAlarm(Alarm alarm) async {
-    print(alarm.toJson());
     try {
-      // await mainChannel.invokeMethod('setAlarm', {
-      //   'alarmJson': alarm.toJson().toString(),
-      // });
-    } on PlatformException catch (e) {
-      print("Failed to set alarm: '${e.message}'.");
-    }
+      await mainChannel.invokeMethod('setAlarm', {
+        'alarmJson': alarm.toJson().toString(),
+      });
+    } on PlatformException catch (_) {}
   }
 
-  // NEEDS WORK!!!!! undo comments
   static Future<void> cancelAlarm(String alarmName) async {
     try {
-      // await mainChannel.invokeMethod('cancelAlarm', {'name': alarmName});
-    } on PlatformException catch (e) {
-      print("Failed to cancel alarm: '${e.message}'.");
-    }
+      await mainChannel.invokeMethod('cancelAlarm', {'name': alarmName});
+    } on PlatformException catch (_) {}
   }
 
   static Future<List<Alarm>> getAllAlarms() async {
     List<Alarm> alarms = [];
     try {
-      final res0 = await mainChannel.invokeMethod('getAllAlarms');
-      print(res0);
       final res = await mainChannel.invokeMethod<List<Object?>>('getAllAlarms');
       print(res);
       alarms =
-          res
-              ?.whereType<String>()
-              .map((jsonString) => Alarm.fromJson(jsonDecode(jsonString)))
-              .toList() ??
+          res?.whereType<String>().map((jsonString) {
+            dynamic json = jsonDecode(jsonString);
+            json["statuses"] =
+                json["statuses"].whereType<Map<String, dynamic>>().toList();
+            return Alarm.fromJson(json);
+          }).toList() ??
           [];
-    } on PlatformException catch (e) {
-      print("Failed to cancel alarm: '${e.message}'.");
-    }
+    } on PlatformException catch (_) {}
 
     return alarms;
   }
 
-  static Future<Map?> getPrayerTimes() async {
+  static Future<Prayers?> getPrayerTimes() async {
     try {
       final prayers = await mainChannel.invokeMethod('getPrayerTimes');
 
-      return prayers as Map;
-    } on PlatformException catch (e) {
-      print("Failed to get prayers: '${e.message}'.");
-    }
+      return Prayers(prayers as Map);
+    } on PlatformException catch (_) {}
     return null;
   }
 
-  static Future<void> setPrayerTimes() async {
+  static Future<void> setPrayeralarms() async {
     try {
-      await mainChannel.invokeMethod('setPrayerTimes');
+      await mainChannel.invokeMethod('setPrayerAlarms');
     } on PlatformException catch (e) {
       print("Failed to set prayers: '${e.message}'.");
     }

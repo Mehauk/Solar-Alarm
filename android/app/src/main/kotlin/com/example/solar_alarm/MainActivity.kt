@@ -52,7 +52,7 @@ class MainActivity : FlutterActivity() {
                             }
                         }
 
-                        "setPrayerTimes" -> {
+                        "setPrayerAlarms" -> {
                             val prayerTimes = setPrayerAlarms(context)
                             prayerTimes?.let {
                                 result.success(it)

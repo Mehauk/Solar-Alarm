@@ -148,8 +148,6 @@ class _AlarmsWidgetState extends State<AlarmsWidget> {
                                           ..add(status),
                                       );
                                     }
-
-                                    print(alarms[e.key].statuses);
                                   });
                                   PlatformChannel.setAlarm(alarms[e.key]);
                                 },

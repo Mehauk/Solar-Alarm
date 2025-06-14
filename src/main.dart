@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:solar_alarm/models/prayers.dart';
 import 'package:solar_alarm/platform/platform_channel.dart';
 
 import 'components/alarms.dart';
@@ -35,16 +34,37 @@ class _Home extends StatefulWidget {
   State<_Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<_Home> {
+class _HomeState extends State<_Home> with WidgetsBindingObserver {
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
+
     PlatformChannel.getPrayerTimes().then((value) {
-      if (value != null) prayerTimingsObserver.update(PrayerTimings(value));
+      prayerTimingsObserver.update(value);
     });
 
-    PlatformChannel.getAllAlarms().then((value) => print(value));
+    PlatformChannel.getAllAlarms().then((value) {
+      alarmsObserver.update(value);
+    });
 
     super.initState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      PlatformChannel.getAllAlarms().then((value) {
+        alarmsObserver.update(value);
+      });
+    }
+
+    super.didChangeAppLifecycleState(state);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override

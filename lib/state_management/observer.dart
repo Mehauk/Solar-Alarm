@@ -2,9 +2,9 @@ final class Observer<T> {
   T _data;
   T get data => _data;
 
-  final T Function(T)? modify;
+  final T Function(T)? _modify;
 
-  Observer(this._data, {this.modify});
+  Observer(this._data, {final T Function(T)? modify}) : _modify = modify;
 
   final List<void Function(T data)> _observers = [];
 
@@ -12,8 +12,8 @@ final class Observer<T> {
   void removeObserver(void Function(T data) obs) => _observers.remove(obs);
 
   void update(T newData) {
-    if (modify != null) {
-      _data = modify!(newData);
+    if (_modify != null) {
+      _data = _modify(newData);
     } else {
       _data = newData;
     }

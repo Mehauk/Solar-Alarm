@@ -14,9 +14,9 @@ class PrayerTimingsWidget extends StatefulWidget {
 }
 
 class _PrayerTimingsWidgetState extends State<PrayerTimingsWidget> {
-  PrayerTimings? _prayers;
+  Prayers? _prayers;
   Prayer? _currentPrayer;
-  late final void Function(PrayerTimings? data) _prayersObserver;
+  late final void Function(Prayers? data) _prayersObserver;
   late final void Function(Prayer? data) _currentPrayerObserver;
 
   @override
@@ -51,7 +51,7 @@ class _PrayerTimingsWidgetState extends State<PrayerTimingsWidget> {
       children: [
         for (var i = 0; i < (_prayers?.ordered.length ?? 0); i++)
           _PrayerTiming(
-            _prayers!.orderedPrayers[i],
+            Prayers.orderedPrayers[i],
             _prayers!.ordered[i],
             _currentPrayer,
           ),

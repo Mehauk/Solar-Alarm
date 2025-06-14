@@ -12,7 +12,7 @@ class _DigitalClockState extends State<DigitalClock> {
   late Timer _timer;
   Prayer? _currentPrayer;
 
-  late final void Function(PrayerTimings? data) _observer;
+  late final void Function(Prayers? data) _observer;
 
   void setCurrentPrayer(Prayer? prayer) {
     _currentPrayer = prayer;

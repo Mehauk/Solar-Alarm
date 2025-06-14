@@ -1,12 +1,31 @@
-enum Prayer { fajr, sunrise, dhuhr, asr, maghrib, isha, midnight }
+enum Prayer {
+  fajr,
+  sunrise,
+  dhuhr,
+  asr,
+  maghrib,
+  isha,
+  midnight;
 
-class PrayerTimings {
-  final DateTime fajr;
-  final DateTime sunrise;
-  final DateTime dhuhr;
-  final DateTime asr;
-  final DateTime maghrib;
-  final DateTime isha;
+  String get capitalizedName => name._capitalized;
+}
+
+extension on String {
+  String get _capitalized {
+    if (length <= 1) return toUpperCase();
+    return this[0].toUpperCase() + substring(1);
+  }
+}
+
+class Prayers {
+  final Map<Prayer, DateTime> _times;
+
+  DateTime get fajr => _times[Prayer.fajr]!;
+  DateTime get sunrise => _times[Prayer.sunrise]!;
+  DateTime get dhuhr => _times[Prayer.dhuhr]!;
+  DateTime get asr => _times[Prayer.asr]!;
+  DateTime get maghrib => _times[Prayer.maghrib]!;
+  DateTime get isha => _times[Prayer.isha]!;
 
   List<DateTime> get ordered => [
     fajr,
@@ -17,13 +36,18 @@ class PrayerTimings {
     isha,
     midnight,
   ];
-  List<Prayer> get orderedPrayers => [
+
+  static List<Prayer> get _orderedPrayers => [
     Prayer.fajr,
     Prayer.sunrise,
     Prayer.dhuhr,
     Prayer.asr,
     Prayer.maghrib,
     Prayer.isha,
+  ];
+
+  static List<Prayer> get orderedPrayers => [
+    ..._orderedPrayers,
     Prayer.midnight,
   ];
 
@@ -55,19 +79,25 @@ class PrayerTimings {
     return currentPrayer;
   }
 
-  PrayerTimings(Map<dynamic, dynamic> input)
-    : fajr = DateTime.fromMillisecondsSinceEpoch(input["Fajr"]),
-      sunrise = DateTime.fromMillisecondsSinceEpoch(input["Sunrise"]),
-      dhuhr = DateTime.fromMillisecondsSinceEpoch(input["Dhuhr"]),
-      asr = DateTime.fromMillisecondsSinceEpoch(input["Asr"]),
-      maghrib = DateTime.fromMillisecondsSinceEpoch(input["Maghrib"]),
-      isha = DateTime.fromMillisecondsSinceEpoch(input["Isha"]) {
-    assert(ordered.length == orderedPrayers.length);
+  Prayers._(this._times);
+
+  factory Prayers(Map<dynamic, dynamic> input) {
+    Map<Prayer, DateTime> times = {};
+
+    for (var prayer in _orderedPrayers) {
+      times[prayer] = DateTime.fromMillisecondsSinceEpoch(
+        input[prayer.capitalizedName],
+      );
+    }
+
+    final prayers = Prayers._(times);
+    assert(prayers.ordered.length == orderedPrayers.length);
+    return prayers;
   }
 
   @override
   bool operator ==(Object other) {
-    return other is PrayerTimings && other.ordered == ordered;
+    return other is Prayers && other.ordered == ordered;
   }
 
   @override
