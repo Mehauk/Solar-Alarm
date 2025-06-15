@@ -33,14 +33,14 @@ class _AlarmEditState extends State<AlarmEdit> {
 
   void deleteAlarm(BuildContext context) async {
     Alarm newAlarm = alarm;
-    List<Alarm> newAlarms = [...alarmsObserver.data];
+    List<Alarm> newAlarms = [...alarmsObservable.data];
 
     if (widget.alarm != null) {
       newAlarms.remove(widget.alarm);
       await PlatformChannel.cancelAlarm(newAlarm.name);
     }
 
-    alarmsObserver.update(newAlarms);
+    alarmsObservable.update(newAlarms);
     showSnackbar("Deleted Alarm: ${newAlarm.name}");
     if (context.mounted) {
       Navigator.pop(context);
@@ -49,7 +49,7 @@ class _AlarmEditState extends State<AlarmEdit> {
 
   Future<void> saveChanges(BuildContext context) async {
     Alarm newAlarm = alarm.copyWith(enabled: true);
-    List<Alarm> newAlarms = [...alarmsObserver.data];
+    List<Alarm> newAlarms = [...alarmsObservable.data];
 
     if (widget.alarm != null) {
       newAlarms.remove(widget.alarm);
@@ -64,7 +64,7 @@ class _AlarmEditState extends State<AlarmEdit> {
 
     await PlatformChannel.setAlarm(newAlarm);
     newAlarms.add(newAlarm);
-    alarmsObserver.update(newAlarms);
+    alarmsObservable.update(newAlarms);
     if (context.mounted) Navigator.pop(context, newAlarm);
   }
 
@@ -492,7 +492,7 @@ class AlarmStatusesIndicator extends StatelessWidget {
                         child: SizedBox(
                           width: 100,
                           child: SText(
-                            "Canceled untill ${delay.date.formattedDateWithYear}",
+                            "Blocked until \n${delay.date.formattedDateWithYear}",
                             maxLines: 2,
                             fontSize: 11,
                           ),

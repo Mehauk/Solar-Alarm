@@ -38,8 +38,11 @@
   - [x] Main Page
   - [x] Add/Edit Alarm dialog
   - [x] Alarm Features UI
-  - [ ] Adhan Features UI
+  - [x] Adhan Features UI
   - [x] Refetch all alarms on resume and restart
 - [ ] Fix permissions 
 - [ ] Fix all NEEDS WORK comments
 - [x] Alarm set collisions
+
+FUTURE
+- [ ] multiselect + actions

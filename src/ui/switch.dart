@@ -1,16 +1,29 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:solar_alarm/mixins/toggleable_enum.dart';
 
-class SSwitch extends StatelessWidget {
-  final bool value;
-  final void Function(bool) onChanged;
+enum SSwitchStatus with Toggleable<SSwitchStatus> {
+  off,
+  on;
+
+  @override
+  SSwitchStatus get me => this;
+
+  @override
+  List<SSwitchStatus> get ordered => values;
+}
+
+class SSwitch<T extends Toggleable<T>> extends StatelessWidget {
+  final T value;
+  final void Function(T) onChanged;
   final Size trackSize;
-  final double trackRadius;
+  final double trackBorderRadius;
   final bool enabledTrackShadow;
   final Gradient? enabledTrackGradient;
   final Gradient? disabledTrackGradient;
   final Size toggleSize;
+  final double toggleJut;
   final Color enabledToggleColor;
   final Color disabledToggleColor;
   final Widget toggle;
@@ -20,36 +33,48 @@ class SSwitch extends StatelessWidget {
     super.key,
     required this.onChanged,
     this.trackSize = const Size(33, 14),
-    this.trackRadius = 16,
+    this.trackBorderRadius = 16,
     this.enabledTrackShadow = true,
     this.enabledTrackGradient,
     this.disabledTrackGradient,
     this.toggleSize = const Size(21, 21),
     this.enabledToggleColor = const Color(0XFFA2ADB9),
     this.disabledToggleColor = const Color(0XFF4E565F),
+    final double? toggleJut,
     final Widget? toggle,
   }) : toggle =
            toggle ??
            _DefaultToggle(
              value,
-             value ? enabledToggleColor : disabledToggleColor,
-           );
+             value.isOn ? enabledToggleColor : disabledToggleColor,
+           ),
+       toggleJut = toggleJut ?? (toggleSize.width / 4);
 
   @override
   Widget build(BuildContext context) {
+    final trueLength = toggleJut + trackSize.width + toggleJut;
+    final double portion =
+        (trueLength - toggleSize.width) / (value.ordered.length - 1);
+    final double leftPosition = value.vindex * portion;
     return GestureDetector(
-      onTap: () => onChanged(!value),
+      onTap: () => onChanged(value.toggle),
       child: Stack(
         alignment: Alignment.center,
         children: [
+          // total size
+          SizedBox(
+            height: max(trackSize.height, toggleSize.height),
+            width: trueLength,
+          ),
+
           SizedBox(
             width: trackSize.width,
             height: trackSize.height,
             child: DecoratedBox(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(trackRadius),
+                borderRadius: BorderRadius.circular(trackBorderRadius),
                 boxShadow:
-                    value && enabledTrackShadow
+                    value.isOn && enabledTrackShadow
                         ? [
                           const BoxShadow(
                             blurRadius: 10,
@@ -59,7 +84,7 @@ class SSwitch extends StatelessWidget {
                         ]
                         : null,
                 gradient:
-                    value
+                    value.isOn
                         ? const LinearGradient(
                           begin: Alignment.topRight,
                           end: Alignment.bottomRight,
@@ -71,20 +96,16 @@ class SSwitch extends StatelessWidget {
               ),
             ),
           ),
+
           AnimatedPositioned(
             duration: Durations.short2,
             curve: Curves.easeInOut,
-            right: value ? 0 : trackSize.width - toggleSize.width * 0.75,
-            left: value ? trackSize.width - toggleSize.width * 0.75 : 0,
+            left: leftPosition,
             child: SizedBox(
               width: toggleSize.width,
               height: toggleSize.height,
               child: toggle,
             ),
-          ),
-          SizedBox(
-            height: max(trackSize.height, toggleSize.height),
-            width: trackSize.width + (0.25 * toggleSize.width),
           ),
         ],
       ),
@@ -92,10 +113,10 @@ class SSwitch extends StatelessWidget {
   }
 }
 
-class _DefaultToggle extends StatelessWidget {
-  final bool enabled;
+class _DefaultToggle<T extends Toggleable> extends StatelessWidget {
+  final T value;
   final Color color;
-  const _DefaultToggle(this.enabled, this.color);
+  const _DefaultToggle(this.value, this.color);
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +130,7 @@ class _DefaultToggle extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomCenter,
             colors:
-                enabled
+                value.isOn
                     ? [const Color(0xFFCCD4DC), const Color(0xFF7A8998)]
                     : [const Color(0xFF666E74), const Color(0xFF21272D)],
           ),

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:solar_alarm/models/prayers.dart';
+import 'package:solar_alarm/platform/platform_channel.dart';
 
 import '../globals.dart';
+import '../ui/icon.dart';
+import '../ui/switch.dart';
 import '../ui/text.dart';
 import '../utils/formatting_extensions.dart';
 import 'prayer_icons.dart';
@@ -16,31 +19,37 @@ class PrayerTimingsWidget extends StatefulWidget {
 class _PrayerTimingsWidgetState extends State<PrayerTimingsWidget> {
   Prayers? _prayers;
   Prayer? _currentPrayer;
+
   late final void Function(Prayers? data) _prayersObserver;
   late final void Function(Prayer? data) _currentPrayerObserver;
+
+  void updatePrayerStatus(Prayer prayer, PrayerAlarmStatus s) {
+    PlatformChannel.updatePrayerSetting(prayer, s);
+    setState(() => _prayers!.statuses[prayer] = s);
+  }
 
   @override
   void initState() {
     super.initState();
 
-    _prayers = prayerTimingsObserver.data;
+    _prayers = prayerTimingsObservable.data;
 
     _prayersObserver = (prayerTimings) {
       setState(() => _prayers = prayerTimings);
     };
 
-    prayerTimingsObserver.addObserver(_prayersObserver);
+    prayerTimingsObservable.addObserver(_prayersObserver);
 
     _currentPrayerObserver = (prayer) {
       setState(() => _currentPrayer = prayer);
     };
-    currentPrayerObserver.addObserver(_currentPrayerObserver);
+    currentPrayerObservable.addObserver(_currentPrayerObserver);
   }
 
   @override
   void dispose() {
-    prayerTimingsObserver.removeObserver(_prayersObserver);
-    currentPrayerObserver.removeObserver(_currentPrayerObserver);
+    prayerTimingsObservable.removeObserver(_prayersObserver);
+    currentPrayerObservable.removeObserver(_currentPrayerObserver);
     super.dispose();
   }
 
@@ -54,6 +63,8 @@ class _PrayerTimingsWidgetState extends State<PrayerTimingsWidget> {
             Prayers.orderedPrayers[i],
             _prayers!.ordered[i],
             _currentPrayer,
+            _prayers!.statuses[Prayers.orderedPrayers[i]],
+            (s) => updatePrayerStatus(Prayers.orderedPrayers[i], s),
           ),
       ],
     );
@@ -64,40 +75,79 @@ class _PrayerTiming extends StatelessWidget {
   final Prayer prayer;
   final Prayer? currentPrayer;
   final DateTime time;
+  final PrayerAlarmStatus? status;
+  final void Function(PrayerAlarmStatus s)? onUpdateStatus;
 
-  const _PrayerTiming(this.prayer, this.time, this.currentPrayer);
+  const _PrayerTiming(
+    this.prayer,
+    this.time,
+    this.currentPrayer,
+    this.status,
+    this.onUpdateStatus,
+  );
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SizedBox(
-          width: 220,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              PrayerIcon(prayer, weight: PrayerIconWeight.thin, radius: 12),
-              const SizedBox(width: 8),
-              SText(prayer.name.capitalized, fontSize: 16),
-              const Expanded(child: SizedBox()),
-              SText(
-                "${time.formattedTime.$1} ${time.formattedTime.$2.uname}",
-                fontSize: 16,
-              ),
-              SText(
-                "I",
-                fontSize: 24,
-                color:
-                    currentPrayer == prayer
-                        ? const Color(0xFF8E98A1)
-                        : Colors.transparent,
-                glow: true,
-              ),
-            ],
+    return SizedBox(
+      width: 300,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SText(
+            "I",
+            fontSize: 24,
+            color:
+                currentPrayer == prayer
+                    ? const Color(0xFF8E98A1)
+                    : Colors.transparent,
+            glow: true,
           ),
-        ),
-      ],
+          Expanded(
+            child: Row(
+              children: [
+                PrayerIcon(prayer, weight: PrayerIconWeight.thin, radius: 12),
+                const SizedBox(width: 8),
+                SText(prayer.name.capitalized, fontSize: 16),
+              ],
+            ),
+          ),
+
+          SText(
+            "${time.formattedTime.$1} ${time.formattedTime.$2.uname}",
+            fontSize: 16,
+          ),
+
+          const SizedBox(width: 4),
+          SizedBox(
+            width: 52,
+            child:
+                status != null
+                    ? Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SSwitch(
+                          status!,
+                          onChanged: onUpdateStatus ?? (_) {},
+                          trackSize: const Size(27, 7),
+                          toggleSize: const Size(14, 14),
+                        ),
+                        const SizedBox(width: 4),
+                        if (status!.icon != null)
+                          SIcon(status!.icon!, radius: 7),
+                      ],
+                    )
+                    : null,
+          ),
+        ],
+      ),
     );
   }
+}
+
+extension on PrayerAlarmStatus {
+  IconData? get icon => switch (this) {
+    PrayerAlarmStatus.disabled => null,
+    PrayerAlarmStatus.vibrate => Icons.vibration,
+    PrayerAlarmStatus.sound => Icons.volume_up,
+  };
 }

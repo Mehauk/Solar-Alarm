@@ -16,7 +16,7 @@ class _DigitalClockState extends State<DigitalClock> {
 
   void setCurrentPrayer(Prayer? prayer) {
     _currentPrayer = prayer;
-    currentPrayerObserver.update(_currentPrayer);
+    currentPrayerObservable.update(_currentPrayer);
   }
 
   @override
@@ -25,14 +25,14 @@ class _DigitalClockState extends State<DigitalClock> {
     _currentTime = DateTime.now();
     _startTimer();
 
-    setCurrentPrayer(prayerTimingsObserver.data?.prayerAtTime(_currentTime));
+    setCurrentPrayer(prayerTimingsObservable.data?.prayerAtTime(_currentTime));
 
     _observer = (prayerTimings) {
       setState(() {
         setCurrentPrayer(prayerTimings?.prayerAtTime(_currentTime));
       });
     };
-    prayerTimingsObserver.addObserver(_observer);
+    prayerTimingsObservable.addObserver(_observer);
   }
 
   void _startTimer() {
@@ -43,7 +43,7 @@ class _DigitalClockState extends State<DigitalClock> {
         setState(() {
           _currentTime = DateTime.now();
           setCurrentPrayer(
-            prayerTimingsObserver.data?.prayerAtTime(_currentTime),
+            prayerTimingsObservable.data?.prayerAtTime(_currentTime),
           );
         });
       });
@@ -53,7 +53,7 @@ class _DigitalClockState extends State<DigitalClock> {
   @override
   void dispose() {
     _timer.cancel();
-    prayerTimingsObserver.removeObserver(_observer);
+    prayerTimingsObservable.removeObserver(_observer);
     super.dispose();
   }
 

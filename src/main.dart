@@ -40,11 +40,11 @@ class _HomeState extends State<_Home> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
 
     PlatformChannel.getPrayerTimes().then((value) {
-      prayerTimingsObserver.update(value);
+      prayerTimingsObservable.update(value);
     });
 
     PlatformChannel.getAllAlarms().then((value) {
-      alarmsObserver.update(value);
+      alarmsObservable.update(value);
     });
 
     super.initState();
@@ -54,7 +54,7 @@ class _HomeState extends State<_Home> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       PlatformChannel.getAllAlarms().then((value) {
-        alarmsObserver.update(value);
+        alarmsObservable.update(value);
       });
     }
 

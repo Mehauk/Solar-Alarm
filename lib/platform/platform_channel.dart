@@ -47,9 +47,21 @@ abstract class PlatformChannel {
     return null;
   }
 
-  static Future<void> setPrayeralarms() async {
+  static Future<void> updatePrayerSetting(
+    Prayer prayer,
+    PrayerAlarmStatus status,
+  ) async {
     try {
-      await mainChannel.invokeMethod('setPrayerAlarms');
+      await mainChannel.invokeMethod('updatePrayerSetting', {
+        'name': prayer.capitalizedName,
+        'status': status.name,
+      });
+    } on PlatformException catch (_) {}
+  }
+
+  static Future<void> schedulePrayerAlarms() async {
+    try {
+      await mainChannel.invokeMethod('schedulePrayerAlarms');
     } on PlatformException catch (_) {}
   }
 }

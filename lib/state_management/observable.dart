@@ -1,10 +1,10 @@
-final class Observer<T> {
+final class Observable<T> {
   T _data;
   T get data => _data;
 
   final T Function(T)? _modify;
 
-  Observer(this._data, {final T Function(T)? modify}) : _modify = modify;
+  Observable(this._data, {final T Function(T)? modify}) : _modify = modify;
 
   final List<void Function(T data)> _observers = [];
 

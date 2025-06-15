@@ -3,8 +3,9 @@ package com.example.solar_alarm
 import com.example.solar_alarm.utils.Alarm.Companion.setAlarm
 import com.example.solar_alarm.utils.Alarm.Companion.getAllAlarms
 import com.example.solar_alarm.utils.Alarm.Companion.cancelAlarm
-import com.example.solar_alarm.utils.Prayer.Companion.getPrayerAlarms
-import com.example.solar_alarm.utils.Prayer.Companion.setPrayerAlarms
+import com.example.solar_alarm.utils.Prayer.Companion.getPrayerTimesWithSettings
+import com.example.solar_alarm.utils.Prayer.Companion.schedulePrayerAlarms
+import com.example.solar_alarm.utils.Prayer.Companion.updatePrayerSettings
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -38,7 +39,7 @@ class MainActivity : FlutterActivity() {
                         }
 
                         "getPrayerTimes" -> {
-                            getPrayerAlarms(this) { prayerTimes ->
+                            getPrayerTimesWithSettings(this) { prayerTimes ->
                                 println("Prayer times 2: $prayerTimes")
                                 prayerTimes?.let {
                                     result.success(it)
@@ -52,8 +53,16 @@ class MainActivity : FlutterActivity() {
                             }
                         }
 
-                        "setPrayerAlarms" -> {
-                            val prayerTimes = setPrayerAlarms(context)
+                        "updatePrayerSetting" -> {
+                            val args = call.arguments as Map<*, *>
+                            val prayerName = args["name"]!! as String
+                            val prayerStatus = args["status"]!! as String
+                            updatePrayerSettings(context, prayerName, prayerStatus)
+                            result.success(null)
+                        }
+
+                        "schedulePrayerAlarms" -> {
+                            val prayerTimes = schedulePrayerAlarms(context)
                             prayerTimes?.let {
                                 result.success(it)
                             } ?: {

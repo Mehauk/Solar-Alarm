@@ -11,6 +11,7 @@ import com.example.solar_alarm.utils.Alarm.Companion.setAlarm
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import android.provider.Settings
+import com.example.solar_alarm.utils.Constants.Companion.DAILY_PRAYERS
 import com.example.solar_alarm.utils.Constants.Companion.PRAYER_RESET
 import org.json.JSONObject
 
@@ -69,7 +70,35 @@ class Prayer {
                 .toMap()
         }
 
-        fun getPrayerAlarms(context: Context, callback: (Map<String, Long>?) -> Unit) {
+        fun updatePrayerSettings(context: Context, name: String, status: String) {
+            val prefs = context.getSharedPreferences("prayer_settings_prefs", Context.MODE_PRIVATE)
+            val statusKey = "alarm_status_$name"
+            prefs.edit().putString(statusKey, status).apply();
+        }
+
+        fun getPrayerTimesWithSettings(context: Context, callback: (Map<String, Any>?) -> Unit) {
+            val prefs = context.getSharedPreferences("prayer_settings_prefs", Context.MODE_PRIVATE)
+
+            getPrayerTimes(context) { prayerTimes ->
+                prayerTimes?.let {
+                    val result = mutableMapOf<String, Any>()
+                    result.putAll(it)
+
+                    val statuses = mutableMapOf<String, String>()
+                    for (prayer in it.keys) {
+                        val statusKey = "alarm_status_$prayer"
+                        val status = prefs.getString(statusKey, "disabled") ?: "disabled"
+                        statuses[prayer] = status
+                    }
+
+                    result["__statuses__"] = statuses
+
+                    callback(result)
+                } ?: callback(null)
+            }
+        }
+
+        private fun getPrayerTimes(context: Context, callback: (Map<String, Long>?) -> Unit) {
             val prefs = context.getSharedPreferences("location_prefs", Context.MODE_PRIVATE)
             val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
@@ -104,6 +133,9 @@ class Prayer {
                             .apply()
 
                         val prayerTimes = getPrayerMillis(latitude, longitude)
+
+                        // load 
+
                         callback(prayerTimes)
 
                         // Remove updates after first fix
@@ -143,13 +175,12 @@ class Prayer {
             }
         }
 
-        fun setPrayerAlarms(context: Context): Map<String, Long>? {
-            val dailyPrayers = setOf("Fajr", "Dhuhr", "Asr", "Maghrib", "Isha")
+        fun schedulePrayerAlarms(context: Context): Map<String, Long>? {
             var prayerTimes: Map<String, Long>? = null
-            getPrayerAlarms(context) { times ->
+            getPrayerTimes(context) { times ->
                 times?.let {
                     val currentTime = System.currentTimeMillis()
-                    it.filterKeys { prayerName -> prayerName in dailyPrayers } // Filter only daily prayers
+                    it.filterKeys { prayerName -> prayerName in DAILY_PRAYERS } // Filter only daily prayers
                         .forEach { (prayerName, time) ->
                             if (time > currentTime) { // Only set alarms for future times
                                 val prayerMap = mapOf(
@@ -159,7 +190,7 @@ class Prayer {
                                 setAlarm(JSONObject(prayerMap).toString(), context, false)
                             }
                         }
-                    prayerTimes = it.filterKeys { prayerName -> prayerName in dailyPrayers }
+                    prayerTimes = it.filterKeys { prayerName -> prayerName in DAILY_PRAYERS }
 
                     // Set an alarm at the start of the next day (00:00:00)
                     val calendar = Calendar.getInstance().apply {

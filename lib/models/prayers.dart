@@ -1,3 +1,5 @@
+import 'package:solar_alarm/mixins/toggleable_enum.dart';
+
 enum Prayer {
   fajr,
   sunrise,
@@ -10,6 +12,22 @@ enum Prayer {
   String get capitalizedName => name._capitalized;
 }
 
+enum PrayerAlarmStatus with Toggleable<PrayerAlarmStatus> {
+  disabled,
+  vibrate,
+  sound;
+
+  @override
+  PrayerAlarmStatus get me => this;
+
+  @override
+  List<PrayerAlarmStatus> get ordered => values;
+
+  static PrayerAlarmStatus fromName(String name) {
+    return PrayerAlarmStatus.values.firstWhere((v) => v.name == name);
+  }
+}
+
 extension on String {
   String get _capitalized {
     if (length <= 1) return toUpperCase();
@@ -19,6 +37,7 @@ extension on String {
 
 class Prayers {
   final Map<Prayer, DateTime> _times;
+  final Map<Prayer, PrayerAlarmStatus> statuses;
 
   DateTime get fajr => _times[Prayer.fajr]!;
   DateTime get sunrise => _times[Prayer.sunrise]!;
@@ -37,7 +56,7 @@ class Prayers {
     midnight,
   ];
 
-  static List<Prayer> get actual => [
+  static List<Prayer> get _actualPrayers => [
     Prayer.fajr,
     Prayer.dhuhr,
     Prayer.asr,
@@ -87,10 +106,11 @@ class Prayers {
     return currentPrayer;
   }
 
-  Prayers._(this._times);
+  Prayers._(this._times, this.statuses);
 
   factory Prayers(Map<dynamic, dynamic> input) {
     Map<Prayer, DateTime> times = {};
+    Map<Prayer, PrayerAlarmStatus> statuses = {};
 
     for (var prayer in _orderedPrayers) {
       times[prayer] = DateTime.fromMillisecondsSinceEpoch(
@@ -98,16 +118,25 @@ class Prayers {
       );
     }
 
-    final prayers = Prayers._(times);
+    for (var prayer in _actualPrayers) {
+      statuses[prayer] = PrayerAlarmStatus.fromName(
+        input["__statuses__"][prayer.capitalizedName] ??
+            PrayerAlarmStatus.disabled.name,
+      );
+    }
+
+    final prayers = Prayers._(times, statuses);
     assert(prayers.ordered.length == orderedPrayers.length);
     return prayers;
   }
 
   @override
   bool operator ==(Object other) {
-    return other is Prayers && other.ordered == ordered;
+    return other is Prayers &&
+        other.ordered == ordered &&
+        statuses == other.statuses;
   }
 
   @override
-  int get hashCode => ordered.hashCode;
+  int get hashCode => Object.hash(ordered.hashCode, statuses.hashCode);
 }

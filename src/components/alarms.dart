@@ -28,7 +28,7 @@ class _AlarmsWidgetState extends State<AlarmsWidget> {
   void initState() {
     super.initState();
 
-    alarms = alarmsObserver.data;
+    alarms = alarmsObservable.data;
     for (var a in alarms) {
       _alarmKeys[a] = GlobalKey();
     }
@@ -39,12 +39,12 @@ class _AlarmsWidgetState extends State<AlarmsWidget> {
       }
     };
 
-    alarmsObserver.addObserver(obs);
+    alarmsObservable.addObserver(obs);
   }
 
   @override
   void dispose() {
-    alarmsObserver.removeObserver(obs);
+    alarmsObservable.removeObserver(obs);
     super.dispose();
   }
 
@@ -83,19 +83,6 @@ class _AlarmsWidgetState extends State<AlarmsWidget> {
                         });
                       },
                     ),
-                    // const SizedBox(width: 4),
-                    // SIconButton(
-                    //   Icons.more_horiz,
-                    //   onTap:
-                    //       () => showDialog(
-                    //         context: context,
-                    //         builder: (context) {
-                    //           return TimePickerDialog(
-                    //             initialTime: TimeOfDay.now(),
-                    //           );
-                    //         },
-                    //       ),
-                    // ),
                   ],
                 ),
               ],
@@ -276,7 +263,14 @@ class AlarmTile extends StatelessWidget {
                             ],
 
                             const SizedBox(width: 6),
-                            SSwitch(alarm.enabled, onChanged: onToggle),
+                            SSwitch(
+                              alarm.enabled
+                                  ? SSwitchStatus.on
+                                  : SSwitchStatus.off,
+                              onChanged: (s) {
+                                onToggle(s == SSwitchStatus.on);
+                              },
+                            ),
                           ],
                         ),
                       ],
