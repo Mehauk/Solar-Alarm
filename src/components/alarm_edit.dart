@@ -157,14 +157,15 @@ class _AlarmEditState extends State<AlarmEdit> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 400 + MediaQuery.of(context).viewInsets.bottom,
+    return Padding(
+      padding: MediaQuery.of(context).viewInsets,
       child: GradientBorderedBox(
         child: SizedBox(
           width: double.infinity,
           child: Padding(
             padding: const EdgeInsets.all(18.0),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -180,15 +181,15 @@ class _AlarmEditState extends State<AlarmEdit> {
                   ],
                 ),
                 const SizedBox(height: 8),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: SizedBox(
+                SizedBox(
                       width: double.infinity,
-                      child: Center(
-                        child: Wrap(
+                  child: Column(
+                    children: [
+                      Wrap(
                           runSpacing: 12,
                           spacing: 12,
                           crossAxisAlignment: WrapCrossAlignment.center,
+                        alignment: WrapAlignment.center,
                           children: [
                             Clock(
                               clockDiameter: 150,
@@ -231,9 +232,7 @@ class _AlarmEditState extends State<AlarmEdit> {
                                                         : now,
                                                 firstDate: now,
                                                 lastDate: now.add(
-                                                  const Duration(
-                                                    days: 365 * 100,
-                                                  ),
+                                                const Duration(days: 365 * 100),
                                                 ),
                                                 onDateChanged: (date) {
                                                   updateDate(date);
@@ -324,10 +323,6 @@ class _AlarmEditState extends State<AlarmEdit> {
                             ),
                           ],
                         ),
-                      ),
-                    ),
-                  ),
-                ),
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -362,6 +357,9 @@ class _AlarmEditState extends State<AlarmEdit> {
                     ),
                   ],
                 ),
+              ],
+            ),
+          ),
               ],
             ),
           ),
