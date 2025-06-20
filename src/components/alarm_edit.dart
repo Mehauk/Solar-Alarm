@@ -182,184 +182,192 @@ class _AlarmEditState extends State<AlarmEdit> {
                 ),
                 const SizedBox(height: 8),
                 SizedBox(
-                      width: double.infinity,
+                  width: double.infinity,
                   child: Column(
                     children: [
                       Wrap(
-                          runSpacing: 12,
-                          spacing: 12,
-                          crossAxisAlignment: WrapCrossAlignment.center,
+                        runSpacing: 12,
+                        spacing: 12,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         alignment: WrapAlignment.center,
-                          children: [
-                            Clock(
-                              clockDiameter: 150,
-                              time: TimeOfDay.fromDateTime(alarm.date),
-                              editingPart: currentEdit,
-                              onUpdate: updateTime,
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        if (alarm.date.deicticWord != null)
+                        children: [
+                          Clock(
+                            clockDiameter: 150,
+                            time: TimeOfDay.fromDateTime(alarm.date),
+                            editingPart: currentEdit,
+                            onUpdate: updateTime,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          if (alarm.date.deicticWord != null)
+                                            SText(
+                                              alarm.date.deicticWord!,
+                                              fontSize: 12,
+                                            ),
                                           SText(
-                                            alarm.date.deicticWord!,
+                                            alarm.date.formattedDate,
                                             fontSize: 12,
                                           ),
-                                        SText(
-                                          alarm.date.formattedDate,
-                                          fontSize: 12,
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(width: 4),
-                                    IconButton(
-                                      onPressed:
-                                          () => showModalBottomSheet(
-                                            context: context,
-                                            builder: (context) {
-                                              final now = DateTime.now();
-                                              return CalendarDatePicker(
-                                                initialDate:
-                                                    alarm.date.isAfter(now)
-                                                        ? alarm.date
-                                                        : now,
-                                                firstDate: now,
-                                                lastDate: now.add(
-                                                const Duration(days: 365 * 100),
-                                                ),
-                                                onDateChanged: (date) {
-                                                  updateDate(date);
-                                                  Navigator.pop(context);
-                                                },
-                                              );
-                                            },
+                                        ],
+                                      ),
+                                      const SizedBox(width: 4),
+                                      IconButton(
+                                        onPressed:
+                                            () => showModalBottomSheet(
+                                              context: context,
+                                              builder: (context) {
+                                                final now = DateTime.now();
+                                                return CalendarDatePicker(
+                                                  initialDate:
+                                                      alarm.date.isAfter(now)
+                                                          ? alarm.date
+                                                          : now,
+                                                  firstDate: now,
+                                                  lastDate: now.add(
+                                                    const Duration(
+                                                      days: 365 * 100,
+                                                    ),
+                                                  ),
+                                                  onDateChanged: (date) {
+                                                    updateDate(date);
+                                                    Navigator.pop(context);
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                        icon: const SIcon(Icons.calendar_month),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      _TimeCapsule(
+                                        alarm.time.hour12,
+                                        editType: TimePart.hour,
+                                        currentEdit: currentEdit,
+                                        onTap:
+                                            () => setState(
+                                              () => currentEdit = TimePart.hour,
+                                            ),
+                                      ),
+                                      SText(":", fontSize: 36),
+                                      _TimeCapsule(
+                                        alarm.time.minute,
+                                        editType: TimePart.minute,
+                                        currentEdit: currentEdit,
+                                        onTap:
+                                            () => setState(
+                                              () =>
+                                                  currentEdit = TimePart.minute,
+                                            ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Column(
+                                        children: [
+                                          _TimeIndicatorWidget(
+                                            DayPeriod.am,
+                                            timeInd,
+                                            updateDayPeriod,
                                           ),
-                                      icon: const SIcon(Icons.calendar_month),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    _TimeCapsule(
-                                      alarm.time.hour12,
-                                      editType: TimePart.hour,
-                                      currentEdit: currentEdit,
-                                      onTap:
-                                          () => setState(
-                                            () => currentEdit = TimePart.hour,
+                                          const SizedBox(height: 1),
+                                          _TimeIndicatorWidget(
+                                            DayPeriod.pm,
+                                            timeInd,
+                                            updateDayPeriod,
                                           ),
-                                    ),
-                                    SText(":", fontSize: 36),
-                                    _TimeCapsule(
-                                      alarm.time.minute,
-                                      editType: TimePart.minute,
-                                      currentEdit: currentEdit,
-                                      onTap:
-                                          () => setState(
-                                            () => currentEdit = TimePart.minute,
-                                          ),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Column(
-                                      children: [
-                                        _TimeIndicatorWidget(
-                                          DayPeriod.am,
-                                          timeInd,
-                                          updateDayPeriod,
-                                        ),
-                                        const SizedBox(height: 1),
-                                        _TimeIndicatorWidget(
-                                          DayPeriod.pm,
-                                          timeInd,
-                                          updateDayPeriod,
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(width: 6),
-                                  ],
-                                ),
-                                const SizedBox(height: 16),
+                                        ],
+                                      ),
+                                      const SizedBox(width: 6),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
 
-                                Material(
+                              Material(
+                                color: Colors.transparent,
+                                child: RepeatingDaysIndicator(
+                                  alarm.repeatDays,
+                                  fontSize: 16,
+                                  padding: 12,
+                                  onDayToggled: updateRepeatingDay,
+                                ),
+                              ),
+
+                              const SizedBox(height: 16),
+                              SizedBox(
+                                width: 170,
+                                child: STextField(
+                                  labelText: "Name required",
+                                  controller: nameController,
+                                ),
+                              ),
+
+                              const SizedBox(height: 8),
+                              SizedBox(
+                                width: 170,
+                                child: Material(
                                   color: Colors.transparent,
-                                  child: RepeatingDaysIndicator(
-                                    alarm.repeatDays,
-                                    fontSize: 16,
-                                    padding: 5.5,
-                                    onDayToggled: updateRepeatingDay,
+                                  child: AlarmStatusesIndicator(
+                                    alarm.statuses,
+                                    onTap: updateStatus,
+                                    enabled: true,
                                   ),
                                 ),
-
-                                const SizedBox(height: 16),
-                                SizedBox(
-                                  width: 170,
-                                  child: STextField(
-                                    labelText: "Name required",
-                                    controller: nameController,
-                                  ),
-                                ),
-
-                                const SizedBox(height: 8),
-                                SizedBox(
-                                  width: 170,
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: AlarmStatusesIndicator(
-                                      alarm.statuses,
-                                      onTap: updateStatus,
-                                      enabled: true,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    SButton(
-                      onTap: () => Navigator.pop(context),
-                      destructive: true,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 30,
-                        vertical: 14,
-                      ),
-                      child: SizedBox(
-                        width: 70,
-                        child: Center(
-                          child: SText(
-                            "Cancel",
-                            fontSize: 22,
-                            color: const Color(0xDDFD251E),
+                              ),
+                            ],
                           ),
-                        ),
+                        ],
                       ),
-                    ),
-                    SButton(
-                      onTap:
-                          alarm.name.isEmpty
-                              ? null
-                              : () => saveChanges(context),
-                      child: SizedBox(
-                        width: 50,
-                        child: Center(child: SText("Save", fontSize: 22)),
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          SButton(
+                            onTap: () => Navigator.pop(context),
+                            destructive: true,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 30,
+                              vertical: 14,
+                            ),
+                            child: SizedBox(
+                              width: 70,
+                              child: Center(
+                                child: SText(
+                                  "Cancel",
+                                  fontSize: 22,
+                                  color: const Color(0xDDFD251E),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SButton(
+                            onTap:
+                                alarm.name.isEmpty
+                                    ? null
+                                    : () => saveChanges(context),
+                            child: SizedBox(
+                              width: 50,
+                              child: Center(child: SText("Save", fontSize: 22)),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
               ],
             ),
           ),
@@ -584,7 +592,7 @@ class RepeatingIntervalIndicator extends StatelessWidget {
   }
 }
 
-class RepeatingDaysIndicator extends StatelessWidget {
+class RepeatingDaysIndicator extends StatefulWidget {
   final Set<Weekday> repeatDays;
   final double fontSize;
   final double padding;
@@ -599,27 +607,140 @@ class RepeatingDaysIndicator extends StatelessWidget {
   });
 
   @override
+  State<RepeatingDaysIndicator> createState() => _RepeatingDaysIndicatorState();
+}
+
+class _RepeatingDaysIndicatorState extends State<RepeatingDaysIndicator> {
+  final Map<Weekday, GlobalKey> _dayKeys = {
+    for (var wd in Weekday.orderedWeekdays) wd: GlobalKey(),
+  };
+  final Set<Weekday> _draggedDays = {};
+  Weekday? _lastDay;
+  bool? _dragToggleOn; // true: select, false: deselect
+
+  int _weekdayIndex(Weekday day) => Weekday.orderedWeekdays.indexOf(day);
+
+  Weekday? _findDayAtPosition(Offset globalPosition) {
+    Weekday? firstDay = Weekday.orderedWeekdays.first;
+    Weekday? lastDay = Weekday.orderedWeekdays.last;
+    double? minX, maxX;
+    for (final wd in Weekday.orderedWeekdays) {
+      final key = _dayKeys[wd];
+      final ctx = key?.currentContext;
+      if (ctx != null) {
+        final box = ctx.findRenderObject() as RenderBox?;
+        if (box != null) {
+          final pos = box.localToGlobal(Offset.zero);
+          final size = box.size;
+          final rect = pos & size;
+          minX =
+              minX == null ? rect.left : (rect.left < minX ? rect.left : minX);
+          maxX =
+              maxX == null
+                  ? rect.right
+                  : (rect.right > maxX ? rect.right : maxX);
+          if (rect.contains(globalPosition)) {
+            return wd;
+          }
+        }
+      }
+    }
+    // If pointer is left of all days, return first day
+    if (minX != null && globalPosition.dx < minX) return firstDay;
+    // If pointer is right of all days, return last day
+    if (maxX != null && globalPosition.dx > maxX) return lastDay;
+    return null;
+  }
+
+  void _handlePointer(Offset globalPosition, {bool forceFirst = false}) {
+    final day = _findDayAtPosition(globalPosition);
+    if (day != null) {
+      if (_lastDay == null || forceFirst) {
+        // Determine toggle mode on first drag
+        _dragToggleOn = !widget.repeatDays.contains(day);
+        if (_dragToggleOn == true && !widget.repeatDays.contains(day)) {
+          if (!_draggedDays.contains(day)) {
+            _draggedDays.add(day);
+            widget.onDayToggled?.call(day);
+          }
+        } else if (_dragToggleOn == false && widget.repeatDays.contains(day)) {
+          if (!_draggedDays.contains(day)) {
+            _draggedDays.add(day);
+            widget.onDayToggled?.call(day);
+          }
+        }
+        _lastDay = day;
+      } else if (!_draggedDays.contains(day)) {
+        // Trigger all days between _lastDay and day
+        int lastIdx = _weekdayIndex(_lastDay!);
+        int currIdx = _weekdayIndex(day);
+        if (lastIdx > currIdx) {
+          final tmp = lastIdx;
+          lastIdx = currIdx;
+          currIdx = tmp;
+        }
+        for (int i = lastIdx; i <= currIdx; i++) {
+          final wd = Weekday.orderedWeekdays[i];
+          bool shouldToggle =
+              _dragToggleOn == true
+                  ? !widget.repeatDays.contains(wd)
+                  : widget.repeatDays.contains(wd);
+          if (!_draggedDays.contains(wd) && shouldToggle) {
+            _draggedDays.add(wd);
+            widget.onDayToggled?.call(wd);
+          }
+        }
+        _lastDay = day;
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children:
-          Weekday.orderedWeekdays.map((wd) {
-            return InkWell(
-              onTap: onDayToggled != null ? () => onDayToggled!(wd) : null,
-              child: Padding(
-                padding: EdgeInsets.all(padding),
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onPanStart: (details) {
+        _draggedDays.clear();
+        _lastDay = null;
+        _dragToggleOn = null;
+        _handlePointer(details.globalPosition, forceFirst: true);
+      },
+      onPanUpdate: (details) {
+        _handlePointer(details.globalPosition);
+      },
+      onPanEnd: (_) {
+        _draggedDays.clear();
+        _lastDay = null;
+        _dragToggleOn = null;
+      },
+      onTapUp: (details) {
+        _draggedDays.clear();
+        _lastDay = null;
+        _dragToggleOn = null;
+        _handlePointer(details.globalPosition, forceFirst: true);
+      },
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children:
+            Weekday.orderedWeekdays.map((wd) {
+              return Padding(
+                key: _dayKeys[wd],
+                padding: EdgeInsets.symmetric(
+                  horizontal: widget.padding,
+                  vertical: widget.padding,
+                ),
                 child: SText(
                   "\u2009${wd.oneChar.capitalized}",
-                  fontSize: fontSize,
+                  fontSize: widget.fontSize,
                   weight: STextWeight.normal,
                   color:
-                      repeatDays.contains(wd)
+                      widget.repeatDays.contains(wd)
                           ? const Color(0xFFFD251E)
                           : const Color(0xFF8E98A1),
                 ),
-              ),
-            );
-          }).toList(),
+              );
+            }).toList(),
+      ),
     );
   }
 }

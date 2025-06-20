@@ -8,13 +8,13 @@ enum Weekday {
   sunday;
 
   static List<Weekday> get orderedWeekdays => [
+    sunday,
     monday,
     tuesday,
     wednesday,
     thursday,
     friday,
     saturday,
-    sunday,
   ];
 
   String get oneChar => name[0];
