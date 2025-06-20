@@ -122,19 +122,28 @@ class _PrayerTiming extends StatelessWidget {
             width: 52,
             child:
                 status != null
-                    ? Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SSwitch(
-                          status!,
-                          onChanged: onUpdateStatus ?? (_) {},
-                          trackSize: const Size(27, 7),
-                          toggleSize: const Size(14, 14),
+                    ? InkWell(
+                      onTap:
+                          status != null
+                              ? () => onUpdateStatus!(status!.toggle)
+                              : null,
+                      child: SizedBox(
+                        height: 28,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SSwitch(
+                              status!,
+                              onChanged: onUpdateStatus ?? (_) {},
+                              trackSize: const Size(27, 7),
+                              toggleSize: const Size(14, 14),
+                            ),
+                            const SizedBox(width: 4),
+                            if (status!.icon != null)
+                              SIcon(status!.icon!, radius: 7),
+                          ],
                         ),
-                        const SizedBox(width: 4),
-                        if (status!.icon != null)
-                          SIcon(status!.icon!, radius: 7),
-                      ],
+                      ),
                     )
                     : null,
           ),

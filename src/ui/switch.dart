@@ -58,6 +58,7 @@ class SSwitch<T extends Toggleable<T>> extends StatelessWidget {
     final double leftPosition = value.vindex * portion;
     return GestureDetector(
       onTap: () => onChanged(value.toggle),
+      onHorizontalDragEnd: (details) => onChanged(value.toggle),
       child: Stack(
         alignment: Alignment.center,
         children: [

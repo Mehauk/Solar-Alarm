@@ -17,7 +17,6 @@ class AlarmReceiver : BroadcastReceiver() {
 
         Alarm.getAlarm(alarmName!!, context)?.let {
             val alarm = JSONObject(it)
-            val alarmIntent = Intent(context, AlarmActivity::class.java)
             val alarmTime = alarm.getString("timeInMillis").toLong()
             val alarmStatuses = alarm.getJSONArray("statuses")
             val statusList = mutableListOf<String>()
@@ -31,14 +30,17 @@ class AlarmReceiver : BroadcastReceiver() {
             val alarmSoundStatus = "sound" in statusList
             val alarmVibrateStatus = "vibrate" in statusList
 
-            alarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            if (alarmTime > System.currentTimeMillis()) {
+                val alarmIntent = Intent(context, AlarmActivity::class.java)
+                alarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
-            alarmIntent.putExtra("alarmName", alarmName)
-            alarmIntent.putExtra("alarmTime", alarmTime)
-            alarmIntent.putExtra("alarmSoundStatus", alarmSoundStatus)
-            alarmIntent.putExtra("alarmVibrateStatus", alarmVibrateStatus)
+                alarmIntent.putExtra("alarmName", alarmName)
+                alarmIntent.putExtra("alarmTime", alarmTime)
+                alarmIntent.putExtra("alarmSoundStatus", alarmSoundStatus)
+                alarmIntent.putExtra("alarmVibrateStatus", alarmVibrateStatus)
 
-            context.startActivity(alarmIntent)
+                context.startActivity(alarmIntent)
+            }
 
             val repeatInterval = alarm.optString("repeatInterval").toLongOrNull()
 

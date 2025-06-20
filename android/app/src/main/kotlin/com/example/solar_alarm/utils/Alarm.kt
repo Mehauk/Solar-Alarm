@@ -22,10 +22,8 @@ class Alarm {
             val timeInMillis = alarm.getString("timeInMillis").toLong()
 
             val alarmEnabled = alarm.getBoolean("enabled")
-            println("BOGOGOSO alarmENABLED " + alarmEnabled)
 
             if (alarmEnabled) {
-                println("BOGOGOSO alarmENABLED2 " + alarmEnabled)
                 val intent = Intent(context, AlarmReceiver::class.java)
                 intent.putExtra("alarmName", alarmName)
 
