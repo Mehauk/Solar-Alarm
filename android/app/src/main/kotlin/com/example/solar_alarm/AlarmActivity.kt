@@ -48,12 +48,9 @@ class AlarmActivity : Activity() {
         setContentView(R.layout.activity_alarm)
 
         val alarmName = intent.getStringExtra("alarmName") ?: "ALARM!"
-        var alarmTime = System.currentTimeMillis()
-        Alarm.getAlarm(alarmName, applicationContext)?.let {
-            val alarm = JSONObject(it)
-            alarmTime = alarm.getString("timeInMillis").toLong()
-        }
-
+        val alarmTime = intent.getLongExtra("alarmTime", 0);
+        val alarmSoundStatus = intent.getBooleanExtra("alarmSoundStatus", false);
+        val alarmVibrateStatus = intent.getBooleanExtra("alarmVibrateStatus", false);
 
         findViewById<TextView>(R.id.alarmTitle).text = alarmName
 
@@ -63,12 +60,7 @@ class AlarmActivity : Activity() {
 
         // Vibrate and play sound if not silent
         val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
-        val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            getSystemService(Vibrator::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            getSystemService(VIBRATOR_SERVICE) as Vibrator
-        }
+
 
         if (audioManager.ringerMode != AudioManager.RINGER_MODE_SILENT) {
             // Play alarm sound repeatedly every 3 seconds
@@ -88,16 +80,27 @@ class AlarmActivity : Activity() {
                 mediaPlayer.seekTo(0) // Reset to the beginning
             }
 
-            handler.post(playSoundRunnable)
+            if (alarmSoundStatus) {
+                handler.post(playSoundRunnable)
+            }
 
-            // Vibrate
-            val vibrationPattern = longArrayOf(0, 500, 1000) // Delay, Vibrate, Sleep
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                val effect = android.os.VibrationEffect.createWaveform(vibrationPattern, 0) // 0 to repeat from start
-                vibrator.vibrate(effect)
+
+            val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                getSystemService(Vibrator::class.java)
             } else {
                 @Suppress("DEPRECATION")
-                vibrator.vibrate(vibrationPattern, 0) // Pass -1 for no repeat, or 0 to repeat from start
+                getSystemService(VIBRATOR_SERVICE) as Vibrator
+            }
+            // Vibrate
+            val vibrationPattern = longArrayOf(0, 500, 1000) // Delay, Vibrate, Sleep
+            if (alarmVibrateStatus) {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    val effect = android.os.VibrationEffect.createWaveform(vibrationPattern, 0) // 0 to repeat from start
+                    vibrator.vibrate(effect)
+                } else {
+                    @Suppress("DEPRECATION")
+                    vibrator.vibrate(vibrationPattern, 0) // Pass -1 for no repeat, or 0 to repeat from start
+                }
             }
 
             // Stop vibration and sound when activity is destroyed

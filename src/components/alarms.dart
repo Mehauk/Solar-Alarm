@@ -193,6 +193,7 @@ class AlarmTile extends StatelessWidget {
             color: Colors.transparent,
             child: InkWell(
               onTap: onTap,
+              onLongPress: () {},
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(15, 15, 15, 11),
                 child: Column(

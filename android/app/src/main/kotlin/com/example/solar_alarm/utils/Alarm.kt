@@ -17,25 +17,30 @@ class Alarm {
         }
 
         fun setAlarm(alarmJson: String, context: Context, save: Boolean = true) {
-            val intent = Intent(context, AlarmReceiver::class.java)
-
             val alarm = JSONObject(alarmJson)
             val alarmName = alarm.getString("name")
             val timeInMillis = alarm.getString("timeInMillis").toLong()
 
-            intent.putExtra("alarmName", alarmName)
+            val alarmEnabled = alarm.getBoolean("enabled")
+            println("BOGOGOSO alarmENABLED " + alarmEnabled)
 
-            val pendingIntent = PendingIntent.getBroadcast(
-                context,
-                alarmName.hashCode(),
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
+            if (alarmEnabled) {
+                println("BOGOGOSO alarmENABLED2 " + alarmEnabled)
+                val intent = Intent(context, AlarmReceiver::class.java)
+                intent.putExtra("alarmName", alarmName)
 
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                val pendingIntent = PendingIntent.getBroadcast(
+                    context,
+                    alarmName.hashCode(),
+                    intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
 
-            val aci = AlarmManager.AlarmClockInfo(timeInMillis, pendingIntent)
-            alarmManager.setAlarmClock(aci, pendingIntent)
+                val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+                val aci = AlarmManager.AlarmClockInfo(timeInMillis, pendingIntent)
+                alarmManager.setAlarmClock(aci, pendingIntent)
+            }
 
             if (save) getAlarmPrefs(context).edit().putString("$ALARM_PREFIX$alarmName", alarmJson).apply()
         }
@@ -69,11 +74,6 @@ class Alarm {
             getAlarmPrefs(context).edit().remove(alarmName).apply()
 
             println("Alarm $alarmName canceled and removed from preferences.")
-        }
-
-        // NEEDS WORK!!!!
-        fun disableAlarm(alarmName: String, context: Context) {
-
         }
 
         // NEEDS WORK!!!!

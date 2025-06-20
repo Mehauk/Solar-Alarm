@@ -43,6 +43,9 @@
 - [ ] Fix permissions 
 - [ ] Fix all NEEDS WORK comments
 - [x] Alarm set collisions
+- [ ] Fix for setting an alarm for before now!
+- [ ] Fix for __snoozed
 
 FUTURE
+- [ ] Duplicate
 - [ ] multiselect + actions

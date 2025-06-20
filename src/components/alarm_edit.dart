@@ -25,6 +25,7 @@ class _AlarmEditState extends State<AlarmEdit> {
     name: "",
     enabled: true,
     timeInMillis: DateTime.now().millisecondsSinceEpoch,
+    statuses: {const AlarmStatus.sound(), const AlarmStatus.vibrate()},
   );
   TimePart currentEdit = TimePart.hour;
   DayPeriod timeInd = DayPeriod.am;
@@ -179,131 +180,153 @@ class _AlarmEditState extends State<AlarmEdit> {
                   ],
                 ),
                 const SizedBox(height: 8),
-                Wrap(
-                  runSpacing: 12,
-                  spacing: 12,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Clock(
-                      clockDiameter: 150,
-                      time: TimeOfDay.fromDateTime(alarm.date),
-                      editingPart: currentEdit,
-                      onUpdate: updateTime,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: Center(
+                        child: Wrap(
+                          runSpacing: 12,
+                          spacing: 12,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (alarm.date.deicticWord != null)
-                                  SText(alarm.date.deicticWord!, fontSize: 12),
-                                SText(alarm.date.formattedDate, fontSize: 12),
-                              ],
+                            Clock(
+                              clockDiameter: 150,
+                              time: TimeOfDay.fromDateTime(alarm.date),
+                              editingPart: currentEdit,
+                              onUpdate: updateTime,
                             ),
-                            const SizedBox(width: 4),
-                            IconButton(
-                              onPressed:
-                                  () => showModalBottomSheet(
-                                    context: context,
-                                    builder: (context) {
-                                      return CalendarDatePicker(
-                                        initialDate: alarm.date,
-                                        firstDate: DateTime.now(),
-                                        lastDate: DateTime.now().add(
-                                          const Duration(days: 365 * 100),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        if (alarm.date.deicticWord != null)
+                                          SText(
+                                            alarm.date.deicticWord!,
+                                            fontSize: 12,
+                                          ),
+                                        SText(
+                                          alarm.date.formattedDate,
+                                          fontSize: 12,
                                         ),
-                                        onDateChanged: (date) {
-                                          updateDate(date);
-                                          Navigator.pop(context);
-                                        },
-                                      );
-                                    },
-                                  ),
-                              icon: const SIcon(Icons.calendar_month),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _TimeCapsule(
-                              alarm.time.hour12,
-                              editType: TimePart.hour,
-                              currentEdit: currentEdit,
-                              onTap:
-                                  () => setState(
-                                    () => currentEdit = TimePart.hour,
-                                  ),
-                            ),
-                            SText(":", fontSize: 36),
-                            _TimeCapsule(
-                              alarm.time.minute,
-                              editType: TimePart.minute,
-                              currentEdit: currentEdit,
-                              onTap:
-                                  () => setState(
-                                    () => currentEdit = TimePart.minute,
-                                  ),
-                            ),
-                            const SizedBox(width: 6),
-                            Column(
-                              children: [
-                                _TimeIndicatorWidget(
-                                  DayPeriod.am,
-                                  timeInd,
-                                  updateDayPeriod,
+                                      ],
+                                    ),
+                                    const SizedBox(width: 4),
+                                    IconButton(
+                                      onPressed:
+                                          () => showModalBottomSheet(
+                                            context: context,
+                                            builder: (context) {
+                                              final now = DateTime.now();
+                                              return CalendarDatePicker(
+                                                initialDate:
+                                                    alarm.date.isAfter(now)
+                                                        ? alarm.date
+                                                        : now,
+                                                firstDate: now,
+                                                lastDate: now.add(
+                                                  const Duration(
+                                                    days: 365 * 100,
+                                                  ),
+                                                ),
+                                                onDateChanged: (date) {
+                                                  updateDate(date);
+                                                  Navigator.pop(context);
+                                                },
+                                              );
+                                            },
+                                          ),
+                                      icon: const SIcon(Icons.calendar_month),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 1),
-                                _TimeIndicatorWidget(
-                                  DayPeriod.pm,
-                                  timeInd,
-                                  updateDayPeriod,
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    _TimeCapsule(
+                                      alarm.time.hour12,
+                                      editType: TimePart.hour,
+                                      currentEdit: currentEdit,
+                                      onTap:
+                                          () => setState(
+                                            () => currentEdit = TimePart.hour,
+                                          ),
+                                    ),
+                                    SText(":", fontSize: 36),
+                                    _TimeCapsule(
+                                      alarm.time.minute,
+                                      editType: TimePart.minute,
+                                      currentEdit: currentEdit,
+                                      onTap:
+                                          () => setState(
+                                            () => currentEdit = TimePart.minute,
+                                          ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Column(
+                                      children: [
+                                        _TimeIndicatorWidget(
+                                          DayPeriod.am,
+                                          timeInd,
+                                          updateDayPeriod,
+                                        ),
+                                        const SizedBox(height: 1),
+                                        _TimeIndicatorWidget(
+                                          DayPeriod.pm,
+                                          timeInd,
+                                          updateDayPeriod,
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(width: 6),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+
+                                Material(
+                                  color: Colors.transparent,
+                                  child: RepeatingDaysIndicator(
+                                    alarm.repeatDays,
+                                    fontSize: 16,
+                                    padding: 5.5,
+                                    onDayToggled: updateRepeatingDay,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 16),
+                                SizedBox(
+                                  width: 170,
+                                  child: STextField(
+                                    labelText: "Name required",
+                                    controller: nameController,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 8),
+                                SizedBox(
+                                  width: 170,
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: AlarmStatusesIndicator(
+                                      alarm.statuses,
+                                      onTap: updateStatus,
+                                      enabled: true,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
-                            const SizedBox(width: 6),
                           ],
                         ),
-                        const SizedBox(height: 16),
-
-                        Material(
-                          color: Colors.transparent,
-                          child: RepeatingDaysIndicator(
-                            alarm.repeatDays,
-                            fontSize: 16,
-                            padding: 5.5,
-                            onDayToggled: updateRepeatingDay,
-                          ),
-                        ),
-
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: 170,
-                          child: STextField(
-                            labelText: "Name required",
-                            controller: nameController,
-                          ),
-                        ),
-
-                        const SizedBox(height: 8),
-                        SizedBox(
-                          width: 170,
-                          child: Material(
-                            color: Colors.transparent,
-                            child: AlarmStatusesIndicator(
-                              alarm.statuses,
-                              onTap: updateStatus,
-                              enabled: true,
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ],
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Row(
@@ -459,7 +482,7 @@ class AlarmStatusesIndicator extends StatelessWidget {
             if (statuses.contains(as0)) {
               child = SIcon(
                 as0.icon,
-                color: const Color(0xFFFD251E),
+                color: enabled ? const Color(0xFFFD251E) : Colors.black38,
                 radius: 11,
               );
             } else {

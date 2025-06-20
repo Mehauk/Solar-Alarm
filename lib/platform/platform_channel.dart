@@ -35,6 +35,7 @@ abstract class PlatformChannel {
           [];
     } on PlatformException catch (_) {}
 
+    print("BOGOGOSO$alarms");
     return alarms;
   }
 
