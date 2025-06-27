@@ -40,8 +40,8 @@ class MainActivity : FlutterActivity() {
 
                         "getPrayerTimes" -> {
                             getPrayerTimesWithSettings(this) { prayerTimes ->
-                                println("Prayer times 2: $prayerTimes")
                                 prayerTimes?.let {
+                                    schedulePrayerAlarms(context, prayerTimes)
                                     result.success(it)
                                 } ?: run {
                                     result.error(
@@ -59,19 +59,6 @@ class MainActivity : FlutterActivity() {
                             val prayerStatus = args["status"]!! as String
                             updatePrayerSettings(context, prayerName, prayerStatus)
                             result.success(null)
-                        }
-
-                        "schedulePrayerAlarms" -> {
-                            val prayerTimes = schedulePrayerAlarms(context)
-                            prayerTimes?.let {
-                                result.success(it)
-                            } ?: {
-                                result.error(
-                                    "LOCATION_ERROR",
-                                    "Most likely failed to retrieve location",
-                                    null
-                                )
-                            }
                         }
 
                     }

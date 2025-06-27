@@ -16,9 +16,10 @@ class Alarm {
             return context.getSharedPreferences("alarm_prefs", Context.MODE_PRIVATE)
         }
 
-        fun setAlarm(alarmJson: String, context: Context, save: Boolean = true) {
+        fun setAlarm(alarmJson: String, context: Context, save: Boolean = true, asExtra: Boolean = false) {
             val alarm = JSONObject(alarmJson)
             val alarmName = alarm.getString("name")
+            cancelAlarm(alarmName, context)
             val timeInMillis = alarm.getString("timeInMillis").toLong()
 
             val alarmEnabled = alarm.getBoolean("enabled")
@@ -26,6 +27,10 @@ class Alarm {
             if (alarmEnabled) {
                 val intent = Intent(context, AlarmReceiver::class.java)
                 intent.putExtra("alarmName", alarmName)
+
+                if (asExtra) {
+                    intent.putExtra("alarmJson", alarmJson)
+                }
 
                 val pendingIntent = PendingIntent.getBroadcast(
                     context,

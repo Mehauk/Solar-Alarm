@@ -14,6 +14,7 @@
 - [x] Ask for location perms (and device location)
 - [x] Reset alarms after they go off (set extra long)
   - [x] Change to repeatInterval?
+
 - [x] TEST
   - [ ] Alarm
   - [x] Prayer Times
@@ -24,13 +25,12 @@
   - [x] Prayer Alarms After Shutdown
   - [x] Correct Timing For Prayer Alarms
   - [x] Alarm Repeat After Shutdown
-  
 - [ ] Alarm Features 
   - [ ] Custom offset / snooze behaviour for adhan alarms
   - [ ] Disable period
-  - [ ] Implement disable, mute, vibrate, sound statuses for individual alarms
+  - [x] Implement disable, vibrate, sound statuses for individual alarms
   - [ ] Snooze time addition
-  - [ ] Disable one off alarms after they have rung
+  - [x] Disable one off alarms after they have rung
   - [x] Delete Alarm
   - [x] Fix no name alarm?
   - [x] Scroll to new
@@ -43,7 +43,7 @@
 - [ ] Fix permissions 
 - [ ] Fix all NEEDS WORK comments
 - [x] Alarm set collisions
-- [ ] Fix for setting an alarm for before now!
+- [x] Fix for setting an alarm for before now!
 - [ ] Fix for __snoozed
 
 FUTURE

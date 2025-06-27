@@ -59,10 +59,4 @@ abstract class PlatformChannel {
       });
     } on PlatformException catch (_) {}
   }
-
-  static Future<void> schedulePrayerAlarms() async {
-    try {
-      await mainChannel.invokeMethod('schedulePrayerAlarms');
-    } on PlatformException catch (_) {}
-  }
 }

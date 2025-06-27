@@ -7,6 +7,7 @@ import android.location.LocationManager
 import java.util.Calendar
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import com.example.solar_alarm.utils.Alarm.Companion.setAlarm
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
@@ -175,40 +176,45 @@ class Prayer {
             }
         }
 
-        fun schedulePrayerAlarms(context: Context): Map<String, Long>? {
-            var prayerTimes: Map<String, Long>? = null
-            getPrayerTimes(context) { times ->
-                times?.let {
-                    val currentTime = System.currentTimeMillis()
-                    it.filterKeys { prayerName -> prayerName in DAILY_PRAYERS } // Filter only daily prayers
-                        .forEach { (prayerName, time) ->
-                            if (time > currentTime) { // Only set alarms for future times
-                                val prayerMap = mapOf(
-                                    "name" to prayerName,
-                                    "timeInMillis" to time.toString(),
-                                )
-                                setAlarm(JSONObject(prayerMap).toString(), context, false)
-                            }
+        fun schedulePrayerAlarms(context: Context, prayerTimesWithSettings: Map<String, Any>) {
+            val currentTime = System.currentTimeMillis()
+            DAILY_PRAYERS.forEach{
+                name ->
+                val time = prayerTimesWithSettings[name] as Long
+                val status = (prayerTimesWithSettings["__statuses__"] as Map<*, *>)[name] as String
+                if (time > currentTime) {
+                    val prayerMap = buildMap{
+                        put("name", name)
+                        put("timeInMillis", time.toString())
+                        put("enabled", status != "disabled")
+                        if (status == "sound") {
+                            put("statuses", arrayOf("{\"runtimeType\": \"sound\"}", "{\"runtimeType\": \"vibrate\"}"))
                         }
-                    prayerTimes = it.filterKeys { prayerName -> prayerName in DAILY_PRAYERS }
-
-                    // Set an alarm at the start of the next day (00:00:00)
-                    val calendar = Calendar.getInstance().apply {
-                        add(Calendar.DAY_OF_YEAR, 1)
-                        set(Calendar.HOUR_OF_DAY, 0)
-                        set(Calendar.MINUTE, 5)
-                        set(Calendar.SECOND, 0)
-                        set(Calendar.MILLISECOND, 0)
+                        if (status == "vibrate") {
+                            put("statuses", arrayOf("{\"runtimeType\": \"vibrate\"}"))
+                        }
                     }
-                    val startOfNextDayMillis = calendar.timeInMillis
-                    val map = mapOf(
-                        "name" to PRAYER_RESET,
-                        "timeInMillis" to startOfNextDayMillis.toString()
-                    )
-                    setAlarm(JSONObject(map).toString(), context, false)
+
+                    setAlarm(JSONObject(prayerMap).toString(), context, save = false, asExtra = true)
                 }
             }
-            return prayerTimes
+
+
+            // Set an alarm at the start of the next day (00:00:00)
+            val calendar = Calendar.getInstance().apply {
+                add(Calendar.DAY_OF_YEAR, 1)
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 5)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            val startOfNextDayMillis = calendar.timeInMillis
+            val map = mapOf(
+                "name" to PRAYER_RESET,
+                "timeInMillis" to startOfNextDayMillis.toString(),
+                "enabled" to true,
+            )
+            setAlarm(JSONObject(map).toString(), context, false)
         }
 
         private fun promptUserToEnableLocation(context: Context) {

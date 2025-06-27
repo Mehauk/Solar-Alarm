@@ -74,15 +74,15 @@ class _DigitalClockState extends State<DigitalClock> {
           ),
         ),
 
-        if (_currentPrayer != null)
-          Positioned(
-            top: 0,
-            left: 0,
-            child: SizedBox(
-              height: 16,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+        Positioned(
+          top: 0,
+          left: 0,
+          child: SizedBox(
+            height: 16,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (_currentPrayer != null) ...[
                   PrayerIcon(_currentPrayer!, radius: 16),
                   const SizedBox(width: 4),
                   SText(
@@ -90,10 +90,14 @@ class _DigitalClockState extends State<DigitalClock> {
                     fontSize: 16,
                     weight: STextWeight.bold,
                   ),
+                  const SizedBox(width: 4),
+                  SText("\u00B7", fontSize: 16, weight: STextWeight.bold),
+                  const SizedBox(width: 4),
                 ],
-              ),
+              ],
             ),
           ),
+        ),
         Positioned(
           bottom: 0,
           right: 0,
