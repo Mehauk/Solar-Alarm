@@ -7,7 +7,9 @@ import android.content.Intent
 import android.content.SharedPreferences
 import com.example.solar_alarm.AlarmReceiver
 import com.example.solar_alarm.utils.Constants.Companion.ALARM_PREFIX
+import com.example.solar_alarm.utils.Constants.Companion.ONE_DAY_MILLIS
 import com.example.solar_alarm.utils.Constants.Companion.PRAYER_RESET
+import kotlinx.coroutines.delay
 import org.json.JSONObject
 
 class Alarm {
@@ -20,9 +22,32 @@ class Alarm {
             val alarm = JSONObject(alarmJson)
             val alarmName = alarm.getString("name")
             cancelAlarm(alarmName, context)
-            val timeInMillis = alarm.getString("timeInMillis").toLong()
+            var timeInMillis = alarm.getString("timeInMillis").toLong()
 
             val alarmEnabled = alarm.getBoolean("enabled")
+
+            var delayedUntil = 0L
+            val statuses = alarm.optJSONArray("statuses")
+            if (statuses != null) {
+                for (i in 0 until statuses.length()) {
+                    val status = statuses.getJSONObject(i)
+                    if (status["runtimeType"] == "delayed") {
+                        delayedUntil = status.getLong("delayedUntil")
+                    }
+                }
+            }
+
+            val diff = delayedUntil - timeInMillis
+
+            if (diff > 0) {
+                val days = Math.floorDiv(diff, ONE_DAY_MILLIS)
+                timeInMillis += days * ONE_DAY_MILLIS
+
+                if (timeInMillis < delayedUntil) {
+                    timeInMillis += ONE_DAY_MILLIS
+                }
+            }
+
 
             if (alarmEnabled) {
                 val intent = Intent(context, AlarmReceiver::class.java)

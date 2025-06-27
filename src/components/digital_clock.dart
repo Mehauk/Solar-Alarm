@@ -80,7 +80,7 @@ class _DigitalClockState extends State<DigitalClock> {
           child: SizedBox(
             height: 16,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 if (_currentPrayer != null) ...[
                   PrayerIcon(_currentPrayer!, radius: 16),
@@ -91,9 +91,15 @@ class _DigitalClockState extends State<DigitalClock> {
                     weight: STextWeight.bold,
                   ),
                   const SizedBox(width: 4),
-                  SText("\u00B7", fontSize: 16, weight: STextWeight.bold),
+                  SText("\u0387", fontSize: 16, weight: STextWeight.bold),
                   const SizedBox(width: 4),
                 ],
+                SText(
+                  _currentTime.formattedDate,
+                  fontSize: 16,
+                  weight: STextWeight.thin,
+                ),
+                const SizedBox(width: 4),
               ],
             ),
           ),

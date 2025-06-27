@@ -29,6 +29,8 @@
   - [ ] Custom offset / snooze behaviour for adhan alarms
   - [ ] Disable period
   - [x] Implement disable, vibrate, sound statuses for individual alarms
+  - [ ] Handle repeat days
+  - [x] Handle disable period
   - [ ] Snooze time addition
   - [x] Disable one off alarms after they have rung
   - [x] Delete Alarm

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:solar_alarm/models/calendar.dart';
 import 'package:solar_alarm/models/prayers.dart';
 
 import '../globals.dart';
