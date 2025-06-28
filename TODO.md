@@ -28,8 +28,11 @@
   - [x] Alarm Features UI
   - [x] Adhan Features UI
   - [x] Refetch all alarms on resume and restart
+- [x] Alarm set collisions
+- [x] Fix for setting an alarm for before now!
 
-- [x] TEST
+- [ ] Fix for __snoozed
+- [ ] TEST
   - [ ] Alarm
   - [x] Prayer Times
   - [x] Location 
@@ -39,9 +42,6 @@
   - [x] Prayer Alarms After Shutdown
   - [x] Correct Timing For Prayer Alarms
   - [x] Alarm Repeat After Shutdown
-- [x] Alarm set collisions
-- [x] Fix for setting an alarm for before now!
-- [ ] Fix for __snoozed
 
 FUTURE
 - [ ] Snooze time addition

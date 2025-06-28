@@ -11,6 +11,7 @@ import com.example.solar_alarm.utils.Constants.Companion.DAYS_OF_THE_WEEK
 import com.example.solar_alarm.utils.Constants.Companion.ONE_DAY_MILLIS
 import com.example.solar_alarm.utils.Constants.Companion.PRAYER_RESET
 import org.json.JSONObject
+import java.util.UUID
 
 class Alarm {
     companion object {
@@ -18,7 +19,7 @@ class Alarm {
             return context.getSharedPreferences("alarm_prefs", Context.MODE_PRIVATE)
         }
 
-        fun setAlarm(alarmJson: String, context: Context, save: Boolean = true, asExtra: Boolean = false) {
+        fun setAlarm(alarmJson: String, context: Context, save: Boolean = true, asExtra: Boolean = false, unique: Boolean = false) {
             val alarm = JSONObject(alarmJson)
             val alarmName = alarm.getString("name")
             cancelAlarm(alarmName, context)
@@ -61,9 +62,14 @@ class Alarm {
                     intent.putExtra("alarmJson", alarmJson)
                 }
 
+                var hash: Int = alarmName.hashCode()
+                if (unique) {
+                    hash =  UUID.randomUUID().hashCode()
+                }
+
                 val pendingIntent = PendingIntent.getBroadcast(
                     context,
-                    alarmName.hashCode(),
+                    hash,
                     intent,
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )

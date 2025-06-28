@@ -188,10 +188,15 @@ class Prayer {
                         put("timeInMillis", time.toString())
                         put("enabled", status != "disabled")
                         if (status == "sound") {
-                            put("statuses", arrayOf("{\"runtimeType\": \"sound\"}", "{\"runtimeType\": \"vibrate\"}"))
+                            put("statuses",
+                                arrayOf(
+                                    JSONObject("{\"runtimeType\": \"sound\"}"),
+                                    JSONObject("{\"runtimeType\": \"vibrate\"}")
+                                )
+                            )
                         }
                         if (status == "vibrate") {
-                            put("statuses", arrayOf("{\"runtimeType\": \"vibrate\"}"))
+                            put("statuses", arrayOf(JSONObject("{\"runtimeType\": \"vibrate\"}")))
                         }
                     }
 

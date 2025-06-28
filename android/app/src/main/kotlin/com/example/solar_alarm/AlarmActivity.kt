@@ -116,10 +116,11 @@ class AlarmActivity : Activity() {
             val timeInMillis = System.currentTimeMillis() + (1_000 * 5)
             val context = applicationContext
             val map = mapOf(
-                "name" to alarmName.split("__SNOOZED")[0] + "__SNOOZED",
-                "timeInMillis" to timeInMillis.toString()
+                "name" to alarmName,
+                "timeInMillis" to timeInMillis.toString(),
+                "enabled" to true,
             )
-            setAlarm(JSONObject(map).toString(), context, false)
+            setAlarm(JSONObject(map).toString(), context, save = false, asExtra =  false, unique = true)
             finish()
         }
         changeAlarmUIBasedOnSolarTimes()
