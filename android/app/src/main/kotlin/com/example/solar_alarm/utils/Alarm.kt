@@ -7,9 +7,9 @@ import android.content.Intent
 import android.content.SharedPreferences
 import com.example.solar_alarm.AlarmReceiver
 import com.example.solar_alarm.utils.Constants.Companion.ALARM_PREFIX
+import com.example.solar_alarm.utils.Constants.Companion.DAYS_OF_THE_WEEK
 import com.example.solar_alarm.utils.Constants.Companion.ONE_DAY_MILLIS
 import com.example.solar_alarm.utils.Constants.Companion.PRAYER_RESET
-import kotlinx.coroutines.delay
 import org.json.JSONObject
 
 class Alarm {
@@ -48,6 +48,10 @@ class Alarm {
                 }
             }
 
+            alarm.put("timeInMillis", timeInMillis)
+            getNextAlarmTimeForRepeatDays(alarm)?.let {
+                timeInMillis = it
+            }
 
             if (alarmEnabled) {
                 val intent = Intent(context, AlarmReceiver::class.java)
@@ -71,6 +75,30 @@ class Alarm {
             }
 
             if (save) getAlarmPrefs(context).edit().putString("$ALARM_PREFIX$alarmName", alarmJson).apply()
+        }
+
+        fun getNextAlarmTimeForRepeatDays(alarm: JSONObject): Long? {
+            alarm.optJSONArray("repeatDays")?.let {repeatDays ->
+                val calendar = java.util.Calendar.getInstance()
+                calendar.timeInMillis = alarm.getString("timeInMillis").toLong()
+                val currentDayIndex = calendar.get(java.util.Calendar.DAY_OF_WEEK) - 1 // 0 = Sunday
+
+                // Find the next day in repeatDays
+                var minDaysUntil = 8
+                for (i in 0 until repeatDays.length()) {
+                    val day = repeatDays.getString(i).lowercase()
+                    val dayIndex = DAYS_OF_THE_WEEK.indexOf(day)
+                    if (dayIndex != -1) {
+                        var daysUntil = (dayIndex - currentDayIndex + 7) % 7
+                        if (daysUntil == 0) daysUntil = 7 // Don't repeat today, go to next week
+                        if (daysUntil < minDaysUntil) minDaysUntil = daysUntil
+                    }
+                }
+                // Set next alarm time
+                calendar.add(java.util.Calendar.DAY_OF_YEAR, minDaysUntil)
+                return calendar.timeInMillis
+            }
+           return null
         }
 
         fun getAlarm(alarmName: String, context: Context): String? {
@@ -104,7 +132,6 @@ class Alarm {
             println("Alarm $alarmName canceled and removed from preferences.")
         }
 
-        // NEEDS WORK!!!!
         fun rescheduleAllAlarms(context: Context) {
             val prefs = getAlarmPrefs(context)
             val allEntries = prefs.all

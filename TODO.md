@@ -14,6 +14,20 @@
 - [x] Ask for location perms (and device location)
 - [x] Reset alarms after they go off (set extra long)
   - [x] Change to repeatInterval?
+- [x] Alarm Features 
+  - [x] Implement disable, vibrate, sound statuses for individual alarms
+  - [x] Handle repeat days
+  - [x] Handle disable period
+  - [x] Disable one off alarms after they have rung
+  - [x] Delete Alarm
+  - [x] Fix no name alarm?
+  - [x] Scroll to new
+- [x] Use flutter ui for alarm
+  - [x] Main Page
+  - [x] Add/Edit Alarm dialog
+  - [x] Alarm Features UI
+  - [x] Adhan Features UI
+  - [x] Refetch all alarms on resume and restart
 
 - [x] TEST
   - [ ] Alarm
@@ -25,29 +39,13 @@
   - [x] Prayer Alarms After Shutdown
   - [x] Correct Timing For Prayer Alarms
   - [x] Alarm Repeat After Shutdown
-- [ ] Alarm Features 
-  - [ ] Custom offset / snooze behaviour for adhan alarms
-  - [ ] Disable period
-  - [x] Implement disable, vibrate, sound statuses for individual alarms
-  - [ ] Handle repeat days
-  - [x] Handle disable period
-  - [ ] Snooze time addition
-  - [x] Disable one off alarms after they have rung
-  - [x] Delete Alarm
-  - [x] Fix no name alarm?
-  - [x] Scroll to new
-- [x] Use flutter ui for alarm
-  - [x] Main Page
-  - [x] Add/Edit Alarm dialog
-  - [x] Alarm Features UI
-  - [x] Adhan Features UI
-  - [x] Refetch all alarms on resume and restart
-- [ ] Fix permissions 
-- [ ] Fix all NEEDS WORK comments
 - [x] Alarm set collisions
 - [x] Fix for setting an alarm for before now!
 - [ ] Fix for __snoozed
 
 FUTURE
+- [ ] Snooze time addition
+- [ ] Fix permissions 
 - [ ] Duplicate
+- [ ] Custom offset / snooze behaviour for adhan alarms
 - [ ] multiselect + actions

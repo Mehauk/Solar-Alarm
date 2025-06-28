@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
 import com.example.solar_alarm.utils.Alarm
+import com.example.solar_alarm.utils.Alarm.Companion.getNextAlarmTimeForRepeatDays
 import com.example.solar_alarm.utils.Constants.Companion.DAILY_PRAYERS
 import com.example.solar_alarm.utils.Constants.Companion.PRAYER_RESET
 import com.example.solar_alarm.utils.Prayer
@@ -20,6 +21,7 @@ class AlarmReceiver : BroadcastReceiver() {
             startAlarmIntent(alarm, context)
 
             val repeatInterval = alarm.optString("repeatInterval").toLongOrNull()
+            val repeatDaysNextAlarmTime = getNextAlarmTimeForRepeatDays(alarm)
 
             if (repeatInterval != null && repeatInterval > 1000L) {
                 alarm.put(
@@ -27,6 +29,9 @@ class AlarmReceiver : BroadcastReceiver() {
                     alarm.getString("timeInMillis").toLong() + repeatInterval
                 )
                 println("alarm $alarmName set to reset $repeatInterval")
+                Alarm.setAlarm(alarm.toString(), context)
+            } else if (repeatDaysNextAlarmTime != null) {
+                alarm.put("timeInMillis", repeatDaysNextAlarmTime)
                 Alarm.setAlarm(alarm.toString(), context)
             } else {
                 alarm.put("enabled", false)
