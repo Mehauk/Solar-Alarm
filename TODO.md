@@ -33,7 +33,9 @@
 - [x] Fix for __snoozed
 
 - [ ] TEST
-  - [ ] Alarm
+  - [x] Alarm
+  - [ ] One off alarm? disappearing after one shot? after snooze?
+  - [ ] Snooze
   - [x] Prayer Times
   - [x] Location 
   - [ ] Alarm Repeat
