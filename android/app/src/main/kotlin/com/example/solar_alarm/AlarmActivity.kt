@@ -25,6 +25,7 @@ class AlarmActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        println("AlarmActivity: onCreate called at ${System.currentTimeMillis()}")
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
@@ -48,10 +49,10 @@ class AlarmActivity : Activity() {
         setContentView(R.layout.activity_alarm)
 
         val alarmName = intent.getStringExtra("alarmName") ?: "ALARM!"
-        val alarmTime = intent.getLongExtra("alarmTime", 0);
-        val alarmSoundStatus = intent.getBooleanExtra("alarmSoundStatus", false);
-        val alarmVibrateStatus = intent.getBooleanExtra("alarmVibrateStatus", false);
-
+        val alarmTime = intent.getLongExtra("alarmTime", 0)
+        val alarmSoundStatus = intent.getBooleanExtra("alarmSoundStatus", false)
+        val alarmVibrateStatus = intent.getBooleanExtra("alarmVibrateStatus", false)
+        println("AlarmActivity: Received alarmName=$alarmName, alarmTime=$alarmTime, sound=$alarmSoundStatus, vibrate=$alarmVibrateStatus")
         findViewById<TextView>(R.id.alarmTitle).text = alarmName
 
         // Retrieve the alarm time and display it
@@ -105,6 +106,7 @@ class AlarmActivity : Activity() {
 
             // Stop vibration and sound when activity is destroyed
             findViewById<Button>(R.id.dismissButton).setOnClickListener {
+                println("AlarmActivity: Dismiss button clicked")
                 handler.removeCallbacks(playSoundRunnable)
                 Toast.makeText(this, "Alarm dismissed", Toast.LENGTH_SHORT).show()
                 finish()
@@ -112,6 +114,7 @@ class AlarmActivity : Activity() {
         }
 
         findViewById<Button>(R.id.snoozeButton).setOnClickListener {
+            println("AlarmActivity: Snooze button clicked")
             Toast.makeText(this, "Snoozed for 5 minutes", Toast.LENGTH_SHORT).show()
             val timeInMillis = System.currentTimeMillis() + (1_000 * 5)
             val context = applicationContext
@@ -206,6 +209,7 @@ class AlarmActivity : Activity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        println("AlarmActivity: onDestroy called, cleaning up resources")
         // Stop and release MediaPlayer
         if (::mediaPlayer.isInitialized) {
             try {

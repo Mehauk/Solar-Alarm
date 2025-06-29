@@ -118,6 +118,7 @@ class _AlarmsWidgetState extends State<AlarmsWidget> {
                                       enabled: alarmEnabled,
                                     );
                                   });
+                                  print("BOGOGOSO ${alarms[e.key]}");
                                   PlatformChannel.setAlarm(alarms[e.key]);
                                 },
                                 onStatusTap: (status) {
@@ -195,7 +196,7 @@ class AlarmTile extends StatelessWidget {
               onTap: onTap,
               onLongPress: () {},
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(15, 15, 15, 11),
+                padding: const EdgeInsets.fromLTRB(15, 15, 0, 11),
                 child: Column(
                   children: [
                     Column(
@@ -205,7 +206,6 @@ class AlarmTile extends StatelessWidget {
                           fontSize: 16,
                           shadow: true,
                         ),
-                        const SizedBox(height: 4),
                         Row(
                           children: [
                             Row(
@@ -265,6 +265,7 @@ class AlarmTile extends StatelessWidget {
 
                             const SizedBox(width: 6),
                             SSwitch(
+                              padding: const EdgeInsets.fromLTRB(0, 16, 15, 15),
                               alarm.enabled
                                   ? SSwitchStatus.on
                                   : SSwitchStatus.off,
@@ -276,7 +277,6 @@ class AlarmTile extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
                     SizedBox(
                       width: 140,
                       child: AlarmStatusesIndicator(

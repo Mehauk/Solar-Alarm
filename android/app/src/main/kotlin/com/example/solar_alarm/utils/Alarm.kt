@@ -22,10 +22,12 @@ class Alarm {
         fun setAlarm(alarmJson: String, context: Context, save: Boolean = true, asExtra: Boolean = false, unique: Boolean = false) {
             val alarm = JSONObject(alarmJson)
             val alarmName = alarm.getString("name")
+            println("setAlarm: Setting alarm for $alarmName with data: $alarmJson")
             cancelAlarm(alarmName, context)
             var timeInMillis = alarm.getString("timeInMillis").toLong()
 
             val alarmEnabled = alarm.getBoolean("enabled")
+            println("The alarm $alarmName is enabled = $alarmEnabled")
 
             var delayedUntil = 0L
             val statuses = alarm.optJSONArray("statuses")
@@ -38,23 +40,31 @@ class Alarm {
                 }
             }
 
+            println("setAlarm: Initial timeInMillis for $alarmName: $timeInMillis")
             val diff = delayedUntil - timeInMillis
+            println("setAlarm: delayedUntil=$delayedUntil, diff=$diff")
 
             if (diff > 0) {
                 val days = Math.floorDiv(diff, ONE_DAY_MILLIS)
+                println("setAlarm: Adding $days days to timeInMillis for $alarmName")
                 timeInMillis += days * ONE_DAY_MILLIS
+                println("setAlarm: timeInMillis after adding days: $timeInMillis")
 
                 if (timeInMillis < delayedUntil) {
+                    println("setAlarm: timeInMillis ($timeInMillis) < delayedUntil ($delayedUntil), adding one more day")
                     timeInMillis += ONE_DAY_MILLIS
+                    println("setAlarm: timeInMillis after extra day: $timeInMillis")
                 }
             }
 
             alarm.put("timeInMillis", timeInMillis)
             getNextAlarmTimeForRepeatDays(alarm)?.let {
+                println("setAlarm: getNextAlarmTimeForRepeatDays returned $it for $alarmName, updating timeInMillis")
                 timeInMillis = it
             }
 
             if (alarmEnabled) {
+                println("setAlarm: Alarm $alarmName is enabled, scheduling at $timeInMillis (" + java.util.Date(timeInMillis) + ")")
                 val intent = Intent(context, AlarmReceiver::class.java)
                 intent.putExtra("alarmName", alarmName)
 
@@ -78,13 +88,17 @@ class Alarm {
 
                 val aci = AlarmManager.AlarmClockInfo(timeInMillis, pendingIntent)
                 alarmManager.setAlarmClock(aci, pendingIntent)
+            } else {
+                println("setAlarm: Alarm $alarmName is disabled, not scheduling.")
             }
 
+            if (save) println("setAlarm: Saving alarm $alarmName to preferences")
             if (save) getAlarmPrefs(context).edit().putString("$ALARM_PREFIX$alarmName", alarmJson).apply()
         }
 
         fun getNextAlarmTimeForRepeatDays(alarm: JSONObject): Long? {
             alarm.optJSONArray("repeatDays")?.let {repeatDays ->
+                if (repeatDays.length() == 0) return null
                 val calendar = java.util.Calendar.getInstance()
                 calendar.timeInMillis = alarm.getString("timeInMillis").toLong()
                 val currentDayIndex = calendar.get(java.util.Calendar.DAY_OF_WEEK) - 1 // 0 = Sunday
@@ -122,6 +136,7 @@ class Alarm {
         }
 
         fun cancelAlarm(alarmName: String, context: Context) {
+            println("cancelAlarm: Cancelling alarm $alarmName")
             val intent = Intent(context, AlarmReceiver::class.java)
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
@@ -133,7 +148,7 @@ class Alarm {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             alarmManager.cancel(pendingIntent)
 
-            getAlarmPrefs(context).edit().remove(alarmName).apply()
+            getAlarmPrefs(context).edit().remove("$ALARM_PREFIX$alarmName").apply()
 
             println("Alarm $alarmName canceled and removed from preferences.")
         }

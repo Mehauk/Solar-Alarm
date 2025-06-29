@@ -13,10 +13,12 @@ import org.json.JSONObject
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        println("AlarmReceiver " + SystemClock.currentThreadTimeMillis().toString() + " in com.example.solar_alarm.AlarmReceiver onReceive()")
+        println("AlarmReceiver: Received alarm broadcast at ${System.currentTimeMillis()}")
         val alarmName = intent.getStringExtra("alarmName")
+        println("AlarmReceiver: alarmName = $alarmName")
 
         Alarm.getAlarm(alarmName!!, context)?.let {
+            println("AlarmReceiver: Found alarm in preferences: $it")
             val alarm = JSONObject(it)
             startAlarmIntent(alarm, context)
 
@@ -37,7 +39,8 @@ class AlarmReceiver : BroadcastReceiver() {
                 alarm.put("enabled", false)
                 Alarm.setAlarm(alarm.toString(), context)
             }
-        } ?: {
+        } ?: run {
+            println("AlarmReceiver: No alarm found for $alarmName, checking for PRAYER_RESET or DAILY_PRAYERS")
             when (alarmName) {
                 PRAYER_RESET -> {
                     Prayer.getPrayerTimesWithSettings(context) {
@@ -58,6 +61,7 @@ class AlarmReceiver : BroadcastReceiver() {
     private fun startAlarmIntent(alarm: JSONObject, context: Context) {
         val alarmName = alarm.getString("name")
         val alarmTime = alarm.getString("timeInMillis").toLong()
+        println("startAlarmIntent: Preparing to launch AlarmActivity for $alarmName at $alarmTime (${java.util.Date(alarmTime)})")
         val alarmStatuses = alarm.getJSONArray("statuses")
         val statusList = mutableListOf<String>()
 
@@ -70,7 +74,9 @@ class AlarmReceiver : BroadcastReceiver() {
         val alarmSoundStatus = "sound" in statusList
         val alarmVibrateStatus = "vibrate" in statusList
 
-        if (alarmTime > System.currentTimeMillis()) {
+        val now = System.currentTimeMillis()
+        if (alarmTime + 15 * 1000L > now) {
+            println("startAlarmIntent: Starting AlarmActivity for $alarmName")
             val alarmIntent = Intent(context, AlarmActivity::class.java)
             alarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
@@ -80,6 +86,8 @@ class AlarmReceiver : BroadcastReceiver() {
             alarmIntent.putExtra("alarmVibrateStatus", alarmVibrateStatus)
 
             context.startActivity(alarmIntent)
+        } else {
+            println("startAlarmIntent: Alarm time (${java.util.Date(alarmTime)}) has already passed (${java.util.Date(now)}), not starting activity.")
         }
     }
 }

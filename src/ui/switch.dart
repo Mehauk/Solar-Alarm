@@ -27,6 +27,7 @@ class SSwitch<T extends Toggleable<T>> extends StatelessWidget {
   final Color enabledToggleColor;
   final Color disabledToggleColor;
   final Widget toggle;
+  final EdgeInsets? padding;
 
   SSwitch(
     this.value, {
@@ -37,6 +38,7 @@ class SSwitch<T extends Toggleable<T>> extends StatelessWidget {
     this.enabledTrackShadow = true,
     this.enabledTrackGradient,
     this.disabledTrackGradient,
+    this.padding,
     this.toggleSize = const Size(21, 21),
     this.enabledToggleColor = const Color(0XFFA2ADB9),
     this.disabledToggleColor = const Color(0XFF4E565F),
@@ -59,56 +61,60 @@ class SSwitch<T extends Toggleable<T>> extends StatelessWidget {
     return GestureDetector(
       onTap: () => onChanged(value.toggle),
       onHorizontalDragEnd: (details) => onChanged(value.toggle),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // total size
-          SizedBox(
-            height: max(trackSize.height, toggleSize.height),
-            width: trueLength,
-          ),
+      child: Container(
+        color: Colors.transparent, //WTF?
+        padding: padding ?? EdgeInsets.zero,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // total size
+            SizedBox(
+              height: max(trackSize.height, toggleSize.height),
+              width: trueLength,
+            ),
 
-          SizedBox(
-            width: trackSize.width,
-            height: trackSize.height,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(trackBorderRadius),
-                boxShadow:
-                    value.isOn && enabledTrackShadow
-                        ? [
-                          const BoxShadow(
-                            blurRadius: 10,
-                            color: Color(0xAAFD2A22),
-                            offset: Offset(0, 1),
+            SizedBox(
+              width: trackSize.width,
+              height: trackSize.height,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(trackBorderRadius),
+                  boxShadow:
+                      value.isOn && enabledTrackShadow
+                          ? [
+                            const BoxShadow(
+                              blurRadius: 10,
+                              color: Color(0xAAFD2A22),
+                              offset: Offset(0, 1),
+                            ),
+                          ]
+                          : null,
+                  gradient:
+                      value.isOn
+                          ? const LinearGradient(
+                            begin: Alignment.topRight,
+                            end: Alignment.bottomRight,
+                            colors: [Color(0xFFFD2A22), Color(0xFFFE6C57)],
+                          )
+                          : const LinearGradient(
+                            colors: [Color(0xFF282F35), Color(0xFF282F35)],
                           ),
-                        ]
-                        : null,
-                gradient:
-                    value.isOn
-                        ? const LinearGradient(
-                          begin: Alignment.topRight,
-                          end: Alignment.bottomRight,
-                          colors: [Color(0xFFFD2A22), Color(0xFFFE6C57)],
-                        )
-                        : const LinearGradient(
-                          colors: [Color(0xFF282F35), Color(0xFF282F35)],
-                        ),
+                ),
               ),
             ),
-          ),
 
-          AnimatedPositioned(
-            duration: Durations.short2,
-            curve: Curves.easeInOut,
-            left: leftPosition,
-            child: SizedBox(
-              width: toggleSize.width,
-              height: toggleSize.height,
-              child: toggle,
+            AnimatedPositioned(
+              duration: Durations.short2,
+              curve: Curves.easeInOut,
+              left: leftPosition,
+              child: SizedBox(
+                width: toggleSize.width,
+                height: toggleSize.height,
+                child: toggle,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

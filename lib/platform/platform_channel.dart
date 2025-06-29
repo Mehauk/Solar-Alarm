@@ -8,7 +8,7 @@ const mainChannel = MethodChannel('com.example.solar_alarm/main_channel');
 
 abstract class PlatformChannel {
   static Future<void> setAlarm(Alarm alarm) async {
-    print(alarm.toJson().toString());
+    print("BOGOGOSO $alarm");
     try {
       await mainChannel.invokeMethod('setAlarm', {
         'alarmJson': alarm.toJson().toString(),
