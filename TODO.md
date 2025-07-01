@@ -31,10 +31,11 @@
 - [x] Alarm set collisions
 - [x] Fix for setting an alarm for before now!
 - [x] Fix for __snoozed
-- [ ] Clear disable period
+- [x] Clear disable period
 
 - [ ] TEST
   - [x] Alarm
+  - [ ] Delay + clear disable period
   - [ ] One off alarm? disappearing after one shot? after snooze?
   - [ ] Snooze
   - [x] Prayer Times

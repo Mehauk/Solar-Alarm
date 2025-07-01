@@ -93,7 +93,11 @@ class Alarm {
             }
 
             if (save) println("setAlarm: Saving alarm $alarmName to preferences")
-            if (save) getAlarmPrefs(context).edit().putString("$ALARM_PREFIX$alarmName", alarmJson).apply()
+            if (save) saveAlarm(alarmName, alarmJson, context)
+        }
+
+        fun saveAlarm(alarmName:String, alarmJson: String, context: Context) {
+            getAlarmPrefs(context).edit().putString("$ALARM_PREFIX$alarmName", alarmJson).apply()
         }
 
         fun getNextAlarmTimeForRepeatDays(alarm: JSONObject): Long? {

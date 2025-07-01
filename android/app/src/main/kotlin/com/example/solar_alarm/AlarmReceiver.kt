@@ -3,9 +3,9 @@ package com.example.solar_alarm
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.SystemClock
 import com.example.solar_alarm.utils.Alarm
 import com.example.solar_alarm.utils.Alarm.Companion.getNextAlarmTimeForRepeatDays
+import com.example.solar_alarm.utils.Alarm.Companion.saveAlarm
 import com.example.solar_alarm.utils.Constants.Companion.DAILY_PRAYERS
 import com.example.solar_alarm.utils.Constants.Companion.PRAYER_RESET
 import com.example.solar_alarm.utils.Prayer
@@ -73,6 +73,14 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val alarmSoundStatus = "sound" in statusList
         val alarmVibrateStatus = "vibrate" in statusList
+        val alarmDelayed = "delayed" in statusList
+
+        if (alarmDelayed) {
+            val id = statusList.indexOf("delayed")
+            alarmStatuses.remove(id)
+            alarm.put("statuses", alarmStatuses)
+            saveAlarm(alarmName, alarm.toString(), context)
+        }
 
         val now = System.currentTimeMillis()
         if (alarmTime + 15 * 1000L > now) {
