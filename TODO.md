@@ -31,6 +31,7 @@
 - [x] Alarm set collisions
 - [x] Fix for setting an alarm for before now!
 - [x] Fix for __snoozed
+- [ ] Clear disable period
 
 - [ ] TEST
   - [x] Alarm
@@ -43,6 +44,7 @@
   - [ ] Prayer Alarms
   - [ ] Prayer Alarms After Shutdown
   - [ ] Alarm Repeat After Shutdown
+- [ ] Remove logs
 
 FUTURE
 - [ ] Snooze time addition
