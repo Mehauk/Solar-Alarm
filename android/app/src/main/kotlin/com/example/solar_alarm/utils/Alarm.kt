@@ -29,33 +29,7 @@ class Alarm {
             val alarmEnabled = alarm.getBoolean("enabled")
             println("The alarm $alarmName is enabled = $alarmEnabled")
 
-            var delayedUntil = 0L
-            val statuses = alarm.optJSONArray("statuses")
-            if (statuses != null) {
-                for (i in 0 until statuses.length()) {
-                    val status = statuses.getJSONObject(i)
-                    if (status["runtimeType"] == "delayed") {
-                        delayedUntil = status.getLong("delayedUntil")
-                    }
-                }
-            }
-
             println("setAlarm: Initial timeInMillis for $alarmName: $timeInMillis")
-            val diff = delayedUntil - timeInMillis
-            println("setAlarm: delayedUntil=$delayedUntil, diff=$diff")
-
-            if (diff > 0) {
-                val days = Math.floorDiv(diff, ONE_DAY_MILLIS)
-                println("setAlarm: Adding $days days to timeInMillis for $alarmName")
-                timeInMillis += days * ONE_DAY_MILLIS
-                println("setAlarm: timeInMillis after adding days: $timeInMillis")
-
-                if (timeInMillis < delayedUntil) {
-                    println("setAlarm: timeInMillis ($timeInMillis) < delayedUntil ($delayedUntil), adding one more day")
-                    timeInMillis += ONE_DAY_MILLIS
-                    println("setAlarm: timeInMillis after extra day: $timeInMillis")
-                }
-            }
 
             alarm.put("timeInMillis", timeInMillis)
             getNextAlarmTimeForRepeatDays(alarm)?.let {
@@ -96,7 +70,7 @@ class Alarm {
             if (save) saveAlarm(alarmName, alarmJson, context)
         }
 
-        fun saveAlarm(alarmName:String, alarmJson: String, context: Context) {
+        private fun saveAlarm(alarmName:String, alarmJson: String, context: Context) {
             getAlarmPrefs(context).edit().putString("$ALARM_PREFIX$alarmName", alarmJson).apply()
         }
 

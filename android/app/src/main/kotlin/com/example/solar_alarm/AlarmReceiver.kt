@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import com.example.solar_alarm.utils.Alarm
 import com.example.solar_alarm.utils.Alarm.Companion.getNextAlarmTimeForRepeatDays
-import com.example.solar_alarm.utils.Alarm.Companion.saveAlarm
 import com.example.solar_alarm.utils.Constants.Companion.DAILY_PRAYERS
 import com.example.solar_alarm.utils.Constants.Companion.PRAYER_RESET
 import com.example.solar_alarm.utils.Prayer
@@ -75,14 +74,15 @@ class AlarmReceiver : BroadcastReceiver() {
         val alarmVibrateStatus = "vibrate" in statusList
         val alarmDelayed = "delayed" in statusList
 
+        val now = System.currentTimeMillis()
         if (alarmDelayed) {
             val id = statusList.indexOf("delayed")
-            alarmStatuses.remove(id)
-            alarm.put("statuses", alarmStatuses)
-            saveAlarm(alarmName, alarm.toString(), context)
+            val delay = alarmStatuses.getJSONObject(id).getLong("delayedUntil")
+            if (delay > now) return
         }
 
-        val now = System.currentTimeMillis()
+        // 15 seconds grace period for alarm, since some amount of time must have elapsed from the
+        // receiving the alarm and starting the intent
         if (alarmTime + 15 * 1000L > now) {
             println("startAlarmIntent: Starting AlarmActivity for $alarmName")
             val alarmIntent = Intent(context, AlarmActivity::class.java)

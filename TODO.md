@@ -32,6 +32,7 @@
 - [x] Fix for setting an alarm for before now!
 - [x] Fix for __snoozed
 - [x] Clear disable period
+- [x] Fix Delay
 
 - [ ] TEST
   - [x] Alarm
