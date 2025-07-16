@@ -33,6 +33,7 @@
 - [x] Fix for __snoozed
 - [x] Clear disable period
 - [x] Fix Delay
+- [x] Fix Prayers not reseting on boot
 
 - [ ] TEST
   - [x] Alarm
