@@ -8,7 +8,6 @@ import android.content.SharedPreferences
 import com.example.solar_alarm.AlarmReceiver
 import com.example.solar_alarm.utils.Constants.Companion.ALARM_PREFIX
 import com.example.solar_alarm.utils.Constants.Companion.DAYS_OF_THE_WEEK
-import com.example.solar_alarm.utils.Constants.Companion.ONE_DAY_MILLIS
 import com.example.solar_alarm.utils.Constants.Companion.PRAYER_RESET
 import org.json.JSONObject
 import java.util.UUID
@@ -22,8 +21,8 @@ class Alarm {
         fun setAlarm(alarmJson: String, context: Context, save: Boolean = true, asExtra: Boolean = false, unique: Boolean = false) {
             val alarm = JSONObject(alarmJson)
             val alarmName = alarm.getString("name")
-            println("setAlarm: Setting alarm for $alarmName with data: $alarmJson")
             cancelAlarm(alarmName, context)
+            println("setAlarm: Setting alarm for $alarmName with data: $alarmJson")
             var timeInMillis = alarm.getString("timeInMillis").toLong()
 
             val alarmEnabled = alarm.getBoolean("enabled")
@@ -144,11 +143,6 @@ class Alarm {
                     if (System.currentTimeMillis() < timeInMillis) {
                         setAlarm(value, context)
                         println("Alarm Rescheduled alarm: $alarmName")
-                    }
-
-                    else if (key.contains(PRAYER_RESET)) {
-                        setAlarm(value, context)
-                        println("Alarm Rescheduled prayer reset: $alarmName")
                     }
 
                     else {
