@@ -32,6 +32,10 @@ class _AlarmEditState extends State<AlarmEdit> {
 
   TextEditingController nameController = TextEditingController();
 
+  void close(BuildContext context) {
+    if (context.mounted) Navigator.pop(context);
+  }
+
   void deleteAlarm(BuildContext context) async {
     Alarm newAlarm = alarm;
     List<Alarm> newAlarms = [...alarmsObservable.data];
@@ -49,6 +53,14 @@ class _AlarmEditState extends State<AlarmEdit> {
   }
 
   Future<void> saveChanges(BuildContext context) async {
+    if (alarm.repeatDays.isNotEmpty) {
+      alarm = alarm.copyWith(
+        timeInMillis:
+            DateTime.now()
+                .copyWith(hour: alarm.time.hour, minute: alarm.time.minute)
+                .millisecondsSinceEpoch,
+      );
+    }
     Alarm newAlarm = alarm.copyWith(enabled: true);
     List<Alarm> newAlarms = [...alarmsObservable.data];
 
@@ -170,13 +182,24 @@ class _AlarmEditState extends State<AlarmEdit> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SText("Set Alarm", fontSize: 18),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        InkWell(
+                          onTap: () => deleteAlarm(context),
+                          child: const SIcon(
+                            Icons.delete_forever_outlined,
+                            radius: 14,
+                            color: Color(0xDDFD251E),
+                          ),
+                        ),
+                        SText("Set Alarm", fontSize: 18),
+                      ],
+                    ),
+
                     InkWell(
-                      onTap: () => deleteAlarm(context),
-                      child: const SIcon(
-                        Icons.delete_forever_outlined,
-                        radius: 14,
-                      ),
+                      onTap: () => close(context),
+                      child: const SIcon(Icons.close, radius: 14),
                     ),
                   ],
                 ),
@@ -203,53 +226,56 @@ class _AlarmEditState extends State<AlarmEdit> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          if (alarm.date.deicticWord != null)
+                                  if (alarm.repeatDays.isEmpty)
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            if (alarm.date.deicticWord != null)
+                                              SText(
+                                                alarm.date.deicticWord!,
+                                                fontSize: 12,
+                                              ),
                                             SText(
-                                              alarm.date.deicticWord!,
+                                              alarm.date.formattedDate,
                                               fontSize: 12,
                                             ),
-                                          SText(
-                                            alarm.date.formattedDate,
-                                            fontSize: 12,
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(width: 4),
-                                      IconButton(
-                                        onPressed:
-                                            () => showModalBottomSheet(
-                                              context: context,
-                                              builder: (context) {
-                                                final now = DateTime.now();
-                                                return CalendarDatePicker(
-                                                  initialDate:
-                                                      alarm.date.isAfter(now)
-                                                          ? alarm.date
-                                                          : now,
-                                                  firstDate: now,
-                                                  lastDate: now.add(
-                                                    const Duration(
-                                                      days: 365 * 100,
+                                          ],
+                                        ),
+                                        const SizedBox(width: 4),
+                                        IconButton(
+                                          onPressed:
+                                              () => showModalBottomSheet(
+                                                context: context,
+                                                builder: (context) {
+                                                  final now = DateTime.now();
+                                                  return CalendarDatePicker(
+                                                    initialDate:
+                                                        alarm.date.isAfter(now)
+                                                            ? alarm.date
+                                                            : now,
+                                                    firstDate: now,
+                                                    lastDate: now.add(
+                                                      const Duration(
+                                                        days: 365 * 100,
+                                                      ),
                                                     ),
-                                                  ),
-                                                  onDateChanged: (date) {
-                                                    updateDate(date);
-                                                    Navigator.pop(context);
-                                                  },
-                                                );
-                                              },
-                                            ),
-                                        icon: const SIcon(Icons.calendar_month),
-                                      ),
-                                    ],
-                                  ),
+                                                    onDateChanged: (date) {
+                                                      updateDate(date);
+                                                      Navigator.pop(context);
+                                                    },
+                                                  );
+                                                },
+                                              ),
+                                          icon: const SIcon(
+                                            Icons.calendar_month,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
