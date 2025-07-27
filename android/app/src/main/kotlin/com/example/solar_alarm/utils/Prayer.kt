@@ -122,6 +122,7 @@ class Prayer {
             }
 
             try {
+                var called = false
                 val locationListener = object : LocationListener {
                     override fun onLocationChanged(location: Location) {
                         val latitude = location.latitude
@@ -136,8 +137,8 @@ class Prayer {
                         val prayerTimes = getPrayerMillis(latitude, longitude)
 
                         // load 
-
-                        callback(prayerTimes)
+                        if (!called) callback(prayerTimes)
+                        called = true
 
                         // Remove updates after first fix
                         locationManager.removeUpdates(this)

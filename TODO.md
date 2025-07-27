@@ -34,6 +34,8 @@
 - [x] Clear disable period
 - [x] Fix Delay
 - [x] Fix Prayers not reseting on boot
+- [ ] Fix Day alarms
+- [ ] fix ctd first launch
 
 - [ ] TEST
   - [x] Alarm

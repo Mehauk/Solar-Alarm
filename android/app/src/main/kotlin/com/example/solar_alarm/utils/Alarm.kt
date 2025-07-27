@@ -31,7 +31,7 @@ class Alarm {
             println("setAlarm: Initial timeInMillis for $alarmName: $timeInMillis")
 
             alarm.put("timeInMillis", timeInMillis)
-            getNextAlarmTimeForRepeatDays(alarm)?.let {
+            getNextAlarmTimeForRepeatDays(alarm, setToday = true)?.let {
                 println("setAlarm: getNextAlarmTimeForRepeatDays returned $it for $alarmName, updating timeInMillis")
                 timeInMillis = it
             }
@@ -73,7 +73,7 @@ class Alarm {
             getAlarmPrefs(context).edit().putString("$ALARM_PREFIX$alarmName", alarmJson).apply()
         }
 
-        fun getNextAlarmTimeForRepeatDays(alarm: JSONObject): Long? {
+        fun getNextAlarmTimeForRepeatDays(alarm: JSONObject, setToday: Boolean = false): Long? {
             alarm.optJSONArray("repeatDays")?.let {repeatDays ->
                 if (repeatDays.length() == 0) return null
                 val calendar = java.util.Calendar.getInstance()
@@ -87,7 +87,7 @@ class Alarm {
                     val dayIndex = DAYS_OF_THE_WEEK.indexOf(day)
                     if (dayIndex != -1) {
                         var daysUntil = (dayIndex - currentDayIndex + 7) % 7
-                        if (daysUntil == 0) daysUntil = 7 // Don't repeat today, go to next week
+                        if (daysUntil == 0 && !setToday) daysUntil = 7 // Don't repeat today, go to next week
                         if (daysUntil < minDaysUntil) minDaysUntil = daysUntil
                     }
                 }
