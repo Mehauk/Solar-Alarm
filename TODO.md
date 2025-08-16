@@ -35,7 +35,9 @@
 - [x] Fix Delay
 - [x] Fix Prayers not reseting on boot
 - [x] Fix Day alarms
-- [x] fix ctd first launch
+- [x] Fix ctd first launch
+- [ ] Fix prayer alarms not resetting on lanuch?
+- [ ] Fix Alarms not resetting on launch
 
 - [ ] TEST
   - [x] Alarm
