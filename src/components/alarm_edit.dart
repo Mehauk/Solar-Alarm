@@ -214,12 +214,13 @@ class _AlarmEditState extends State<AlarmEdit> {
                         crossAxisAlignment: WrapCrossAlignment.center,
                         alignment: WrapAlignment.center,
                         children: [
-                          Clock(
-                            clockDiameter: 150,
-                            time: TimeOfDay.fromDateTime(alarm.date),
-                            editingPart: currentEdit,
-                            onUpdate: updateTime,
-                          ),
+                          if (MediaQuery.of(context).viewInsets.bottom <= 0)
+                            Clock(
+                              clockDiameter: 150,
+                              time: TimeOfDay.fromDateTime(alarm.date),
+                              editingPart: currentEdit,
+                              onUpdate: updateTime,
+                            ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [

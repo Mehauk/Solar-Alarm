@@ -58,6 +58,15 @@ class _PrayerTimingsWidgetState extends State<PrayerTimingsWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if ((_prayers?.ordered.length ?? 0) == 0)
+          IconButton(
+            onPressed: () {
+              PlatformChannel.getPrayerTimes().then((value) {
+                prayerTimingsObservable.update(value);
+              });
+            },
+            icon: const Icon(Icons.refresh),
+          ),
         for (var i = 0; i < (_prayers?.ordered.length ?? 0); i++)
           _PrayerTiming(
             Prayers.orderedPrayers[i],

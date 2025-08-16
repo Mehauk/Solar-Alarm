@@ -81,9 +81,9 @@ class AlarmReceiver : BroadcastReceiver() {
             if (delay > now) return
         }
 
-        // 15 seconds grace period for alarm, since some amount of time must have elapsed from the
+        // 5 minute grace period for alarm, since some amount of time must have elapsed from the
         // receiving the alarm and starting the intent
-        if (alarmTime + 15 * 1000L > now) {
+        if (alarmTime + 5 * 60 * 1000L > now) {
             println("startAlarmIntent: Starting AlarmActivity for $alarmName")
             val alarmIntent = Intent(context, AlarmActivity::class.java)
             alarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
