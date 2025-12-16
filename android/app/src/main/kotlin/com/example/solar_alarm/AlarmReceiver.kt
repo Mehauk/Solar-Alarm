@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.example.solar_alarm.utils.Alarm
+import com.example.solar_alarm.utils.FileLogger
 import com.example.solar_alarm.utils.Alarm.Companion.getNextAlarmTimeForRepeatDays
 import com.example.solar_alarm.utils.Constants.Companion.DAILY_PRAYERS
 import com.example.solar_alarm.utils.Constants.Companion.PRAYER_RESET
@@ -12,12 +13,12 @@ import org.json.JSONObject
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        println("AlarmReceiver: Received alarm broadcast at ${System.currentTimeMillis()}")
+    FileLogger.append(context, "AlarmReceiver", "Received alarm broadcast at ${System.currentTimeMillis()}")
         val alarmName = intent.getStringExtra("alarmName")
-        println("AlarmReceiver: alarmName = $alarmName")
+    FileLogger.append(context, "AlarmReceiver", "alarmName = $alarmName")
 
         Alarm.getAlarm(alarmName!!, context)?.let {
-            println("AlarmReceiver: Found alarm in preferences: $it")
+            FileLogger.append(context, "AlarmReceiver", "Found alarm in preferences")
             val alarm = JSONObject(it)
             startAlarmIntent(alarm, context)
 
@@ -29,7 +30,7 @@ class AlarmReceiver : BroadcastReceiver() {
                     "timeInMillis",
                     alarm.getString("timeInMillis").toLong() + repeatInterval
                 )
-                println("alarm $alarmName set to reset $repeatInterval")
+                    FileLogger.append(context, "AlarmReceiver", "alarm $alarmName set to reset $repeatInterval")
                 Alarm.setAlarm(alarm.toString(), context)
             } else if (repeatDaysNextAlarmTime != null) {
                 alarm.put("timeInMillis", repeatDaysNextAlarmTime)
@@ -39,7 +40,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 Alarm.setAlarm(alarm.toString(), context)
             }
         } ?: run {
-            println("AlarmReceiver: No alarm found for $alarmName, checking for PRAYER_RESET or DAILY_PRAYERS")
+            FileLogger.append(context, "AlarmReceiver", "No alarm found for $alarmName, checking for PRAYER_RESET or DAILY_PRAYERS")
             when (alarmName) {
                 PRAYER_RESET -> {
                     Prayer.getPrayerTimesWithSettings(context) {
@@ -60,7 +61,7 @@ class AlarmReceiver : BroadcastReceiver() {
     private fun startAlarmIntent(alarm: JSONObject, context: Context) {
         val alarmName = alarm.getString("name")
         val alarmTime = alarm.getString("timeInMillis").toLong()
-        println("startAlarmIntent: Preparing to launch AlarmActivity for $alarmName at $alarmTime (${java.util.Date(alarmTime)})")
+    FileLogger.append(context, "AlarmReceiver", "Preparing to launch AlarmActivity for $alarmName at $alarmTime")
         val alarmStatuses = alarm.getJSONArray("statuses")
         val statusList = mutableListOf<String>()
 
@@ -84,7 +85,7 @@ class AlarmReceiver : BroadcastReceiver() {
         // 5 minute grace period for alarm, since some amount of time must have elapsed from the
         // receiving the alarm and starting the intent
         if (alarmTime + 5 * 60 * 1000L > now) {
-            println("startAlarmIntent: Starting AlarmActivity for $alarmName")
+            FileLogger.append(context, "AlarmReceiver", "Starting AlarmActivity for $alarmName")
             val alarmIntent = Intent(context, AlarmActivity::class.java)
             alarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
@@ -95,7 +96,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
             context.startActivity(alarmIntent)
         } else {
-            println("startAlarmIntent: Alarm time (${java.util.Date(alarmTime)}) has already passed (${java.util.Date(now)}), not starting activity.")
+            FileLogger.append(context, "AlarmReceiver", "Alarm time has already passed for $alarmName, not starting activity")
         }
     }
 }

@@ -232,10 +232,10 @@ class Prayer {
                     val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                     context.startActivity(intent)
                 } else {
-                    println("Location services are disabled. Please enable them in settings.")
+                    FileLogger.append(context, "Prayer", "Location services are disabled. Please enable them in settings.")
                 }
             } else {
-                println("Location services are already enabled.")
+                FileLogger.append(context, "Prayer", "Location services are already enabled.")
             }
         }
     }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:solar_alarm/models/alarm.dart';
 import 'package:solar_alarm/platform/platform_channel.dart';
+import 'package:solar_alarm/utils/logger.dart';
 
 import '../globals.dart';
 import '../ui/icon.dart';
@@ -118,7 +119,11 @@ class _AlarmsWidgetState extends State<AlarmsWidget> {
                                       enabled: alarmEnabled,
                                     );
                                   });
-                                  print("BOGOGOSO ${alarms[e.key]}");
+                                  Logger.append(
+                                    'AlarmsWidget',
+                                    'toggle ${alarms[e.key]}',
+                                    level: LogLevel.debug,
+                                  );
                                   PlatformChannel.setAlarm(alarms[e.key]);
                                 },
                                 onStatusTap: (status) {

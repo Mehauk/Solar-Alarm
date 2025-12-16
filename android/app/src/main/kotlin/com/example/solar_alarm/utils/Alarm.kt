@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import com.example.solar_alarm.AlarmReceiver
+import com.example.solar_alarm.utils.FileLogger
 import com.example.solar_alarm.utils.Constants.Companion.ALARM_PREFIX
 import com.example.solar_alarm.utils.Constants.Companion.DAYS_OF_THE_WEEK
 import com.example.solar_alarm.utils.Constants.Companion.PRAYER_RESET
@@ -22,22 +23,22 @@ class Alarm {
             val alarm = JSONObject(alarmJson)
             val alarmName = alarm.getString("name")
             cancelAlarm(alarmName, context)
-            println("setAlarm: Setting alarm for $alarmName with data: $alarmJson")
+            FileLogger.append(context, "Alarm.setAlarm", "Setting alarm for $alarmName")
             var timeInMillis = alarm.getString("timeInMillis").toLong()
 
             val alarmEnabled = alarm.getBoolean("enabled")
-            println("The alarm $alarmName is enabled = $alarmEnabled")
+            FileLogger.append(context, "Alarm.setAlarm", "enabled=$alarmEnabled for $alarmName")
 
-            println("setAlarm: Initial timeInMillis for $alarmName: $timeInMillis")
+            FileLogger.append(context, "Alarm.setAlarm", "Initial timeInMillis for $alarmName: $timeInMillis")
 
             alarm.put("timeInMillis", timeInMillis)
             getNextAlarmTimeForRepeatDays(alarm, setToday = true)?.let {
-                println("setAlarm: getNextAlarmTimeForRepeatDays returned $it for $alarmName, updating timeInMillis")
+                FileLogger.append(context, "Alarm.setAlarm", "getNextAlarmTimeForRepeatDays returned $it for $alarmName, updating timeInMillis")
                 timeInMillis = it
             }
 
             if (alarmEnabled) {
-                println("setAlarm: Alarm $alarmName is enabled, scheduling at $timeInMillis (" + java.util.Date(timeInMillis) + ")")
+                FileLogger.append(context, "Alarm.setAlarm", "scheduling $alarmName at $timeInMillis")
                 val intent = Intent(context, AlarmReceiver::class.java)
                 intent.putExtra("alarmName", alarmName)
 
@@ -62,11 +63,13 @@ class Alarm {
                 val aci = AlarmManager.AlarmClockInfo(timeInMillis, pendingIntent)
                 alarmManager.setAlarmClock(aci, pendingIntent)
             } else {
-                println("setAlarm: Alarm $alarmName is disabled, not scheduling.")
+                FileLogger.append(context, "Alarm.setAlarm", "Alarm $alarmName is disabled, not scheduling.")
             }
 
-            if (save) println("setAlarm: Saving alarm $alarmName to preferences")
-            if (save) saveAlarm(alarmName, alarmJson, context)
+            if (save) {
+                FileLogger.append(context, "Alarm.setAlarm", "saving $alarmName")
+                saveAlarm(alarmName, alarmJson, context)
+            }
         }
 
         private fun saveAlarm(alarmName:String, alarmJson: String, context: Context) {
@@ -113,7 +116,7 @@ class Alarm {
         }
 
         fun cancelAlarm(alarmName: String, context: Context) {
-            println("cancelAlarm: Cancelling alarm $alarmName")
+            FileLogger.append(context, "Alarm.cancelAlarm", "Cancelling $alarmName")
             val intent = Intent(context, AlarmReceiver::class.java)
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
@@ -127,7 +130,7 @@ class Alarm {
 
             getAlarmPrefs(context).edit().remove("$ALARM_PREFIX$alarmName").apply()
 
-            println("Alarm $alarmName canceled and removed from preferences.")
+            FileLogger.append(context, "Alarm.cancelAlarm", "Canceled $alarmName")
         }
 
         fun rescheduleAllAlarms(context: Context) {
@@ -142,11 +145,11 @@ class Alarm {
 
                     if (System.currentTimeMillis() < timeInMillis) {
                         setAlarm(value, context)
-                        println("Alarm Rescheduled alarm: $alarmName")
+                        FileLogger.append(context, "Alarm.rescheduleAll", "Rescheduled $alarmName")
                     }
 
                     else {
-                        println("Alarm Skipped expired alarm: $alarmName")
+                        FileLogger.append(context, "Alarm.rescheduleAll", "Skipped expired $alarmName")
                     }
                 }
             }

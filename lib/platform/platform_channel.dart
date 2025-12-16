@@ -3,12 +3,13 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:solar_alarm/models/alarm.dart';
 import 'package:solar_alarm/models/prayers.dart';
+import 'package:solar_alarm/utils/logger.dart';
 
 const mainChannel = MethodChannel('com.example.solar_alarm/main_channel');
 
 abstract class PlatformChannel {
   static Future<void> setAlarm(Alarm alarm) async {
-    print("BOGOGOSO $alarm");
+    Logger.append('PlatformChannel', 'setAlarm $alarm', level: LogLevel.debug);
     try {
       await mainChannel.invokeMethod('setAlarm', {
         'alarmJson': alarm.toJson().toString(),
@@ -36,7 +37,11 @@ abstract class PlatformChannel {
           [];
     } on PlatformException catch (_) {}
 
-    print("BOGOGOSO$alarms");
+    Logger.append(
+      'PlatformChannel',
+      'getAllAlarms $alarms',
+      level: LogLevel.debug,
+    );
     return alarms;
   }
 

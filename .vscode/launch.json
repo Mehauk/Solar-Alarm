@@ -7,7 +7,8 @@
         {
             "name": "solar_alarm",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "program": "src/main.dart"
         },
         {
             "name": "solar_alarm (profile mode)",

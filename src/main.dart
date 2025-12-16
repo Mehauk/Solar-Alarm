@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:solar_alarm/platform/platform_channel.dart';
+import 'package:solar_alarm/src/logs_page.dart';
 
 import 'components/alarms.dart';
 import 'components/clock.dart';
@@ -10,6 +11,7 @@ void main(List<String> args) {
   runApp(
     MaterialApp(
       home: const _Home(),
+      routes: {'/logs': (context) => const LogsPage()},
       themeMode: ThemeMode.dark,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
@@ -69,8 +71,17 @@ class _HomeState extends State<_Home> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: DecoratedBox(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Solar Alarm'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bug_report),
+            onPressed: () => Navigator.of(context).pushNamed('/logs'),
+          ),
+        ],
+      ),
+      body: const DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
