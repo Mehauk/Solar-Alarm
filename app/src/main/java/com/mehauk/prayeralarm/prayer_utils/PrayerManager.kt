@@ -51,7 +51,7 @@ object PrayerManager {
     // Main Entry point for scheduling
     fun scheduleDailyWork(context: Context) {
         // TODO: Get actual location from preferences or a location provider.
-        // For now using default (San Francisco) to ensure app works.
+        // For now using default to ensure app works.
         val lat = 53.5462
         val lon = 113.4937
 
