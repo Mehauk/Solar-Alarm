@@ -1,4 +1,4 @@
-import 'package:solar_alarm/mixins/toggleable_enum.dart';
+import '../../utils/mixins.dart';
 
 enum Prayer {
   fajr,

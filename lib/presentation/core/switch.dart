@@ -1,7 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:solar_alarm/mixins/toggleable_enum.dart';
+
+import '../../utils/mixins.dart';
 
 enum SSwitchStatus with Toggleable<SSwitchStatus> {
   off,

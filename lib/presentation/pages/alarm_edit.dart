@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:solar_alarm/models/alarm.dart';
-import 'package:solar_alarm/models/calendar.dart';
 import 'package:solar_alarm/platform/platform_channel.dart';
 
-import '../globals.dart';
-import '../ui/button.dart';
-import '../ui/icon.dart';
-import '../ui/text.dart';
-import '../ui/text_field.dart';
-import '../utils/formatting_extensions.dart';
-import 'clock.dart';
-import 'gradient_bordered_box.dart';
+import '../../../src/globals.dart';
+import '../../data/enums/calendar.dart';
+import '../../data/models/alarm.dart';
+import '../../utils/extensions.dart';
+import '../components/clock.dart';
+import '../components/gradient_bordered_box.dart';
+import '../core/button.dart';
+import '../core/icon.dart';
+import '../core/text.dart';
+import '../core/text_field.dart';
 
 class AlarmEdit extends StatefulWidget {
   final Alarm? alarm;

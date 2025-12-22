@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:solar_alarm/models/prayers.dart';
 import 'package:solar_alarm/platform/platform_channel.dart';
 
-import '../globals.dart';
-import '../ui/icon.dart';
-import '../ui/switch.dart';
-import '../ui/text.dart';
-import '../utils/formatting_extensions.dart';
+import '../../../src/globals.dart';
+import '../../data/models/prayers.dart';
+import '../../utils/extensions.dart';
+import '../core/icon.dart';
+import '../core/switch.dart';
+import '../core/text.dart';
 import 'prayer_icons.dart';
 
 class PrayerTimingsWidget extends StatefulWidget {

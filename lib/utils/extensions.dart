@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:solar_alarm/models/calendar.dart';
+
+import '../data/enums/calendar.dart';
 
 extension FormatString on String {
   String get capitalized {

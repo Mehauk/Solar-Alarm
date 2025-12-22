@@ -1,42 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:solar_alarm/platform/platform_channel.dart';
-import 'package:solar_alarm/src/logs_page.dart';
 
-import 'components/alarms.dart';
-import 'components/clock.dart';
-import 'components/prayer_timings.dart';
-import 'globals.dart';
+import 'logs_page.dart';
 
-void main(List<String> args) {
-  runApp(
-    MaterialApp(
-      home: const _Home(),
-      routes: {'/logs': (context) => const LogsPage()},
-      themeMode: ThemeMode.dark,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF646E82),
-          brightness: Brightness.light,
-        ),
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF8E98A1),
-          brightness: Brightness.dark,
-        ),
-      ),
-    ),
-  );
-}
-
-class _Home extends StatefulWidget {
-  const _Home();
+class Home extends StatefulWidget {
+  const Home({super.key});
 
   @override
-  State<_Home> createState() => _HomeState();
+  State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<_Home> with WidgetsBindingObserver {
+class _HomeState extends State<Home> with WidgetsBindingObserver {
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);

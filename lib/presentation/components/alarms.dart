@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:solar_alarm/models/alarm.dart';
 import 'package:solar_alarm/platform/platform_channel.dart';
 import 'package:solar_alarm/utils/logger.dart';
 
-import '../globals.dart';
-import '../ui/icon.dart';
-import '../ui/switch.dart';
-import '../ui/text.dart';
-import '../utils/formatting_extensions.dart';
-import 'alarm_edit.dart';
+import '../../../src/globals.dart';
+import '../../data/models/alarm.dart';
+import '../../utils/extensions.dart';
+import '../core/icon.dart';
+import '../core/switch.dart';
+import '../core/text.dart';
+import '../pages/alarm_edit.dart';
 import 'gradient_bordered_box.dart';
 
 class AlarmsWidget extends StatefulWidget {

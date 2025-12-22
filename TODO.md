@@ -59,3 +59,9 @@ FUTURE
 - [ ] Duplicate
 - [ ] Custom offset / snooze behaviour for adhan alarms
 - [ ] multiselect + actions
+
+
+TODO
+- [ ] Refactor Codebase using Bloc
+- [ ] Use Jni+gen to sync call kotlin function
+- [ ] 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:solar_alarm/models/calendar.dart';
+
+import '../enums/calendar.dart';
 
 part 'alarm.freezed.dart';
 part 'alarm.g.dart';
