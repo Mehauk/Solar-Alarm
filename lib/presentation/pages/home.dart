@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:solar_alarm/platform/platform_channel.dart';
 
 import 'logs_page.dart';
 

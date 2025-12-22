@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:solar_alarm/platform/platform_channel.dart';
 
-import '../../../src/globals.dart';
 import '../../data/models/prayers.dart';
 import '../../utils/extensions.dart';
 import '../core/icon.dart';

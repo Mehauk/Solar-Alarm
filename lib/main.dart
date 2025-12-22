@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:solar_alarm/data/services/log_service.dart';
 
 import 'presentation/pages/home.dart';
 import 'presentation/pages/logs_page.dart';
@@ -7,7 +8,7 @@ void main() {
   runApp(
     MaterialApp(
       home: const Home(),
-      routes: {'/logs': (context) => const LogsPage()},
+      routes: {'/logs': (context) => LogsPage(DebugLogger())},
       themeMode: ThemeMode.dark,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(

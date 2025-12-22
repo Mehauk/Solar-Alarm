@@ -63,5 +63,5 @@ FUTURE
 
 TODO
 - [ ] Refactor Codebase using Bloc
-- [ ] Use Jni+gen to sync call kotlin function
-- [ ] 
+- [ ] (WRITE) Use Jni+gen to sync call kotlin function
+- [ ] FileLogger should also use jni calls for SST

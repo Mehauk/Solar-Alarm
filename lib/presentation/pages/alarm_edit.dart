@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:solar_alarm/platform/platform_channel.dart';
 
-import '../../../src/globals.dart';
 import '../../data/enums/calendar.dart';
 import '../../data/models/alarm.dart';
 import '../../utils/extensions.dart';

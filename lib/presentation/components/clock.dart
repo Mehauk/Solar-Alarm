@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../../../src/globals.dart';
 import '../../data/models/prayers.dart';
 import '../../utils/extensions.dart';
 import '../core/text.dart';

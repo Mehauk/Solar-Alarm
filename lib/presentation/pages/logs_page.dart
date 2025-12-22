@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:solar_alarm/utils/logger.dart';
+import 'package:solar_alarm/data/services/log_service.dart';
 
 class LogsPage extends StatefulWidget {
-  const LogsPage({super.key});
+  final Logger _logger;
+  const LogsPage(this._logger, {super.key});
 
   @override
   State<LogsPage> createState() => _LogsPageState();
@@ -18,24 +19,18 @@ class _LogsPageState extends State<LogsPage> {
     _refresh();
   }
 
-  Future<void> _refresh() async {
+  void _refresh() async {
     setState(() => _loading = true);
-    final lines = await Logger.readAll();
+    final lines = widget._logger.history();
     setState(() {
-      _lines =
-          lines
-              .split('\n')
-              .where((s) => s.trim().isNotEmpty)
-              .toList()
-              .reversed
-              .toList();
+      _lines = lines;
       _loading = false;
     });
   }
 
-  Future<void> _clear() async {
-    await Logger.clear();
-    await _refresh();
+  void _clear() async {
+    widget._logger.clear();
+    _refresh();
   }
 
   @override
