@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:solar_alarm/data/repositories/alarm_repo.dart';
 import 'package:solar_alarm/data/repositories/prayer_repo.dart';
 import 'package:solar_alarm/data/services/log_service.dart';
 import 'package:solar_alarm/data/services/platform_service.dart';
-
-import 'presentation/pages/home/home_screen.dart';
-import 'presentation/pages/logs/logs_screen.dart';
+import 'package:solar_alarm/presentation/modules/home/home_screen.dart';
+import 'package:solar_alarm/presentation/modules/logs/logs_screen.dart';
 
 void main() {
   final logger = DebugLogger();
   final invoker = PlatformInvoker('com.example.solar_alarm/main_channel');
   final prayerRepo = PrayerRepository(platformInvoker: invoker, logger: logger);
+  final alarmRepo = AlarmRepository(platformInvoker: invoker, logger: logger);
 
   runApp(
     MultiRepositoryProvider(
       providers: [
         RepositoryProvider(create: (context) => logger),
         RepositoryProvider(create: (context) => prayerRepo),
+        RepositoryProvider(create: (context) => alarmRepo),
       ],
       child: Builder(
         builder: (context) {

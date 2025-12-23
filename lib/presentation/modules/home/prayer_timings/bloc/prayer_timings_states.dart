@@ -11,11 +11,10 @@ final class PrayerTimingsLoadInProgress extends PrayerTimingsState
 
 final class PrayerTimingsLoadSuccess extends PrayerTimingsState
     implements WithViewModel<Prayers>, UiState {
-  const PrayerTimingsLoadSuccess(this.prayers);
-  final Prayers prayers;
+  const PrayerTimingsLoadSuccess(this.model);
 
   @override
-  Prayers get model => prayers;
+  final Prayers model;
 }
 
 final class PrayerTimingsLoadFailure extends PrayerTimingsState
@@ -28,11 +27,10 @@ final class PrayerTimingsLoadFailure extends PrayerTimingsState
 
 final class PrayerUpdateSuccess extends PrayerTimingsState
     implements WithViewModel<Prayers>, UiState {
-  const PrayerUpdateSuccess(this.prayers);
-  final Prayers prayers;
+  const PrayerUpdateSuccess(this.model);
 
   @override
-  Prayers get model => prayers;
+  final Prayers model;
 }
 
 final class PrayerUpdateFailure extends PrayerTimingsState

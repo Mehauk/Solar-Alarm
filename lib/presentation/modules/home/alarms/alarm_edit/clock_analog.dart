@@ -1,14 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:solar_alarm/presentation/pages/home/digital_clock/digital_clock_bloc.dart';
-
-import '../../../utils/extensions.dart';
-import '../../components/prayer_icons.dart';
-import '../../core/text.dart';
-
-part '../home/digital_clock/digital_clock.dart';
 
 enum TimePart { hour, minute }
 

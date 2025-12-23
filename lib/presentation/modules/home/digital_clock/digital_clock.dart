@@ -1,4 +1,9 @@
-part of '../../alarm_edit/clock_analog.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:solar_alarm/presentation/components/prayer_icons.dart';
+import 'package:solar_alarm/presentation/core/text.dart';
+import 'package:solar_alarm/presentation/modules/home/digital_clock/digital_clock_bloc.dart';
+import 'package:solar_alarm/utils/extensions.dart';
 
 class ClockDigital extends StatelessWidget {
   const ClockDigital({super.key});

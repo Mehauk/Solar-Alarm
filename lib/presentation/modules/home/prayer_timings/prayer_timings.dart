@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:solar_alarm/presentation/pages/home/prayer_timings/prayer_timings_bloc.dart';
+import 'package:solar_alarm/presentation/modules/home/prayer_timings/bloc/prayer_timings_bloc.dart';
 import 'package:solar_alarm/utils/interfaces.dart';
+import 'package:solar_alarm/utils/widget_extensions.dart';
 
 import '../../../../data/models/prayers.dart';
 import '../../../../utils/extensions.dart';
@@ -18,19 +19,17 @@ class PrayerTimingsWidget extends StatelessWidget {
     return BlocConsumer<PrayerTimingsBloc, PrayerTimingsState>(
       listenWhen: (previous, current) => current is WithErrorMessage,
       listener: (context, state) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${(state as WithErrorMessage).message}'),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showErrorSnackbar(state as WithErrorMessage);
       },
       buildWhen: (previous, current) => current is UiState,
       builder: (context, state) {
         switch (state as UiState) {
           case PrayerTimingsLoadInProgress():
             return const Center(child: CircularProgressIndicator());
-          case PrayerTimingsLoadSuccess(prayers: var prayers) ||
-              PrayerUpdateSuccess(prayers: var prayers):
+          case PrayerTimingsLoadSuccess(model: var prayers) ||
+              PrayerUpdateSuccess(model: var prayers):
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

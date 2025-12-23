@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:solar_alarm/presentation/pages/alarm_edit/clock_analog.dart';
-import 'package:solar_alarm/presentation/pages/home/alarms/alarms.dart';
-import 'package:solar_alarm/presentation/pages/home/digital_clock/digital_clock_bloc.dart';
-import 'package:solar_alarm/presentation/pages/home/prayer_timings/prayer_timings.dart';
-import 'package:solar_alarm/presentation/pages/home/prayer_timings/prayer_timings_bloc.dart';
+import 'package:solar_alarm/presentation/modules/home/alarms/alarms.dart';
+import 'package:solar_alarm/presentation/modules/home/alarms/bloc/alarm_bloc.dart';
+import 'package:solar_alarm/presentation/modules/home/digital_clock/digital_clock.dart';
+import 'package:solar_alarm/presentation/modules/home/digital_clock/digital_clock_bloc.dart';
+import 'package:solar_alarm/presentation/modules/home/prayer_timings/bloc/prayer_timings_bloc.dart';
+import 'package:solar_alarm/presentation/modules/home/prayer_timings/prayer_timings.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -21,6 +22,11 @@ class HomeScreen extends StatelessWidget {
               (context) =>
                   PrayerTimingsBloc(context.read())
                     ..add(const PrayersLoadEvent()),
+        ),
+        BlocProvider(
+          create:
+              (context) =>
+                  AlarmBloc(context.read())..add(const AlarmsLoadEvent()),
         ),
       ],
       child: Scaffold(

@@ -23,12 +23,10 @@ class PrayerTimingsBloc extends Bloc<PrayerTimingsEvent, PrayerTimingsState> {
     });
 
     on<PrayerUpdateEvent>((event, emit) async {
-      final result = await Result.attemptAsync(() async {
-        return await _prayerRepository.updatePrayerSettings(
-          event._prayer,
-          event._status,
-        );
-      });
+      final result = await _prayerRepository.updatePrayerSettings(
+        event._prayer,
+        event._status,
+      );
 
       switch (result) {
         case Ok():

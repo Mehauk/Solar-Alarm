@@ -1,157 +1,147 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:solar_alarm/presentation/core/icon.dart';
+import 'package:solar_alarm/presentation/modules/home/alarms/bloc/alarm_bloc.dart';
+import 'package:solar_alarm/utils/interfaces.dart';
+import 'package:solar_alarm/utils/widget_extensions.dart';
 
 import '../../../../data/models/alarm.dart';
 import '../../../../utils/extensions.dart';
 import '../../../core/gradient_bordered_box.dart';
-import '../../../core/icon.dart';
 import '../../../core/switch.dart';
 import '../../../core/text.dart';
-import '../../alarm_edit/alarm_edit_screen.dart';
+import 'alarm_edit/alarm_edit_dialogue.dart';
 
-class AlarmsWidget extends StatefulWidget {
+class AlarmsWidget extends StatelessWidget {
   const AlarmsWidget({super.key});
 
   @override
-  State<AlarmsWidget> createState() => _AlarmsWidgetState();
-}
-
-class _AlarmsWidgetState extends State<AlarmsWidget> {
-  final Map<Alarm, GlobalKey> _alarmKeys = {};
-  List<Alarm> alarms = [];
-  late final void Function(List<Alarm>) obs;
-
-  final ScrollController controller = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-
-    alarms = alarmsObservable.data;
-    for (var a in alarms) {
-      _alarmKeys[a] = GlobalKey();
-    }
-    obs = (newAlarms) {
-      setState(() => alarms = newAlarms);
-      for (var a in alarms) {
-        _alarmKeys[a] = GlobalKey();
-      }
-    };
-
-    alarmsObservable.addObserver(obs);
-  }
-
-  @override
-  void dispose() {
-    alarmsObservable.removeObserver(obs);
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return GradientBorderedBox(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 36),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SText("Alarms", fontSize: 18),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SIconButton(
-                      Icons.add,
-                      onTap: () async {
-                        final res = await showModalBottomSheet<Alarm?>(
-                          enableDrag: false,
-                          isScrollControlled: true,
-                          context: context,
-                          builder: (context) => const AlarmEdit(),
-                        );
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          final key = _alarmKeys[res];
-                          if (key?.currentContext != null) {
-                            Scrollable.ensureVisible(
-                              key!.currentContext!,
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeOut,
-                            );
-                          }
-                        });
-                      },
+    return BlocConsumer<AlarmBloc, AlarmState>(
+      listenWhen: (previous, current) => current is WithErrorMessage,
+      listener: (context, state) {
+        ScaffoldMessenger.of(
+          context,
+        ).showErrorSnackbar(state as WithErrorMessage);
+      },
+      buildWhen: (previous, current) => current is UiState,
+      builder: (context, state) {
+        switch (state as UiState) {
+          case AlarmsLoadInProgress():
+            return const Center(child: CircularProgressIndicator());
+          case AlarmsLoadSuccess(model: var model):
+            return GradientBorderedBox(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 18,
+                      horizontal: 36,
                     ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              controller: controller,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children:
-                      alarms
-                          .asMap()
-                          .entries
-                          .map(
-                            (e) => KeyedSubtree(
-                              key: _alarmKeys[e.value],
-                              child: AlarmTile(
-                                e.value,
-                                onTap:
-                                    () => showModalBottomSheet(
-                                      enableDrag: false,
-                                      isScrollControlled: true,
-                                      context: context,
-                                      builder:
-                                          (context) =>
-                                              AlarmEdit(alarm: e.value),
-                                    ),
-                                onToggle: (alarmEnabled) {
-                                  setState(() {
-                                    alarms[e.key] = alarms[e.key].copyWith(
-                                      enabled: alarmEnabled,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SText("Alarms", fontSize: 18),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SIconButton(
+                              Icons.add,
+                              onTap: () async {
+                                final res = await showModalBottomSheet<Alarm?>(
+                                  enableDrag: false,
+                                  isScrollControlled: true,
+                                  context: context,
+                                  builder: (context) => const AlarmEdit(),
+                                );
+                                WidgetsBinding.instance.addPostFrameCallback((
+                                  _,
+                                ) {
+                                  final key = model.alarmKeys[res];
+                                  if (key?.currentContext != null) {
+                                    Scrollable.ensureVisible(
+                                      key!.currentContext!,
+                                      duration: const Duration(
+                                        milliseconds: 300,
+                                      ),
+                                      curve: Curves.easeOut,
                                     );
-                                  });
-                                  Logger.append(
-                                    'AlarmsWidget',
-                                    'toggle ${alarms[e.key]}',
-                                    level: LogLevel.debug,
-                                  );
-                                  PlatformChannel.setAlarm(alarms[e.key]);
-                                },
-                                onStatusTap: (status) {
-                                  setState(() {
-                                    if (alarms[e.key].statuses.contains(
-                                      status,
-                                    )) {
-                                      alarms[e.key] = alarms[e.key].copyWith(
-                                        statuses: {...alarms[e.key].statuses}
-                                          ..remove(status),
-                                      );
-                                    } else {
-                                      alarms[e.key] = alarms[e.key].copyWith(
-                                        statuses: {...alarms[e.key].statuses}
-                                          ..add(status),
-                                      );
-                                    }
-                                  });
-                                  PlatformChannel.setAlarm(alarms[e.key]);
-                                },
-                              ),
+                                  }
+                                });
+                              },
                             ),
-                          )
-                          .expand((w) => [w, const SizedBox(height: 18)])
-                          .toList(),
-                ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          children:
+                              model.alarms
+                                  .asMap()
+                                  .entries
+                                  .map(
+                                    (e) => KeyedSubtree(
+                                      key: model.alarmKeys[e.value],
+                                      child: AlarmTile(
+                                        e.value,
+                                        onTap:
+                                            () => showModalBottomSheet(
+                                              enableDrag: false,
+                                              isScrollControlled: true,
+                                              context: context,
+                                              builder:
+                                                  (context) =>
+                                                      AlarmEdit(alarm: e.value),
+                                            ),
+                                        onToggle: (alarmEnabled) {
+                                          context.read<AlarmBloc>().add(
+                                            AlarmUpdateEvent(
+                                              model.alarms[e.key].copyWith(
+                                                enabled: alarmEnabled,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        onStatusTap: (status) {
+                                          context.read<AlarmBloc>().add(
+                                            AlarmUpdateEvent(
+                                              model.alarms[e.key].copyWith(),
+                                              status,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  )
+                                  .expand(
+                                    (w) => [w, const SizedBox(height: 18)],
+                                  )
+                                  .toList(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ),
-        ],
-      ),
+            );
+          case AlarmsLoadFailure():
+            return Center(
+              child: IconButton(
+                onPressed: () {
+                  context.read<AlarmBloc>().add(const AlarmsLoadEvent());
+                },
+                icon: const Icon(Icons.refresh),
+              ),
+            );
+        }
+
+        throw UnimplementedError();
+      },
     );
   }
 }
