@@ -52,7 +52,11 @@ class AlarmsWidget extends StatelessWidget {
                                   enableDrag: false,
                                   isScrollControlled: true,
                                   context: context,
-                                  builder: (context) => const AlarmEdit(),
+                                  builder:
+                                      (c) => BlocProvider.value(
+                                        value: context.read<AlarmBloc>(),
+                                        child: const AlarmEdit(),
+                                      ),
                                 );
                                 WidgetsBinding.instance.addPostFrameCallback((
                                   _,

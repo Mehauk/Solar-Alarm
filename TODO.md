@@ -67,3 +67,4 @@ TODO
 - [ ] (WRITE) Use Jni+gen to sync call kotlin function
 - [ ] FileLogger should also use jni calls for SST
 - [ ] Update readme, add images and running instructions
+- [ ] Better error handling

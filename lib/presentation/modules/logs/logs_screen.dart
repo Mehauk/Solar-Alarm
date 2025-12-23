@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_alarm/data/services/log_service.dart';
 
 class LogsScreen extends StatefulWidget {
-  final Logger _logger;
-  const LogsScreen(this._logger, {super.key});
+  const LogsScreen({super.key});
 
   @override
   State<LogsScreen> createState() => _LogsScreenState();
 }
 
 class _LogsScreenState extends State<LogsScreen> {
+  late final Logger _logger = context.read();
+
   List<String> _lines = [];
   bool _loading = false;
 
@@ -21,7 +23,7 @@ class _LogsScreenState extends State<LogsScreen> {
 
   void _refresh() async {
     setState(() => _loading = true);
-    final lines = widget._logger.history();
+    final lines = _logger.history();
     setState(() {
       _lines = lines;
       _loading = false;
@@ -29,7 +31,7 @@ class _LogsScreenState extends State<LogsScreen> {
   }
 
   void _clear() async {
-    widget._logger.clear();
+    _logger.clear();
     _refresh();
   }
 

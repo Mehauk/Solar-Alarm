@@ -16,30 +16,26 @@ void main() {
   runApp(
     MultiRepositoryProvider(
       providers: [
-        RepositoryProvider(create: (context) => logger),
+        RepositoryProvider<Logger>(create: (context) => logger),
         RepositoryProvider(create: (context) => prayerRepo),
         RepositoryProvider(create: (context) => alarmRepo),
       ],
-      child: Builder(
-        builder: (context) {
-          return MaterialApp(
-            home: const HomeScreen(),
-            routes: {'/logs': (context) => LogsScreen(context.read())},
-            themeMode: ThemeMode.dark,
-            theme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: const Color(0xFF646E82),
-                brightness: Brightness.light,
-              ),
-            ),
-            darkTheme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: const Color(0xFF8E98A1),
-                brightness: Brightness.dark,
-              ),
-            ),
-          );
-        },
+      child: MaterialApp(
+        home: const HomeScreen(),
+        routes: {'/logs': (context) => const LogsScreen()},
+        themeMode: ThemeMode.dark,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF646E82),
+            brightness: Brightness.light,
+          ),
+        ),
+        darkTheme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF8E98A1),
+            brightness: Brightness.dark,
+          ),
+        ),
       ),
     ),
   );
