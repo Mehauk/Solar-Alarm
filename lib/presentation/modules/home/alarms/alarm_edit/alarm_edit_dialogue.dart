@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:solar_alarm/presentation/modules/home/alarms/bloc/alarm_bloc.dart';
 
 import '../../../../../data/enums/calendar.dart';
 import '../../../../../data/models/alarm.dart';
@@ -32,73 +34,6 @@ class _AlarmEditState extends State<AlarmEdit> {
 
   void close(BuildContext context) {
     if (context.mounted) Navigator.pop(context);
-  }
-
-  void deleteAlarm(BuildContext context) async {
-    Alarm newAlarm = alarm;
-    List<Alarm> newAlarms = [...alarmsObservable.data];
-
-    if (widget.alarm != null) {
-      newAlarms.remove(widget.alarm);
-      await PlatformChannel.cancelAlarm(newAlarm.name);
-    }
-
-    alarmsObservable.update(newAlarms);
-    showSnackbar("Deleted Alarm: ${newAlarm.name}");
-    if (context.mounted) {
-      Navigator.pop(context);
-    }
-  }
-
-  Future<void> saveChanges(BuildContext context) async {
-    if (alarm.repeatDays.isNotEmpty) {
-      alarm = alarm.copyWith(
-        timeInMillis:
-            DateTime.now()
-                .copyWith(hour: alarm.time.hour, minute: alarm.time.minute)
-                .millisecondsSinceEpoch,
-      );
-    }
-    Alarm newAlarm = alarm.copyWith(enabled: true);
-    List<Alarm> newAlarms = [...alarmsObservable.data];
-
-    if (widget.alarm != null) {
-      newAlarms.remove(widget.alarm);
-      await PlatformChannel.cancelAlarm(newAlarm.name);
-    }
-
-    final replaceIndex = newAlarms.indexOf(newAlarm);
-    if (replaceIndex >= 0) {
-      newAlarms.removeAt(replaceIndex);
-      showSnackbar("Replaced Alarm: ${newAlarm.name}");
-    }
-
-    await PlatformChannel.setAlarm(newAlarm);
-    newAlarms.add(newAlarm);
-    alarmsObservable.update(newAlarms);
-    if (context.mounted) Navigator.pop(context, newAlarm);
-  }
-
-  void showSnackbar(String text) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        elevation: 20,
-        behavior: SnackBarBehavior.floating,
-        padding: EdgeInsets.zero,
-        margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).size.height - 100,
-          right: 20,
-          left: 20,
-        ),
-        backgroundColor: Colors.transparent,
-        content: GradientBorderedBox(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Center(child: SText(text, fontSize: 16)),
-          ),
-        ),
-      ),
-    );
   }
 
   void updateDate(DateTime date) {
@@ -184,7 +119,12 @@ class _AlarmEditState extends State<AlarmEdit> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         InkWell(
-                          onTap: () => deleteAlarm(context),
+                          onTap: () {
+                            context.read<AlarmBloc>().add(
+                              AlarmDeleteEvent(alarm.name),
+                            );
+                            Navigator.pop(context);
+                          },
                           child: const SIcon(
                             Icons.delete_forever_outlined,
                             radius: 14,
@@ -382,7 +322,12 @@ class _AlarmEditState extends State<AlarmEdit> {
                             onTap:
                                 alarm.name.isEmpty
                                     ? null
-                                    : () => saveChanges(context),
+                                    : () => context.read<AlarmBloc>().add(
+                                      AlarmUpdateEvent(
+                                        alarm,
+                                        oldAlarm: widget.alarm,
+                                      ),
+                                    ),
                             child: SizedBox(
                               width: 50,
                               child: Center(child: SText("Save", fontSize: 22)),

@@ -23,8 +23,19 @@ class AlarmBloc extends Bloc<AlarmEvent, AlarmState> {
       }
     });
 
+    on<AlarmDeleteEvent>((event, emit) async {
+      final delRes = await _alarmRepository.cancelAlarm(event.alarmName);
+
+      switch (delRes) {
+        case Ok<void>():
+          add(const AlarmsLoadEvent());
+        case Err<void>(message: var e):
+          emit(AlarmChangeFailure(e));
+      }
+    });
+
     on<AlarmUpdateEvent>((event, emit) async {
-      final Alarm newAlarm;
+      Alarm newAlarm;
       if (event.status != null) {
         if (event.alarm.statuses.contains(event.status)) {
           newAlarm = event.alarm.copyWith(
@@ -39,13 +50,32 @@ class AlarmBloc extends Bloc<AlarmEvent, AlarmState> {
         newAlarm = event.alarm;
       }
 
+      if (newAlarm.repeatDays.isNotEmpty) {
+        newAlarm = newAlarm.copyWith(
+          timeInMillis:
+              DateTime.now()
+                  .copyWith(
+                    hour: newAlarm.time.hour,
+                    minute: newAlarm.time.minute,
+                  )
+                  .millisecondsSinceEpoch,
+        );
+      }
+
+      newAlarm = newAlarm.copyWith(enabled: true);
+
+      if (event.oldAlarm != null) {
+        final delRes = await _alarmRepository.cancelAlarm(event.oldAlarm!.name);
+        if (delRes is Err) return emit(AlarmChangeFailure(delRes.message));
+      }
+
       final res = await _alarmRepository.setAlarm(newAlarm);
 
       switch (res) {
         case Ok<void>():
           add(const AlarmsLoadEvent());
         case Err<void>(message: var e):
-          emit(AlarmUpdateFailure(e));
+          emit(AlarmChangeFailure(e));
       }
     });
   }

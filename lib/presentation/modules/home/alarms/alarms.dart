@@ -111,7 +111,7 @@ class AlarmsWidget extends StatelessWidget {
                                           context.read<AlarmBloc>().add(
                                             AlarmUpdateEvent(
                                               model.alarms[e.key].copyWith(),
-                                              status,
+                                              status: status,
                                             ),
                                           );
                                         },

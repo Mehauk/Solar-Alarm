@@ -20,8 +20,8 @@ final class AlarmsLoadFailure extends AlarmState implements UiState {
   const AlarmsLoadFailure();
 }
 
-final class AlarmUpdateFailure extends AlarmState implements WithErrorMessage {
-  const AlarmUpdateFailure(this.message);
+final class AlarmChangeFailure extends AlarmState implements WithErrorMessage {
+  const AlarmChangeFailure(this.message);
 
   @override
   final String message;
