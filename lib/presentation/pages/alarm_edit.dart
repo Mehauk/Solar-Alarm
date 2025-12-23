@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '../../data/enums/calendar.dart';
 import '../../data/models/alarm.dart';
 import '../../utils/extensions.dart';
-import '../components/clock.dart';
-import '../components/gradient_bordered_box.dart';
+import '../components/clock_analog.dart';
 import '../core/button.dart';
+import '../core/gradient_bordered_box.dart';
 import '../core/icon.dart';
 import '../core/text.dart';
 import '../core/text_field.dart';
@@ -213,7 +213,7 @@ class _AlarmEditState extends State<AlarmEdit> {
                         alignment: WrapAlignment.center,
                         children: [
                           if (MediaQuery.of(context).viewInsets.bottom <= 0)
-                            Clock(
+                            ClockAnalog(
                               clockDiameter: 150,
                               time: TimeOfDay.fromDateTime(alarm.date),
                               editingPart: currentEdit,

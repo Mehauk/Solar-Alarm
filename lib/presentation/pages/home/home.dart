@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:solar_alarm/presentation/components/alarms.dart';
+import 'package:solar_alarm/presentation/components/clock_analog.dart';
+import 'package:solar_alarm/presentation/components/prayer_timings.dart';
 
-import 'logs_page.dart';
+import '../logs_page.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -66,7 +69,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         child: Column(
           children: [
             SizedBox(height: 60),
-            DigitalClock(),
+            ClockDigital(),
             SizedBox(height: 8),
             PrayerTimingsWidget(),
             SizedBox(height: 16),

@@ -8,19 +8,19 @@ import '../../utils/extensions.dart';
 import '../core/text.dart';
 import 'prayer_icons.dart';
 
-part 'digital_clock.dart';
+part 'clock_digital.dart';
 
 enum TimePart { hour, minute }
 
 const oneTwelfth = (2 * pi / 12);
 const oneSixtyth = (2 * pi / 60);
 
-class Clock extends StatelessWidget {
+class ClockAnalog extends StatelessWidget {
   final double clockDiameter;
   final TimeOfDay time;
   final TimePart editingPart;
   final void Function(TimeOfDay timeUpdate) onUpdate;
-  const Clock({
+  const ClockAnalog({
     super.key,
     required this.time,
     required this.editingPart,

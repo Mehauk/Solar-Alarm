@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../data/models/alarm.dart';
 import '../../utils/extensions.dart';
+import '../core/gradient_bordered_box.dart';
 import '../core/icon.dart';
 import '../core/switch.dart';
 import '../core/text.dart';
 import '../pages/alarm_edit.dart';
-import 'gradient_bordered_box.dart';
 
 class AlarmsWidget extends StatefulWidget {
   const AlarmsWidget({super.key});

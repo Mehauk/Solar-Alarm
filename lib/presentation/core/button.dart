@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../components/gradient_bordered_box.dart';
+import 'gradient_bordered_box.dart';
 
 class SButton extends StatelessWidget {
   final void Function()? onTap;

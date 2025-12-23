@@ -1,13 +1,13 @@
-part of 'clock.dart';
+part of 'clock_analog.dart';
 
-class DigitalClock extends StatefulWidget {
-  const DigitalClock({super.key});
+class ClockDigital extends StatefulWidget {
+  const ClockDigital({super.key});
 
   @override
-  State<DigitalClock> createState() => _DigitalClockState();
+  State<ClockDigital> createState() => _ClockDigitalState();
 }
 
-class _DigitalClockState extends State<DigitalClock> {
+class _ClockDigitalState extends State<ClockDigital> {
   late DateTime _currentTime;
   late Timer _timer;
   Prayer? _currentPrayer;
