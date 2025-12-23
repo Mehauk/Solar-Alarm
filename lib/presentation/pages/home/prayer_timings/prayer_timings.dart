@@ -1,79 +1,66 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:solar_alarm/presentation/pages/home/prayer_timings/prayer_timings_bloc.dart';
+import 'package:solar_alarm/utils/interfaces.dart';
 
-import '../../data/models/prayers.dart';
-import '../../utils/extensions.dart';
-import '../core/icon.dart';
-import '../core/switch.dart';
-import '../core/text.dart';
-import 'prayer_icons.dart';
+import '../../../../data/models/prayers.dart';
+import '../../../../utils/extensions.dart';
+import '../../../components/prayer_icons.dart';
+import '../../../core/icon.dart';
+import '../../../core/switch.dart';
+import '../../../core/text.dart';
 
-class PrayerTimingsWidget extends StatefulWidget {
+class PrayerTimingsWidget extends StatelessWidget {
   const PrayerTimingsWidget({super.key});
 
   @override
-  State<PrayerTimingsWidget> createState() => _PrayerTimingsWidgetState();
-}
-
-class _PrayerTimingsWidgetState extends State<PrayerTimingsWidget> {
-  Prayers? _prayers;
-  Prayer? _currentPrayer;
-
-  late final void Function(Prayers? data) _prayersObserver;
-  late final void Function(Prayer? data) _currentPrayerObserver;
-
-  void updatePrayerStatus(Prayer prayer, PrayerAlarmStatus s) {
-    PlatformChannel.updatePrayerSetting(prayer, s);
-    setState(() => _prayers!.statuses[prayer] = s);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    _prayers = prayerTimingsObservable.data;
-
-    _prayersObserver = (prayerTimings) {
-      setState(() => _prayers = prayerTimings);
-    };
-
-    prayerTimingsObservable.addObserver(_prayersObserver);
-
-    _currentPrayerObserver = (prayer) {
-      setState(() => _currentPrayer = prayer);
-    };
-    currentPrayerObservable.addObserver(_currentPrayerObserver);
-  }
-
-  @override
-  void dispose() {
-    prayerTimingsObservable.removeObserver(_prayersObserver);
-    currentPrayerObservable.removeObserver(_currentPrayerObserver);
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if ((_prayers?.ordered.length ?? 0) == 0)
-          IconButton(
-            onPressed: () {
-              PlatformChannel.getPrayerTimes().then((value) {
-                prayerTimingsObservable.update(value);
-              });
-            },
-            icon: const Icon(Icons.refresh),
+    return BlocConsumer<PrayerTimingsBloc, PrayerTimingsState>(
+      listenWhen: (previous, current) => current is WithErrorMessage,
+      listener: (context, state) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${(state as WithErrorMessage).message}'),
           ),
-        for (var i = 0; i < (_prayers?.ordered.length ?? 0); i++)
-          _PrayerTiming(
-            Prayers.orderedPrayers[i],
-            _prayers!.ordered[i],
-            _currentPrayer,
-            _prayers!.statuses[Prayers.orderedPrayers[i]],
-            (s) => updatePrayerStatus(Prayers.orderedPrayers[i], s),
-          ),
-      ],
+        );
+      },
+      buildWhen: (previous, current) => current is UiState,
+      builder: (context, state) {
+        switch (state as UiState) {
+          case PrayerTimingsLoadInProgress():
+            return const Center(child: CircularProgressIndicator());
+          case PrayerTimingsLoadSuccess(prayers: var prayers) ||
+              PrayerUpdateSuccess(prayers: var prayers):
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var i = 0; i < prayers.ordered.length; i++)
+                  _PrayerTiming(
+                    Prayers.orderedPrayers[i],
+                    prayers.ordered[i],
+                    prayers.prayerAtTime(DateTime.now()),
+                    prayers.statuses[Prayers.orderedPrayers[i]],
+                    (s) => context.read<PrayerTimingsBloc>().add(
+                      PrayerUpdateEvent(Prayers.orderedPrayers[i], s),
+                    ),
+                  ),
+              ],
+            );
+          case PrayerTimingsLoadFailure():
+            return Center(
+              child: IconButton(
+                onPressed: () {
+                  context.read<PrayerTimingsBloc>().add(
+                    const PrayersLoadEvent(),
+                  );
+                },
+                icon: const Icon(Icons.refresh),
+              ),
+            );
+        }
+
+        throw UnimplementedError();
+      },
     );
   }
 }

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:solar_alarm/data/services/log_service.dart';
 
-class LogsPage extends StatefulWidget {
+class LogsScreen extends StatefulWidget {
   final Logger _logger;
-  const LogsPage(this._logger, {super.key});
+  const LogsScreen(this._logger, {super.key});
 
   @override
-  State<LogsPage> createState() => _LogsPageState();
+  State<LogsScreen> createState() => _LogsScreenState();
 }
 
-class _LogsPageState extends State<LogsPage> {
+class _LogsScreenState extends State<LogsScreen> {
   List<String> _lines = [];
   bool _loading = false;
 
