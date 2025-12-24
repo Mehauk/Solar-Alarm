@@ -99,8 +99,14 @@ class AlarmsWidget extends StatelessWidget {
                                               isScrollControlled: true,
                                               context: context,
                                               builder:
-                                                  (context) =>
-                                                      AlarmEdit(alarm: e.value),
+                                                  (c) => BlocProvider.value(
+                                                    value:
+                                                        context
+                                                            .read<AlarmBloc>(),
+                                                    child: AlarmEdit(
+                                                      alarm: e.value,
+                                                    ),
+                                                  ),
                                             ),
                                         onToggle: (alarmEnabled) {
                                           context.read<AlarmBloc>().add(

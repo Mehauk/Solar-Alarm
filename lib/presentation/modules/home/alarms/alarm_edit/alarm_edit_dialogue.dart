@@ -322,12 +322,15 @@ class _AlarmEditState extends State<AlarmEdit> {
                             onTap:
                                 alarm.name.isEmpty
                                     ? null
-                                    : () => context.read<AlarmBloc>().add(
-                                      AlarmUpdateEvent(
-                                        alarm,
-                                        oldAlarm: widget.alarm,
-                                      ),
-                                    ),
+                                    : () {
+                                      context.read<AlarmBloc>().add(
+                                        AlarmUpdateEvent(
+                                          alarm,
+                                          oldAlarm: widget.alarm,
+                                        ),
+                                      );
+                                      Navigator.pop(context);
+                                    },
                             child: SizedBox(
                               width: 50,
                               child: Center(child: SText("Save", fontSize: 22)),
