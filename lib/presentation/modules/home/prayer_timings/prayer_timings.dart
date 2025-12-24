@@ -45,7 +45,7 @@ class PrayerTimingsWidget extends StatelessWidget {
                   ),
               ],
             );
-          case PrayerTimingsLoadFailure():
+          case PrayerTimingsChangeFailure():
             return Center(
               child: IconButton(
                 onPressed: () {

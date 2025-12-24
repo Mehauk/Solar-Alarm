@@ -17,9 +17,9 @@ final class PrayerTimingsLoadSuccess extends PrayerTimingsState
   final Prayers model;
 }
 
-final class PrayerTimingsLoadFailure extends PrayerTimingsState
+final class PrayerTimingsChangeFailure extends PrayerTimingsState
     implements WithErrorMessage, UiState {
-  const PrayerTimingsLoadFailure(this.message);
+  const PrayerTimingsChangeFailure(this.message);
 
   @override
   final String message;
@@ -31,12 +31,4 @@ final class PrayerUpdateSuccess extends PrayerTimingsState
 
   @override
   final Prayers model;
-}
-
-final class PrayerUpdateFailure extends PrayerTimingsState
-    implements WithErrorMessage {
-  const PrayerUpdateFailure(this.message);
-
-  @override
-  final String message;
 }

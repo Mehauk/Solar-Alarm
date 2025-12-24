@@ -18,7 +18,7 @@ class PrayerTimingsBloc extends Bloc<PrayerTimingsEvent, PrayerTimingsState> {
         case Ok(value: var data):
           emit(PrayerTimingsLoadSuccess(data));
         case Err(message: var e):
-          emit(PrayerTimingsLoadFailure(e));
+          emit(PrayerTimingsChangeFailure(e));
       }
     });
 
@@ -36,7 +36,7 @@ class PrayerTimingsBloc extends Bloc<PrayerTimingsEvent, PrayerTimingsState> {
             emit(PrayerUpdateSuccess(prayers));
           }
         case Err(message: var e):
-          emit(PrayerUpdateFailure(e));
+          emit(PrayerTimingsChangeFailure(e));
       }
     });
   }
