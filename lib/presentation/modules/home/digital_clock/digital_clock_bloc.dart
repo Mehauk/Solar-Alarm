@@ -9,15 +9,15 @@ class Timer {
       Stream.periodic(const Duration(seconds: 1), (_) => DateTime.now());
 }
 
-final class TimerState {
-  const TimerState(this.currentTime, this.currentPrayer);
+final class TimerViewModel {
+  const TimerViewModel(this.currentTime, this.currentPrayer);
   final DateTime currentTime;
   final Prayer? currentPrayer;
 
-  factory TimerState.initial() {
+  factory TimerViewModel.initial() {
     final time = DateTime.now();
     const prayer = null; // TODO: calc based on prayer times once synced
-    return TimerState(time, prayer);
+    return TimerViewModel(time, prayer);
   }
 }
 
@@ -25,16 +25,16 @@ final class TimerStarted {
   const TimerStarted();
 }
 
-class DigitalClockBloc extends Bloc<TimerStarted, TimerState> {
+class DigitalClockBloc extends Bloc<TimerStarted, TimerViewModel> {
   final Timer _timer;
 
   DigitalClockBloc({Timer timer = const Timer()})
     : _timer = timer,
-      super(TimerState.initial()) {
+      super(TimerViewModel.initial()) {
     on<TimerStarted>((event, emit) async {
       await emit.forEach(
         _timer.tick(),
-        onData: (dt) => TimerState(dt, null), // TODO: c
+        onData: (dt) => TimerViewModel(dt, null), // TODO: c
       );
     });
   }

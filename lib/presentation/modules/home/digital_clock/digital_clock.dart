@@ -10,7 +10,7 @@ class ClockDigital extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<DigitalClockBloc, TimerState>(
+    return BlocBuilder<DigitalClockBloc, TimerViewModel>(
       builder: (context, state) {
         (String time, DayPeriod period) formattedTime =
             state.currentTime.formattedTime;
