@@ -21,8 +21,8 @@ class MainActivity : FlutterActivity() {
                 .setMethodCallHandler { call, result ->
                     when (call.method) {
                         "setAlarm" -> {
-                            val args = call.arguments as Map<*, *>
-                            val alarmJson = args["alarmJson"]!! as String
+                            val alarmMap = call.arguments as Map<*, *>
+                            val alarmJson = org.json.JSONObject(alarmMap).toString()
                             setAlarm(alarmJson, context)
                             result.success(null)
                         }
