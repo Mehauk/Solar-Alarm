@@ -19,6 +19,7 @@ class PrayerTimingsWidget extends StatelessWidget {
     return BlocConsumer<PrayerTimingsBloc, PrayerTimingsState>(
       listenWhen: (previous, current) => current is WithErrorMessage,
       listener: (context, state) {
+        throw (state as WithErrorMessage).message;
         ScaffoldMessenger.of(
           context,
         ).showErrorSnackbar(state as WithErrorMessage);

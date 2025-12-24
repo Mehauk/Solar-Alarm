@@ -1,13 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
+import 'package:jni/jni.dart';
+import 'package:solar_alarm/data/services/jni_bindings.g.dart' as bindings;
 
 abstract interface class Logger {
   void log(String message);
-
-  List<String> history();
-
   void clear();
+  List<String> history();
 }
 
 class DebugLogger implements Logger {
@@ -22,25 +20,29 @@ class DebugLogger implements Logger {
   }
 
   @override
-  List<String> history() => _history;
+  void clear() => _history.clear();
 
   @override
-  void clear() => _history.clear();
+  List<String> history() => _history;
 }
 
-class FileLogger implements Logger {
-  final File _logFile;
-
-  const FileLogger(this._logFile);
+class JniLogService implements Logger {
+  final bindings.Logger _logger;
+  JniLogService(JObject context) : _logger = bindings.Logger(context);
 
   @override
   void log(String message) {
-    _logFile.writeAsStringSync(message, mode: FileMode.append, flush: true);
+    _logger.append(
+      JString.fromString("Flutter-FileLogger"),
+      JString.fromString(message),
+    );
   }
 
   @override
-  List<String> history() => _logFile.readAsLinesSync();
+  void clear() => _logger.clear();
 
   @override
-  void clear() => _logFile.writeAsBytesSync([], flush: true);
+  List<String> history() {
+    return _logger.history().map((e) => e.toDartString()).toList();
+  }
 }

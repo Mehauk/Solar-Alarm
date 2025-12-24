@@ -14,17 +14,21 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import com.example.solar_alarm.utils.Alarm.Companion.setAlarm
-import com.example.solar_alarm.utils.FileLogger
+import com.example.solar_alarm.services.Alarm
+import com.example.solar_alarm.services.Logger
 import org.json.JSONObject
 
 class AlarmActivity : Activity() {
     private lateinit var mediaPlayer: MediaPlayer
     private lateinit var handler: Handler
 
+    private val fileLogger = Logger(this)
+
+    private val alarmService = Alarm(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        FileLogger.append(this, "AlarmActivity", "onCreate called at ${System.currentTimeMillis()}")
+        fileLogger.append("AlarmActivity", "onCreate called at ${System.currentTimeMillis()}")
 
         // CRITICAL: Set content view FIRST before accessing window properties
         setContentView(R.layout.activity_alarm)
@@ -35,8 +39,8 @@ class AlarmActivity : Activity() {
         } else {
             @Suppress("DEPRECATION")
             window.addFlags(
-                    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
             )
         }
         // Hide status bar for fullscreen (API 30+)
@@ -45,8 +49,8 @@ class AlarmActivity : Activity() {
         } else {
             @Suppress("DEPRECATION")
             window.setFlags(
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
             )
         }
 
@@ -54,17 +58,16 @@ class AlarmActivity : Activity() {
         val alarmTime = intent.getLongExtra("alarmTime", 0)
         val alarmSoundStatus = intent.getBooleanExtra("alarmSoundStatus", false)
         val alarmVibrateStatus = intent.getBooleanExtra("alarmVibrateStatus", false)
-        FileLogger.append(
-                this,
-                "AlarmActivity",
-                "Received alarmName=$alarmName, alarmTime=$alarmTime, sound=$alarmSoundStatus, vibrate=$alarmVibrateStatus"
+        fileLogger.append(
+            "AlarmActivity",
+            "Received alarmName=$alarmName, alarmTime=$alarmTime, sound=$alarmSoundStatus, vibrate=$alarmVibrateStatus"
         )
         findViewById<TextView>(R.id.alarmTitle).text = alarmName
 
         // Retrieve the alarm time and display it
         val formattedTime =
-                java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault())
-                        .format(java.util.Date(alarmTime))
+            java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault())
+                .format(java.util.Date(alarmTime))
         findViewById<TextView>(R.id.timeText).text = formattedTime
 
         // Initialize handler and mediaPlayer
@@ -76,22 +79,21 @@ class AlarmActivity : Activity() {
 
         if (audioManager.ringerMode != AudioManager.RINGER_MODE_SILENT) {
             val playSoundRunnable =
-                    object : Runnable {
-                        override fun run() {
-                            if (::mediaPlayer.isInitialized && !mediaPlayer.isPlaying) {
-                                try {
-                                    mediaPlayer.start()
-                                } catch (e: Exception) {
-                                    FileLogger.append(
-                                            this@AlarmActivity,
-                                            "AlarmActivity",
-                                            "Error playing sound: ${e.message}"
-                                    )
-                                }
+                object : Runnable {
+                    override fun run() {
+                        if (::mediaPlayer.isInitialized && !mediaPlayer.isPlaying) {
+                            try {
+                                mediaPlayer.start()
+                            } catch (e: Exception) {
+                                fileLogger.append(
+                                    "AlarmActivity",
+                                    "Error playing sound: ${e.message}"
+                                )
                             }
-                            handler.postDelayed(this, 3000) // Repeat every 3 seconds
                         }
+                        handler.postDelayed(this, 3000) // Repeat every 3 seconds
                     }
+                }
 
             mediaPlayer.setOnCompletionListener {
                 it.seekTo(0) // Reset to the beginning
@@ -102,33 +104,33 @@ class AlarmActivity : Activity() {
             }
 
             val vibrator =
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                        getSystemService(Vibrator::class.java)
-                    } else {
-                        @Suppress("DEPRECATION") getSystemService(VIBRATOR_SERVICE) as Vibrator
-                    }
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                    getSystemService(Vibrator::class.java)
+                } else {
+                    @Suppress("DEPRECATION") getSystemService(VIBRATOR_SERVICE) as Vibrator
+                }
             // Vibrate
             val vibrationPattern = longArrayOf(0, 500, 1000) // Delay, Vibrate, Sleep
             if (alarmVibrateStatus) {
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                     val effect =
-                            android.os.VibrationEffect.createWaveform(
-                                    vibrationPattern,
-                                    0
-                            ) // 0 to repeat from start
+                        android.os.VibrationEffect.createWaveform(
+                            vibrationPattern,
+                            0
+                        ) // 0 to repeat from start
                     vibrator.vibrate(effect)
                 } else {
                     @Suppress("DEPRECATION")
                     vibrator.vibrate(
-                            vibrationPattern,
-                            0
+                        vibrationPattern,
+                        0
                     ) // Pass -1 for no repeat, or 0 to repeat from start
                 }
             }
 
             // Dismiss button - stop sound and vibration
             findViewById<Button>(R.id.dismissButton).setOnClickListener {
-                FileLogger.append(this, "AlarmActivity", "Dismiss button clicked for $alarmName")
+                fileLogger.append("AlarmActivity", "Dismiss button clicked for $alarmName")
                 handler.removeCallbacksAndMessages(null)
                 Toast.makeText(this, "Alarm dismissed", Toast.LENGTH_SHORT).show()
                 finish()
@@ -136,10 +138,9 @@ class AlarmActivity : Activity() {
         } else {
             // Silent mode - still set up dismiss button
             findViewById<Button>(R.id.dismissButton).setOnClickListener {
-                FileLogger.append(
-                        this,
-                        "AlarmActivity",
-                        "Dismiss button clicked for $alarmName (silent mode)"
+                fileLogger.append(
+                    "AlarmActivity",
+                    "Dismiss button clicked for $alarmName (silent mode)"
                 )
                 Toast.makeText(this, "Alarm dismissed", Toast.LENGTH_SHORT).show()
                 finish()
@@ -148,7 +149,7 @@ class AlarmActivity : Activity() {
 
         // Snooze button - always available regardless of silent mode
         findViewById<Button>(R.id.snoozeButton).setOnClickListener {
-            FileLogger.append(this, "AlarmActivity", "Snooze button clicked for $alarmName")
+            fileLogger.append("AlarmActivity", "Snooze button clicked for $alarmName")
             Toast.makeText(this, "Snoozed for 5 minutes", Toast.LENGTH_SHORT).show()
 
             // Clean up before finishing
@@ -157,19 +158,17 @@ class AlarmActivity : Activity() {
             }
 
             val timeInMillis = System.currentTimeMillis() + (1_000 * 60 * 5) // 5 minutes
-            val context = applicationContext
             val map =
-                    mapOf(
-                            "name" to alarmName,
-                            "timeInMillis" to timeInMillis.toString(),
-                            "enabled" to true,
-                    )
-            setAlarm(
-                    JSONObject(map).toString(),
-                    context,
-                    save = false,
-                    asExtra = false,
-                    unique = true
+                mapOf(
+                    "name" to alarmName,
+                    "timeInMillis" to timeInMillis.toString(),
+                    "enabled" to true,
+                )
+            alarmService.setAlarm(
+                JSONObject(map).toString(),
+                save = false,
+                asExtra = false,
+                unique = true
             )
             finish()
         }
@@ -196,11 +195,12 @@ class AlarmActivity : Activity() {
                 buttonTextColor = 0xFF000000.toInt()
                 //                buttonBackgroundColor = 0xFFFFFFFF.toInt() // White
                 backgroundDrawable =
-                        GradientDrawable(
-                                GradientDrawable.Orientation.TOP_BOTTOM,
-                                intArrayOf(0xFFFFDEE9.toInt(), 0xFFB5FFFC.toInt())
-                        )
+                    GradientDrawable(
+                        GradientDrawable.Orientation.TOP_BOTTOM,
+                        intArrayOf(0xFFFFDEE9.toInt(), 0xFFB5FFFC.toInt())
+                    )
             }
+
             in 9..11 -> {
                 contrastingBackgroundColor = 0xFF16213E.toInt() // Contrast for morning gradient
                 contrastingStrokeColor = 0xFFFFD700.toInt()
@@ -208,11 +208,12 @@ class AlarmActivity : Activity() {
                 buttonTextColor = 0xFF000000.toInt()
                 //                buttonBackgroundColor = 0xFFFFFFFF.toInt() // White
                 backgroundDrawable =
-                        GradientDrawable(
-                                GradientDrawable.Orientation.TOP_BOTTOM,
-                                intArrayOf(0xFFFFFACD.toInt(), 0xFFFFD700.toInt())
-                        )
+                    GradientDrawable(
+                        GradientDrawable.Orientation.TOP_BOTTOM,
+                        intArrayOf(0xFFFFFACD.toInt(), 0xFFFFD700.toInt())
+                    )
             }
+
             in 12..17 -> {
                 contrastingBackgroundColor = 0xFF1A1A2E.toInt() // Contrast for afternoon gradient
                 contrastingStrokeColor = 0xFF00BFFF.toInt()
@@ -220,11 +221,12 @@ class AlarmActivity : Activity() {
                 buttonTextColor = 0xFFFFFFFF.toInt()
                 //                buttonBackgroundColor = 0xFF000000.toInt() // Black
                 backgroundDrawable =
-                        GradientDrawable(
-                                GradientDrawable.Orientation.TOP_BOTTOM,
-                                intArrayOf(0xFF87CEEB.toInt(), 0xFF00BFFF.toInt())
-                        )
+                    GradientDrawable(
+                        GradientDrawable.Orientation.TOP_BOTTOM,
+                        intArrayOf(0xFF87CEEB.toInt(), 0xFF00BFFF.toInt())
+                    )
             }
+
             in 18..20 -> {
                 contrastingBackgroundColor = 0xFF1A1A2E.toInt() // Contrast for evening gradient
                 contrastingStrokeColor = 0xFFFEB47B.toInt()
@@ -232,11 +234,12 @@ class AlarmActivity : Activity() {
                 buttonTextColor = 0xFFFFFFFF.toInt()
                 //                buttonBackgroundColor = 0xFF000000.toInt() // Black
                 backgroundDrawable =
-                        GradientDrawable(
-                                GradientDrawable.Orientation.TOP_BOTTOM,
-                                intArrayOf(0xFFFF7E5F.toInt(), 0xFFFEB47B.toInt())
-                        )
+                    GradientDrawable(
+                        GradientDrawable.Orientation.TOP_BOTTOM,
+                        intArrayOf(0xFFFF7E5F.toInt(), 0xFFFEB47B.toInt())
+                    )
             }
+
             else -> {
                 contrastingBackgroundColor = 0xFFFFFACD.toInt() // Contrast for night gradient
                 contrastingStrokeColor = 0xFF16213E.toInt()
@@ -244,10 +247,10 @@ class AlarmActivity : Activity() {
                 buttonTextColor = 0xFFFFFFFF.toInt()
                 //                buttonBackgroundColor = 0xFF000000.toInt() // Black
                 backgroundDrawable =
-                        GradientDrawable(
-                                GradientDrawable.Orientation.TOP_BOTTOM,
-                                intArrayOf(0xFF1A1A2E.toInt(), 0xFF16213E.toInt())
-                        )
+                    GradientDrawable(
+                        GradientDrawable.Orientation.TOP_BOTTOM,
+                        intArrayOf(0xFF1A1A2E.toInt(), 0xFF16213E.toInt())
+                    )
             }
         }
         findViewById<RelativeLayout>(R.id.container).background = backgroundDrawable
@@ -261,20 +264,20 @@ class AlarmActivity : Activity() {
 
         // Update dismiss button to have contrasting background and stroke
         val dismissButtonBackground =
-                ContextCompat.getDrawable(this, R.drawable.dismiss_button_background) as
-                        GradientDrawable
+            ContextCompat.getDrawable(this, R.drawable.dismiss_button_background) as
+                    GradientDrawable
 
         dismissButtonBackground.setColor(contrastingBackgroundColor)
         dismissButtonBackground.setStroke(
-                4,
-                contrastingBackgroundColor
+            4,
+            contrastingBackgroundColor
         ) // Set stroke color and width
         dismissButton.background = dismissButtonBackground
         dismissButton.setTextColor(contrastingStrokeColor)
 
         val snoozeButtonBackground =
-                ContextCompat.getDrawable(this, R.drawable.snooze_button_background) as
-                        GradientDrawable
+            ContextCompat.getDrawable(this, R.drawable.snooze_button_background) as
+                    GradientDrawable
         snoozeButtonBackground.setStroke(2, buttonTextColor) // Update stroke color
         snoozeButton.background = snoozeButtonBackground
         snoozeButton.setTextColor(buttonTextColor)
@@ -282,7 +285,7 @@ class AlarmActivity : Activity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        FileLogger.append(this, "AlarmActivity", "onDestroy called, cleaning up resources")
+        fileLogger.append("AlarmActivity", "onDestroy called, cleaning up resources")
         // Stop and release MediaPlayer
         if (::mediaPlayer.isInitialized) {
             try {
@@ -296,11 +299,11 @@ class AlarmActivity : Activity() {
         }
         // Stop vibration
         val vibrator =
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                    getSystemService(Vibrator::class.java)
-                } else {
-                    @Suppress("DEPRECATION") getSystemService(VIBRATOR_SERVICE) as Vibrator
-                }
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                getSystemService(Vibrator::class.java)
+            } else {
+                @Suppress("DEPRECATION") getSystemService(VIBRATOR_SERVICE) as Vibrator
+            }
         vibrator.cancel()
 
         // Remove any pending callbacks

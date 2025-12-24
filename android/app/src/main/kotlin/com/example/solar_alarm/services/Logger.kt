@@ -1,4 +1,4 @@
-package com.example.solar_alarm.utils
+package com.example.solar_alarm.services
 
 import android.content.Context
 import java.io.File
@@ -8,12 +8,12 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-object FileLogger {
-    private const val LOG_FILE_NAME = "app_logs.txt"
-    private const val MAX_BYTES: Long = 2 * 1024 * 1024 // 2MB
-    private const val KEEP_BYTES: Long = 1 * 1024 * 1024 // keep last 1MB
+class Logger(val context: Context) {
+    private val LOG_FILE_NAME = "app_logs.txt"
+    private val MAX_BYTES: Long = 2 * 1024 * 1024 // 2MB
+    private val KEEP_BYTES: Long = 1 * 1024 * 1024 // keep last 1MB
 
-    private fun getLogFile(context: Context): File {
+    private fun getLogFile(): File {
         val altDir = File(context.filesDir, "app_flutter")
         return File(altDir, LOG_FILE_NAME)
     }
@@ -40,9 +40,9 @@ object FileLogger {
         }
     }
 
-    fun append(context: Context, tag: String, message: String) {
+    fun append(tag: String, message: String) {
         try {
-            val file = getLogFile(context)
+            val file = getLogFile()
             if (!file.exists()) {
                 file.createNewFile()
             }
@@ -55,6 +55,21 @@ object FileLogger {
             }
         } catch (e: IOException) {
             // fallback to FileLogger.append failed: $e")
+        }
+    }
+
+    fun history(): List<String> {
+        val file = getLogFile()
+        if (!file.exists()) {
+            return emptyList()
+        }
+        return file.readLines()
+    }
+
+    fun clear() {
+        val file = getLogFile()
+        if (file.exists()) {
+            file.delete()
         }
     }
 }

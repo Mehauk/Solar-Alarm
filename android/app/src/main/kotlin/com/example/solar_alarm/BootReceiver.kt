@@ -3,23 +3,22 @@ package com.example.solar_alarm
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.example.solar_alarm.utils.Alarm
-import com.example.solar_alarm.utils.FileLogger
-import com.example.solar_alarm.utils.Prayer
+import com.example.solar_alarm.services.Alarm
+import com.example.solar_alarm.services.Logger
+import com.example.solar_alarm.services.Prayer
 
-class  BootReceiver : BroadcastReceiver() {
+class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+        val fileLogger = Logger(context)
+        val alarmService = Alarm(context)
+        val prayerService = Prayer(context)
+
         if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
-            FileLogger.append(context, "BootReceiver", "Device rebooted, rescheduling alarms...")
+            fileLogger.append("BootReceiver", "Device rebooted, rescheduling alarms...")
 
             // Call your alarm rescheduling logic
-            Alarm.rescheduleAllAlarms(context)
-
-            Prayer.getPrayerTimesWithSettings(context) {prayerTimings ->
-                prayerTimings?.let {
-                    Prayer.schedulePrayerAlarms(context, it)
-                }
-            }
+            alarmService.rescheduleAllAlarms()
+            prayerService.schedulePrayerAlarms()
         }
     }
 }

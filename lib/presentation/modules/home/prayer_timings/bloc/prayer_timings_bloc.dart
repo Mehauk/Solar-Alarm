@@ -13,7 +13,7 @@ class PrayerTimingsBloc extends Bloc<PrayerTimingsEvent, PrayerTimingsState> {
   PrayerTimingsBloc(this._prayerRepository)
     : super(const PrayerTimingsLoadInProgress()) {
     on<PrayersLoadEvent>((event, emit) async {
-      final prayers = await _prayerRepository.getPrayers();
+      final prayers = _prayerRepository.getPrayers();
       switch (prayers) {
         case Ok(value: var data):
           emit(PrayerTimingsLoadSuccess(data));
@@ -23,7 +23,7 @@ class PrayerTimingsBloc extends Bloc<PrayerTimingsEvent, PrayerTimingsState> {
     });
 
     on<PrayerUpdateEvent>((event, emit) async {
-      final result = await _prayerRepository.updatePrayerSettings(
+      final result = _prayerRepository.updatePrayerSettings(
         event._prayer,
         event._status,
       );

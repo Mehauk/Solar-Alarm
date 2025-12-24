@@ -24,8 +24,17 @@ PLEASE DO NOT REMOVE THIS COPYRIGHT BLOCK.
 
 package com.example.solar_alarm.utils
 
-import java.util.*
-import kotlin.math.*
+import java.util.Calendar
+import java.util.TimeZone
+import kotlin.math.abs
+import kotlin.math.acos
+import kotlin.math.asin
+import kotlin.math.atan
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.floor
+import kotlin.math.sin
+import kotlin.math.tan
 
 class PrayTime {
 
@@ -75,25 +84,25 @@ class PrayTime {
 
     // ------------------- Calc Method Parameters --------------------
     val methodParams =
-            mapOf(
-                    jafari to doubleArrayOf(16.0, 0.0, 4.0, 0.0, 14.0),
-                    karachi to doubleArrayOf(18.0, 1.0, 0.0, 0.0, 18.0),
-                    isna to doubleArrayOf(15.0, 1.0, 0.0, 0.0, 15.0),
-                    mwl to doubleArrayOf(18.0, 1.0, 0.0, 0.0, 17.0),
-                    makkah to doubleArrayOf(18.5, 1.0, 0.0, 1.0, 90.0),
-                    egypt to doubleArrayOf(19.5, 1.0, 0.0, 0.0, 17.5),
-                    tehran to doubleArrayOf(17.7, 0.0, 4.5, 0.0, 14.0),
-                    custom to doubleArrayOf(18.0, 1.0, 0.0, 0.0, 17.0)
-            )
+        mapOf(
+            jafari to doubleArrayOf(16.0, 0.0, 4.0, 0.0, 14.0),
+            karachi to doubleArrayOf(18.0, 1.0, 0.0, 0.0, 18.0),
+            isna to doubleArrayOf(15.0, 1.0, 0.0, 0.0, 15.0),
+            mwl to doubleArrayOf(18.0, 1.0, 0.0, 0.0, 17.0),
+            makkah to doubleArrayOf(18.5, 1.0, 0.0, 1.0, 90.0),
+            egypt to doubleArrayOf(19.5, 1.0, 0.0, 0.0, 17.5),
+            tehran to doubleArrayOf(17.7, 0.0, 4.5, 0.0, 14.0),
+            custom to doubleArrayOf(18.0, 1.0, 0.0, 0.0, 17.0)
+        )
 
     var offsets = IntArray(7) { 0 }
 
     // ---------------------- Trigonometric Functions -----------------------
     private fun fixAngle(a: Double): Double =
-            (a - 360 * floor(a / 360)).let { if (it < 0) it + 360 else it }
+        (a - 360 * floor(a / 360)).let { if (it < 0) it + 360 else it }
 
     private fun fixHour(a: Double): Double =
-            (a - 24 * floor(a / 24)).let { if (it < 0) it + 24 else it }
+        (a - 24 * floor(a / 24)).let { if (it < 0) it + 24 else it }
 
     private fun radiansToDegrees(alpha: Double): Double = alpha * 180.0 / Math.PI
 
@@ -182,12 +191,12 @@ class PrayTime {
 
     // -------------------- Interface Functions --------------------
     fun getDatePrayerTimes(
-            year: Int,
-            month: Int,
-            day: Int,
-            latitude: Double,
-            longitude: Double,
-            tZone: Double
+        year: Int,
+        month: Int,
+        day: Int,
+        latitude: Double,
+        longitude: Double,
+        tZone: Double
     ): List<Long> {
         lat = latitude
         lng = longitude
@@ -245,9 +254,9 @@ class PrayTime {
 
         // Adjust Isha
         val ishaAngle =
-                if (methodParams[calcMethod]!![3].toDouble() == 0.0)
-                        methodParams[calcMethod]!![4].toDouble()
-                else 18.0
+            if (methodParams[calcMethod]!![3].toDouble() == 0.0)
+                methodParams[calcMethod]!![4].toDouble()
+            else 18.0
         val ishaDiff = nightPortion(ishaAngle) * nightTime
 
         if (timeDiff(times[4], times[6]) > ishaDiff) {
@@ -258,12 +267,12 @@ class PrayTime {
     }
 
     private fun nightPortion(angle: Double): Double =
-            when (adjustHighLats) {
-                angleBased -> angle / 60.0
-                midNight -> 0.5
-                oneSeventh -> 0.14286
-                else -> 0.0
-            }
+        when (adjustHighLats) {
+            angleBased -> angle / 60.0
+            midNight -> 0.5
+            oneSeventh -> 0.14286
+            else -> 0.0
+        }
 
     private fun dayPortion(times: DoubleArray): DoubleArray = times.map { it / 24 }.toDoubleArray()
 }

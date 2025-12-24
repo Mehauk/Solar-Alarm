@@ -13,7 +13,7 @@ class AlarmBloc extends Bloc<AlarmEvent, AlarmState> {
 
   AlarmBloc(this._alarmRepository) : super(const AlarmsLoadInProgress()) {
     on<AlarmsLoadEvent>((event, emit) async {
-      final alarms = await _alarmRepository.getAlarms();
+      final alarms = _alarmRepository.getAlarms();
 
       switch (alarms) {
         case Ok<List<Alarm>>(value: var alarms):
@@ -24,7 +24,7 @@ class AlarmBloc extends Bloc<AlarmEvent, AlarmState> {
     });
 
     on<AlarmDeleteEvent>((event, emit) async {
-      final delRes = await _alarmRepository.cancelAlarm(event.alarmName);
+      final delRes = _alarmRepository.cancelAlarm(event.alarmName);
 
       switch (delRes) {
         case Ok<void>():
@@ -65,11 +65,11 @@ class AlarmBloc extends Bloc<AlarmEvent, AlarmState> {
       newAlarm = newAlarm.copyWith(enabled: true);
 
       if (event.oldAlarm != null) {
-        final delRes = await _alarmRepository.cancelAlarm(event.oldAlarm!.name);
+        final delRes = _alarmRepository.cancelAlarm(event.oldAlarm!.name);
         if (delRes is Err) return emit(AlarmChangeFailure(delRes.message));
       }
 
-      final res = await _alarmRepository.setAlarm(newAlarm);
+      final res = _alarmRepository.setAlarm(newAlarm);
 
       switch (res) {
         case Ok<void>():
