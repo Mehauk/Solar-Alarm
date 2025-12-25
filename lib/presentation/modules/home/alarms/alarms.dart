@@ -20,7 +20,6 @@ class AlarmsWidget extends StatelessWidget {
     return BlocConsumer<AlarmBloc, AlarmState>(
       listenWhen: (previous, current) => current is WithErrorMessage,
       listener: (context, state) {
-        throw (state as WithErrorMessage).message;
         ScaffoldMessenger.of(
           context,
         ).showErrorSnackbar(state as WithErrorMessage);

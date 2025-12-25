@@ -1,3 +1,5 @@
+import 'package:jni/jni.dart';
+
 import '../../utils/mixins.dart';
 
 enum Prayer {
@@ -108,19 +110,21 @@ class Prayers {
 
   Prayers._(this._times, this.statuses);
 
-  factory Prayers(Map<dynamic, dynamic> input) {
+  factory Prayers.fromJMap(JMap<JString, JObject> input) {
     Map<Prayer, DateTime> times = {};
     Map<Prayer, PrayerAlarmStatus> statuses = {};
 
-    for (var prayer in _orderedPrayers) {
+    for (var prayer in Prayers._orderedPrayers) {
       times[prayer] = DateTime.fromMillisecondsSinceEpoch(
-        input[prayer.capitalizedName],
+        input[prayer.capitalizedName.toJString()]!.as(JLong.type).intValue(),
       );
     }
 
-    for (var prayer in _actualPrayers) {
+    for (var prayer in Prayers._actualPrayers) {
       statuses[prayer] = PrayerAlarmStatus.fromName(
-        input["__statuses__"][prayer.capitalizedName] ??
+        (input["__statuses__".toJString()]!.as(
+              JMap.type(JString.type, JString.type),
+            ))[prayer.capitalizedName.toJString()]?.toDartString() ??
             PrayerAlarmStatus.disabled.name,
       );
     }

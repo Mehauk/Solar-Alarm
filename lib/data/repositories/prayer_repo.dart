@@ -16,15 +16,16 @@ class JniPrayerRepository implements PrayerRepository {
 
   @override
   Result<Prayers> getPrayers() => Result.attempt(() {
-    return Prayers(_prayerService.getPrayerTimesFromLocation(null, null));
+    final map = _prayerService.getPrayerTimesFromLocation(null, null);
+    return Prayers.fromJMap(map);
   });
 
   @override
   Result<void> updatePrayerSettings(Prayer prayer, PrayerAlarmStatus status) {
     return Result.attempt(() {
       _prayerService.updatePrayerSettings(
-        JString.fromString(prayer.name),
-        JString.fromString(status.name),
+        prayer.name.toJString(),
+        status.name.toJString(),
       );
     });
   }

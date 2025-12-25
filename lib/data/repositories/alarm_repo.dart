@@ -19,7 +19,7 @@ class JniAlarmRepository implements AlarmRepository {
   @override
   Result<void> setAlarm(Alarm alarm) => Result.attempt(() {
     _alarmService.setAlarm(
-      JString.fromString(alarm.toJson().toString()),
+      alarm.toJson().toString().toJString(),
       true,
       false,
       false,
@@ -28,14 +28,18 @@ class JniAlarmRepository implements AlarmRepository {
 
   @override
   Result<void> cancelAlarm(String name) => Result.attempt(() {
-    _alarmService.cancelAlarm(JString.fromString(name));
+    _alarmService.cancelAlarm(name.toJString());
   });
 
   @override
   Result<List<Alarm>> getAlarms() => Result.attempt(() {
-    return _alarmService
-        .getAllAlarms()
-        .map((e) => Alarm.fromJson(jsonDecode(e.toDartString())))
-        .toList();
+    return _alarmService.getAllAlarms().map((e) {
+      final map = jsonDecode(e.toDartString()) as Map<String, dynamic>;
+
+      map["statuses"] =
+          (map["statuses"] as List).whereType<Map<String, dynamic>>().toList();
+
+      return Alarm.fromJson(map);
+    }).toList();
   });
 }
