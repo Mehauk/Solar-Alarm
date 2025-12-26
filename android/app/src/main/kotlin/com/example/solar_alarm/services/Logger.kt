@@ -15,6 +15,9 @@ class Logger(val context: Context) {
 
     private fun getLogFile(): File {
         val altDir = File(context.filesDir, "app_flutter")
+        if (!altDir.exists()) {
+            altDir.mkdirs()
+        }
         return File(altDir, LOG_FILE_NAME)
     }
 
@@ -55,6 +58,7 @@ class Logger(val context: Context) {
             }
         } catch (e: IOException) {
             // fallback to FileLogger.append failed: $e")
+            e.printStackTrace()
         }
     }
 

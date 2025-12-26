@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_alarm/presentation/modules/home/alarms/alarms.dart';
@@ -30,17 +31,8 @@ class HomeScreen extends StatelessWidget {
         ),
       ],
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Prayer Alarm'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.bug_report),
-              onPressed: () => Navigator.of(context).pushNamed('/logs'),
-            ),
-          ],
-        ),
-        body: const DecoratedBox(
-          decoration: BoxDecoration(
+        body: DecoratedBox(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -50,12 +42,25 @@ class HomeScreen extends StatelessWidget {
           ),
           child: Column(
             children: [
-              SizedBox(height: 60),
-              ClockDigital(),
-              SizedBox(height: 8),
-              PrayerTimingsWidget(),
-              SizedBox(height: 16),
-              Expanded(child: AlarmsWidget()),
+              if (kDebugMode) ...[
+                const SizedBox(height: 15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      padding: const EdgeInsets.all(5),
+                      icon: const Icon(Icons.bug_report, size: 20),
+                      onPressed: () => Navigator.of(context).pushNamed('/logs'),
+                    ),
+                  ],
+                ),
+              ] else
+                const SizedBox(height: 60),
+              const ClockDigital(),
+              const SizedBox(height: 8),
+              const PrayerTimingsWidget(),
+              const SizedBox(height: 16),
+              const Expanded(child: AlarmsWidget()),
             ],
           ),
         ),

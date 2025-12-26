@@ -2,22 +2,20 @@ sealed class Result<T> {
   const Result();
 
   static Result<T> attempt<T>(T Function() callback) {
-    return Ok._(callback());
     try {
       return Ok._(callback());
-    } catch (e) {
-      return Err._(e.toString());
+    } catch (e, stackTrace) {
+      return Err._("$e\n$stackTrace");
     }
   }
 
   static Future<Result<T>> attemptAsync<T>(
     Future<T> Function() callback,
   ) async {
-    return Ok._(await callback());
     try {
       return Ok._(await callback());
-    } catch (e) {
-      return Err._(e.toString());
+    } catch (e, stackTrace) {
+      return Err._("$e\n$stackTrace");
     }
   }
 }

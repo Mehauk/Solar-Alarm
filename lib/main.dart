@@ -10,7 +10,7 @@ import 'package:solar_alarm/presentation/modules/logs/logs_screen.dart';
 void main() {
   final context = Jni.androidApplicationContext;
 
-  final logger = DebugLogger();
+  final logger = JniLogService(context);
   final alarmRepo = JniAlarmRepository(context);
   final prayerRepo = JniPrayerRepository(context);
 
@@ -22,6 +22,7 @@ void main() {
         RepositoryProvider<AlarmRepository>(create: (context) => alarmRepo),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         home: const HomeScreen(),
         routes: {'/logs': (context) => const LogsScreen()},
         themeMode: ThemeMode.dark,
