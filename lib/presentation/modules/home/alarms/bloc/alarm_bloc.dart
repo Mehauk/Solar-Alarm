@@ -12,7 +12,7 @@ class AlarmBloc extends Bloc<AlarmEvent, AlarmState> {
   final AlarmRepository _alarmRepository;
 
   AlarmBloc(this._alarmRepository) : super(const AlarmsLoadInProgress()) {
-    on<AlarmsLoadEvent>((event, emit) async {
+    on<AlarmsLoadEvent>((event, emit) {
       final alarms = _alarmRepository.getAlarms();
 
       switch (alarms) {
@@ -23,7 +23,7 @@ class AlarmBloc extends Bloc<AlarmEvent, AlarmState> {
       }
     });
 
-    on<AlarmDeleteEvent>((event, emit) async {
+    on<AlarmDeleteEvent>((event, emit) {
       final delRes = _alarmRepository.cancelAlarm(event.alarmName);
 
       switch (delRes) {
@@ -34,7 +34,7 @@ class AlarmBloc extends Bloc<AlarmEvent, AlarmState> {
       }
     });
 
-    on<AlarmUpdateEvent>((event, emit) async {
+    on<AlarmUpdateEvent>((event, emit) {
       Alarm newAlarm;
       if (event.status != null) {
         if (event.alarm.statuses.contains(event.status)) {
