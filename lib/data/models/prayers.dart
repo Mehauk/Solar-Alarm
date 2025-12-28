@@ -116,7 +116,7 @@ class Prayers {
 
     for (var prayer in Prayers._orderedPrayers) {
       times[prayer] = DateTime.fromMillisecondsSinceEpoch(
-        input[prayer.capitalizedName.toJString()]!.as(JLong.type).intValue(),
+        input[prayer.capitalizedName.toJString()]!.as(JLong.type).longValue(),
       );
     }
 

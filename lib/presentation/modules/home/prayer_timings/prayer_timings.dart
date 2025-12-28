@@ -26,10 +26,7 @@ class PrayerTimingsWidget extends StatelessWidget {
       buildWhen: (previous, current) => current is UiState,
       builder: (context, state) {
         switch (state as UiState) {
-          case PrayerTimingsLoadInProgress():
-            return const Center(child: CircularProgressIndicator());
-          case PrayerTimingsLoadSuccess(model: var prayers) ||
-              PrayerUpdateSuccess(model: var prayers):
+          case PrayerTimingsLoadSuccess(model: var prayers):
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -45,8 +42,8 @@ class PrayerTimingsWidget extends StatelessWidget {
                   ),
               ],
             );
-          case PrayerTimingsChangeFailure():
-            return Center(
+          case PrayerTimingsLoadFailure():
+            Center(
               child: IconButton(
                 onPressed: () {
                   context.read<PrayerTimingsBloc>().add(

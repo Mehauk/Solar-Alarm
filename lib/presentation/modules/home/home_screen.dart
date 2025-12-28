@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:solar_alarm/data/repositories/prayer_repo.dart';
 import 'package:solar_alarm/presentation/modules/home/alarms/alarms.dart';
 import 'package:solar_alarm/presentation/modules/home/alarms/bloc/alarm_bloc.dart';
 import 'package:solar_alarm/presentation/modules/home/digital_clock/digital_clock.dart';
@@ -16,7 +17,11 @@ class HomeScreen extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => DigitalClockBloc()..add(const TimerStarted()),
+          create:
+              (context) => DigitalClockBloc(
+                prayers:
+                    context.read<PrayerRepository>().getPrayers().unwrapOrNull,
+              )..add(const TimerStarted()),
         ),
         BlocProvider(
           create:

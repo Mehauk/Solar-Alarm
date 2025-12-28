@@ -1,16 +1,25 @@
 # solar_alarm
-
-A new Flutter project.
+An Application for creating alarms and tracking prayer times (with notifications)
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Prerequisites
+1. Dart/Flutter installed on your device (and added to path)
+2. Android device or emulator
 
-A few resources to get you started if this is your first Flutter project:
+### Installation
+1. Clone this repo
+2. Get deps - `flutter pub get`
+3. Run code generation
+   - `dart run build_runner build` - freezed and jsonserializable
+   - `flutter build apk` - required for next step
+   - `dart ./tool/jnigen.dart` - JNI bindings
+4. Finally run with - `flutter run`
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+flutter pub get
+dart run build_runner build
+flutter build apk
+dart ./tool/jnigen.dart
+flutter run
+```

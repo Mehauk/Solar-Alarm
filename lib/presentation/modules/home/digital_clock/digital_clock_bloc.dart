@@ -14,10 +14,9 @@ final class TimerViewModel {
   final DateTime currentTime;
   final Prayer? currentPrayer;
 
-  factory TimerViewModel.initial() {
+  factory TimerViewModel.initial(Prayer? currentPrayer) {
     final time = DateTime.now();
-    const prayer = null; // TODO: calc based on prayer times once synced
-    return TimerViewModel(time, prayer);
+    return TimerViewModel(time, currentPrayer);
   }
 }
 
@@ -27,14 +26,15 @@ final class TimerStarted {
 
 class DigitalClockBloc extends Bloc<TimerStarted, TimerViewModel> {
   final Timer _timer;
+  final Prayers? prayers;
 
-  DigitalClockBloc({Timer timer = const Timer()})
+  DigitalClockBloc({Timer timer = const Timer(), required this.prayers})
     : _timer = timer,
-      super(TimerViewModel.initial()) {
+      super(TimerViewModel.initial(prayers?.prayerAtTime(DateTime.now()))) {
     on<TimerStarted>((event, emit) async {
       await emit.forEach(
         _timer.tick(),
-        onData: (dt) => TimerViewModel(dt, null), // TODO: c
+        onData: (dt) => TimerViewModel(dt, prayers?.prayerAtTime(dt)),
       );
     });
   }

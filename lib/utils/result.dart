@@ -18,6 +18,24 @@ sealed class Result<T> {
       return Err._("$e\n$stackTrace");
     }
   }
+
+  E map<E>(E Function(T) onSuccess, E Function(String) onFailure) {
+    switch (this) {
+      case Ok<T>(value: var v):
+        return onSuccess(v);
+      case Err<T>(message: var e):
+        return onFailure(e);
+    }
+  }
+
+  T? get unwrapOrNull {
+    switch (this) {
+      case Ok<T>(value: var v):
+        return v;
+      case Err<T>():
+        return null;
+    }
+  }
 }
 
 final class Ok<T> extends Result<T> {

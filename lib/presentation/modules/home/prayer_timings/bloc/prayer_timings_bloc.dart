@@ -11,7 +11,12 @@ class PrayerTimingsBloc extends Bloc<PrayerTimingsEvent, PrayerTimingsState> {
   final PrayerRepository _prayerRepository;
 
   PrayerTimingsBloc(this._prayerRepository)
-    : super(const PrayerTimingsLoadInProgress()) {
+    : super(
+        _prayerRepository.getPrayers().map(
+          (v) => PrayerTimingsLoadSuccess(v),
+          (s) => PrayerTimingsChangeFailure(s),
+        ),
+      ) {
     on<PrayersLoadEvent>((event, emit) {
       final prayers = _prayerRepository.getPrayers();
       switch (prayers) {
@@ -30,11 +35,7 @@ class PrayerTimingsBloc extends Bloc<PrayerTimingsEvent, PrayerTimingsState> {
 
       switch (result) {
         case Ok():
-          if (state is WithViewModel) {
-            final prayers = (state as WithViewModel<Prayers>).model;
-            prayers.statuses[event._prayer] = event._status;
-            emit(PrayerUpdateSuccess(prayers));
-          }
+          add(const PrayersLoadEvent());
         case Err(message: var e):
           emit(PrayerTimingsChangeFailure(e));
       }

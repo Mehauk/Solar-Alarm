@@ -4,10 +4,6 @@ sealed class AlarmState {
   const AlarmState();
 }
 
-final class AlarmsLoadInProgress extends AlarmState implements UiState {
-  const AlarmsLoadInProgress();
-}
-
 final class AlarmsLoadSuccess extends AlarmState
     implements UiState, WithViewModel<AlarmsViewModel> {
   const AlarmsLoadSuccess(this.model);

@@ -27,8 +27,6 @@ class AlarmsWidget extends StatelessWidget {
       buildWhen: (previous, current) => current is UiState,
       builder: (context, state) {
         switch (state as UiState) {
-          case AlarmsLoadInProgress():
-            return const Center(child: CircularProgressIndicator());
           case AlarmsLoadSuccess(model: var model):
             return GradientBorderedBox(
               child: Column(

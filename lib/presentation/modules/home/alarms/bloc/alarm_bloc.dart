@@ -11,7 +11,13 @@ part 'alarm_states.dart';
 class AlarmBloc extends Bloc<AlarmEvent, AlarmState> {
   final AlarmRepository _alarmRepository;
 
-  AlarmBloc(this._alarmRepository) : super(const AlarmsLoadInProgress()) {
+  AlarmBloc(this._alarmRepository)
+    : super(
+        _alarmRepository.getAlarms().map(
+          (v) => AlarmsLoadSuccess(AlarmsViewModel(v)),
+          (s) => const AlarmsLoadFailure(),
+        ),
+      ) {
     on<AlarmsLoadEvent>((event, emit) {
       final alarms = _alarmRepository.getAlarms();
 
