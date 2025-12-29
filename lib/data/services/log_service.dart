@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:jni/jni.dart';
-import 'package:solar_alarm/data/services/jni_bindings.g.dart' as bindings;
+import 'package:solar_alarm/data/services/jni_bindings_service.dart'
+    as jni_bindings;
 
 abstract interface class Logger {
   void log(String message);
@@ -27,8 +28,8 @@ class DebugLogger implements Logger {
 }
 
 class JniLogService implements Logger {
-  final bindings.Logger _logger;
-  JniLogService(JObject context) : _logger = bindings.Logger(context);
+  final jni_bindings.Logger _logger;
+  JniLogService(JObject context) : _logger = jni_bindings.Logger(context);
 
   @override
   void log(String message) {

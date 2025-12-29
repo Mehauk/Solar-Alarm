@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:jni/jni.dart';
-import 'package:solar_alarm/data/services/jni_bindings.g.dart' as bindings;
+import 'package:solar_alarm/data/services/jni_bindings_service.dart'
+    as jni_bindings;
 import 'package:solar_alarm/utils/result.dart';
 
 import '../models/alarm.dart';
@@ -13,8 +14,9 @@ abstract interface class AlarmRepository {
 }
 
 class JniAlarmRepository implements AlarmRepository {
-  final bindings.Alarm _alarmService;
-  JniAlarmRepository(JObject context) : _alarmService = bindings.Alarm(context);
+  final jni_bindings.Alarm _alarmService;
+  JniAlarmRepository(JObject context)
+    : _alarmService = jni_bindings.Alarm(context);
 
   @override
   Result<void> setAlarm(Alarm alarm) => Result.attempt(() {
