@@ -102,246 +102,255 @@ class _AlarmEditState extends State<AlarmEdit> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: MediaQuery.of(context).viewInsets,
-      child: GradientBorderedBox(
-        child: SizedBox(
-          width: double.infinity,
-          child: Padding(
-            padding: const EdgeInsets.all(18.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            context.read<AlarmBloc>().add(
-                              AlarmDeleteEvent(alarm.name),
-                            );
-                            Navigator.pop(context);
-                          },
-                          child: const SIcon(
-                            Icons.delete_forever_outlined,
-                            radius: 14,
-                            color: Color(0xDDFD251E),
-                          ),
-                        ),
-                        SText("Set Alarm", fontSize: 18),
-                      ],
-                    ),
-
-                    InkWell(
-                      onTap: () => close(context),
-                      child: const SIcon(Icons.close, radius: 14),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: double.infinity,
-                  child: Column(
+    return SafeArea(
+      child: Padding(
+        padding: MediaQuery.of(context).viewInsets,
+        child: GradientBorderedBox(
+          child: SizedBox(
+            width: double.infinity,
+            child: Padding(
+              padding: const EdgeInsets.all(18.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Wrap(
-                        runSpacing: 12,
-                        spacing: 12,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        alignment: WrapAlignment.center,
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          if (MediaQuery.of(context).viewInsets.bottom <= 0)
-                            ClockAnalog(
-                              clockDiameter: 150,
-                              time: TimeOfDay.fromDateTime(alarm.date),
-                              editingPart: currentEdit,
-                              onUpdate: updateTime,
+                          InkWell(
+                            onTap: () {
+                              context.read<AlarmBloc>().add(
+                                AlarmDeleteEvent(alarm.name),
+                              );
+                              Navigator.pop(context);
+                            },
+                            child: const SIcon(
+                              Icons.delete_forever_outlined,
+                              radius: 14,
+                              color: Color(0xDDFD251E),
                             ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  if (alarm.repeatDays.isEmpty)
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            if (alarm.date.deicticWord != null)
-                                              SText(
-                                                alarm.date.deicticWord!,
-                                                fontSize: 12,
-                                              ),
-                                            SText(
-                                              alarm.date.formattedDate,
-                                              fontSize: 12,
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(width: 4),
-                                        IconButton(
-                                          onPressed:
-                                              () => showModalBottomSheet(
-                                                context: context,
-                                                builder: (context) {
-                                                  final now = DateTime.now();
-                                                  return CalendarDatePicker(
-                                                    initialDate:
-                                                        alarm.date.isAfter(now)
-                                                            ? alarm.date
-                                                            : now,
-                                                    firstDate: now,
-                                                    lastDate: now.add(
-                                                      const Duration(
-                                                        days: 365 * 100,
-                                                      ),
-                                                    ),
-                                                    onDateChanged: (date) {
-                                                      updateDate(date);
-                                                      Navigator.pop(context);
-                                                    },
-                                                  );
-                                                },
-                                              ),
-                                          icon: const SIcon(
-                                            Icons.calendar_month,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      _TimeCapsule(
-                                        alarm.time.hour12,
-                                        editType: TimePart.hour,
-                                        currentEdit: currentEdit,
-                                        onTap:
-                                            () => setState(
-                                              () => currentEdit = TimePart.hour,
-                                            ),
-                                      ),
-                                      SText(":", fontSize: 36),
-                                      _TimeCapsule(
-                                        alarm.time.minute,
-                                        editType: TimePart.minute,
-                                        currentEdit: currentEdit,
-                                        onTap:
-                                            () => setState(
-                                              () =>
-                                                  currentEdit = TimePart.minute,
-                                            ),
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Column(
-                                        children: [
-                                          _TimeIndicatorWidget(
-                                            DayPeriod.am,
-                                            timeInd,
-                                            updateDayPeriod,
-                                          ),
-                                          const SizedBox(height: 1),
-                                          _TimeIndicatorWidget(
-                                            DayPeriod.pm,
-                                            timeInd,
-                                            updateDayPeriod,
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(width: 6),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-
-                              Material(
-                                color: Colors.transparent,
-                                child: RepeatingDaysIndicator(
-                                  alarm.repeatDays,
-                                  fontSize: 16,
-                                  padding: 12,
-                                  onDayToggled: updateRepeatingDay,
-                                ),
-                              ),
-
-                              const SizedBox(height: 16),
-                              SizedBox(
-                                width: 170,
-                                child: STextField(
-                                  labelText: "Name required",
-                                  controller: nameController,
-                                ),
-                              ),
-
-                              const SizedBox(height: 8),
-                              SizedBox(
-                                width: 170,
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: AlarmStatusesIndicator(
-                                    alarm.statuses,
-                                    onTap: updateStatus,
-                                    enabled: true,
-                                  ),
-                                ),
-                              ),
-                            ],
                           ),
+                          SText("Set Alarm", fontSize: 18),
                         ],
                       ),
-                      const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          SButton(
-                            onTap: () => Navigator.pop(context),
-                            destructive: true,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 30,
-                              vertical: 14,
-                            ),
-                            child: SizedBox(
-                              width: 70,
-                              child: Center(
-                                child: SText(
-                                  "Cancel",
-                                  fontSize: 22,
-                                  color: const Color(0xDDFD251E),
-                                ),
-                              ),
-                            ),
-                          ),
-                          SButton(
-                            onTap:
-                                alarm.name.isEmpty
-                                    ? null
-                                    : () {
-                                      context.read<AlarmBloc>().add(
-                                        AlarmUpdateEvent(
-                                          alarm,
-                                          oldAlarm: widget.alarm,
-                                        ),
-                                      );
-                                      Navigator.pop(context);
-                                    },
-                            child: SizedBox(
-                              width: 50,
-                              child: Center(child: SText("Save", fontSize: 22)),
-                            ),
-                          ),
-                        ],
+
+                      InkWell(
+                        onTap: () => close(context),
+                        child: const SIcon(Icons.close, radius: 14),
                       ),
                     ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Column(
+                      children: [
+                        Wrap(
+                          runSpacing: 12,
+                          spacing: 12,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          alignment: WrapAlignment.center,
+                          children: [
+                            if (MediaQuery.of(context).viewInsets.bottom <= 0)
+                              ClockAnalog(
+                                clockDiameter: 150,
+                                time: TimeOfDay.fromDateTime(alarm.date),
+                                editingPart: currentEdit,
+                                onUpdate: updateTime,
+                              ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    if (alarm.repeatDays.isEmpty)
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              if (alarm.date.deicticWord !=
+                                                  null)
+                                                SText(
+                                                  alarm.date.deicticWord!,
+                                                  fontSize: 12,
+                                                ),
+                                              SText(
+                                                alarm.date.formattedDate,
+                                                fontSize: 12,
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(width: 4),
+                                          IconButton(
+                                            onPressed:
+                                                () => showModalBottomSheet(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    final now = DateTime.now();
+                                                    return CalendarDatePicker(
+                                                      initialDate:
+                                                          alarm.date.isAfter(
+                                                                now,
+                                                              )
+                                                              ? alarm.date
+                                                              : now,
+                                                      firstDate: now,
+                                                      lastDate: now.add(
+                                                        const Duration(
+                                                          days: 365 * 100,
+                                                        ),
+                                                      ),
+                                                      onDateChanged: (date) {
+                                                        updateDate(date);
+                                                        Navigator.pop(context);
+                                                      },
+                                                    );
+                                                  },
+                                                ),
+                                            icon: const SIcon(
+                                              Icons.calendar_month,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        _TimeCapsule(
+                                          alarm.time.hour12,
+                                          editType: TimePart.hour,
+                                          currentEdit: currentEdit,
+                                          onTap:
+                                              () => setState(
+                                                () =>
+                                                    currentEdit = TimePart.hour,
+                                              ),
+                                        ),
+                                        SText(":", fontSize: 36),
+                                        _TimeCapsule(
+                                          alarm.time.minute,
+                                          editType: TimePart.minute,
+                                          currentEdit: currentEdit,
+                                          onTap:
+                                              () => setState(
+                                                () =>
+                                                    currentEdit =
+                                                        TimePart.minute,
+                                              ),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Column(
+                                          children: [
+                                            _TimeIndicatorWidget(
+                                              DayPeriod.am,
+                                              timeInd,
+                                              updateDayPeriod,
+                                            ),
+                                            const SizedBox(height: 1),
+                                            _TimeIndicatorWidget(
+                                              DayPeriod.pm,
+                                              timeInd,
+                                              updateDayPeriod,
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(width: 6),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+
+                                Material(
+                                  color: Colors.transparent,
+                                  child: RepeatingDaysIndicator(
+                                    alarm.repeatDays,
+                                    fontSize: 16,
+                                    padding: 12,
+                                    onDayToggled: updateRepeatingDay,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 16),
+                                SizedBox(
+                                  width: 170,
+                                  child: STextField(
+                                    labelText: "Name required",
+                                    controller: nameController,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 8),
+                                SizedBox(
+                                  width: 170,
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: AlarmStatusesIndicator(
+                                      alarm.statuses,
+                                      onTap: updateStatus,
+                                      enabled: true,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            SButton(
+                              onTap: () => Navigator.pop(context),
+                              destructive: true,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 30,
+                                vertical: 14,
+                              ),
+                              child: SizedBox(
+                                width: 70,
+                                child: Center(
+                                  child: SText(
+                                    "Cancel",
+                                    fontSize: 22,
+                                    color: const Color(0xDDFD251E),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SButton(
+                              onTap:
+                                  alarm.name.isEmpty
+                                      ? null
+                                      : () {
+                                        context.read<AlarmBloc>().add(
+                                          AlarmUpdateEvent(
+                                            alarm,
+                                            oldAlarm: widget.alarm,
+                                          ),
+                                        );
+                                        Navigator.pop(context);
+                                      },
+                              child: SizedBox(
+                                width: 50,
+                                child: Center(
+                                  child: SText("Save", fontSize: 22),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

@@ -13,7 +13,9 @@ abstract interface class PrayerRepository {
 class JniPrayerRepository implements PrayerRepository {
   final jni_bindings.Prayer _prayerService;
   JniPrayerRepository(JObject context)
-    : _prayerService = jni_bindings.Prayer(context);
+    : _prayerService = jni_bindings.Prayer(context) {
+    _prayerService.schedulePrayerAlarms();
+  }
 
   @override
   Result<Prayers> getPrayers() => Result.attempt(() {

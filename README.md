@@ -1,6 +1,11 @@
 # prayer_alarm
 An Application for creating alarms and tracking prayer times (with notifications)
 
+<div style="display: flex; gap: 8px;">
+   <img src="home.jpg" style="height: 400px">
+   <img src="edit.jpg" style="height: 400px">
+</div>
+
 ### Prerequisites
 1. Dart/Flutter installed on your device
 2. Android device or emulator

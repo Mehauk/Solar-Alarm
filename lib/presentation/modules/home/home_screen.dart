@@ -35,9 +35,9 @@ class HomeScreen extends StatelessWidget {
                   AlarmBloc(context.read())..add(const AlarmsLoadEvent()),
         ),
       ],
-      child: Scaffold(
+      child: const Scaffold(
         body: DecoratedBox(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -45,31 +45,61 @@ class HomeScreen extends StatelessWidget {
               // colors: [Color(0xFFEEF0F5), Color(0xffE2E4EA)],
             ),
           ),
-          child: Column(
-            children: [
-              if (kDebugMode) ...[
-                const SizedBox(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                      padding: const EdgeInsets.all(5),
-                      icon: const Icon(Icons.bug_report, size: 20),
-                      onPressed: () => Navigator.of(context).pushNamed('/logs'),
-                    ),
-                  ],
-                ),
-              ] else
-                const SizedBox(height: 60),
-              const ClockDigital(),
-              const SizedBox(height: 8),
-              const PrayerTimingsWidget(),
-              const SizedBox(height: 16),
-              const Expanded(child: AlarmsWidget()),
-            ],
-          ),
+          child: _HomeLifeCycleWrapper(),
         ),
       ),
+    );
+  }
+}
+
+class _HomeLifeCycleWrapper extends StatefulWidget {
+  const _HomeLifeCycleWrapper();
+
+  @override
+  State<_HomeLifeCycleWrapper> createState() => __HomeLifeCycleWrapperState();
+}
+
+class __HomeLifeCycleWrapperState extends State<_HomeLifeCycleWrapper>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      context.read<AlarmBloc>().add(const AlarmsLoadEvent());
+      context.read<PrayerTimingsBloc>().add(const PrayersLoadEvent());
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        if (kDebugMode) ...[
+          const SizedBox(height: 15),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
+                padding: const EdgeInsets.all(5),
+                icon: const Icon(Icons.bug_report, size: 20),
+                onPressed: () => Navigator.of(context).pushNamed('/logs'),
+              ),
+            ],
+          ),
+        ] else
+          const SizedBox(height: 60),
+        const ClockDigital(),
+        const SizedBox(height: 8),
+        const PrayerTimingsWidget(),
+        const SizedBox(height: 16),
+        const Expanded(child: AlarmsWidget()),
+      ],
     );
   }
 }

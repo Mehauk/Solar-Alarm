@@ -68,8 +68,6 @@ class AlarmBloc extends Bloc<AlarmEvent, AlarmState> {
         );
       }
 
-      newAlarm = newAlarm.copyWith(enabled: true);
-
       if (event.oldAlarm != null) {
         final delRes = _alarmRepository.cancelAlarm(event.oldAlarm!.name);
         if (delRes is Err) return emit(AlarmChangeFailure(delRes.message));

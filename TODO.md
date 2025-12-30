@@ -3,11 +3,11 @@
 - [x] Use viewmodels
 - [x] Use Jni+gen to sync call kotlin function
 - [x] FileLogger should also use jni calls for SST
-- [ ] Update readme, add images and running instructions
+- [x] Update readme, add images and running instructions
 - [x] Better error handling
-- [ ] Use better analysis options file
 - [ ] Refactor serialization (can be removed?)
 - [ ] Permission handling and dynamic location
+- [ ] Add icon
 
 ---
 ### FUTURE
@@ -25,8 +25,10 @@
 - [x] Fix no name alarm?
 - [x] Fix for setting an alarm for before now!
 - [x] Fix for __snoozed
-- [ ] Fix prayer plarms not triggering
-- [ ] Fix refetch all alarms on resume and restart
+- [ ] Fix prayer alarms not triggering
+- [x] Fix refetch all alarms on resume and restart
+- [x] Fix alarm date not updating on enable
+- [ ] Fix prayer alarms toggle not working
 
 ---
 ### OLD

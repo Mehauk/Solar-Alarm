@@ -44,6 +44,6 @@ class JniLogService implements Logger {
 
   @override
   List<String> history() {
-    return _logger.history().map((e) => e.toDartString()).toList();
+    return _logger.history().reversed.map((e) => e.toDartString()).toList();
   }
 }
