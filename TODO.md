@@ -5,7 +5,6 @@
 - [x] FileLogger should also use jni calls for SST
 - [x] Update readme, add images and running instructions
 - [x] Better error handling
-- [ ] Refactor serialization (can be removed?)
 - [ ] Permission handling and dynamic location
 - [ ] Add icon
 
