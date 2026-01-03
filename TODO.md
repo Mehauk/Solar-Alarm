@@ -6,7 +6,7 @@
 - [x] Update readme, add images and running instructions
 - [x] Better error handling
 - [ ] Permission handling and dynamic location
-- [ ] Add icon
+- [x] Add icon
 
 ---
 ### FUTURE
